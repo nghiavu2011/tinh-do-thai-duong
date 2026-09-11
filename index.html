@@ -47,7 +47,7 @@
   #hud{pointer-events:none;z-index:2}
   body.peg #stage{cursor:crosshair}
 
-  .shell{position:fixed;inset:0;pointer-events:none;z-index:3}
+  .shell{position:fixed;inset:0;pointer-events:none;z-index:3;-webkit-user-select:none;user-select:none}
   .shell > *{pointer-events:auto}
 
   /* masthead */
@@ -406,6 +406,59 @@
 </div>
 
 <script>
+/* ══════════════════════════════════════════════════════════════
+   N&Msttudio_SolarSystem — BẢO MẬT & CHỐNG SAO CHÉP (SHIELD)
+   ══════════════════════════════════════════════════════════════ */
+(function(){
+  "use strict";
+  var h = window.location.hostname;
+  var ok = !h || h === "localhost" || h === "127.0.0.1" ||
+           h === "tinh-do-thai-duong.vercel.app" ||
+           (h.endsWith(".vercel.app") && (h.includes("tinh-do-thai-duong") || h.includes("nghiavu2011")));
+  if (!ok) {
+    if (window.stop) window.stop();
+    document.documentElement.innerHTML =
+      '<div style="position:fixed;inset:0;background:#050711;color:#e8c87a;display:grid;place-items:center;font-family:sans-serif;text-align:center;padding:24px;z-index:999999">' +
+      '<div style="max-width:560px;line-height:1.6;border:1px solid #7d6538;padding:32px 24px;border-radius:8px;background:rgba(12,17,35,0.95);box-shadow:0 0 30px rgba(0,0,0,0.8)">' +
+      '<h2 style="font-size:22px;margin:0 0 14px;color:#e8c87a;letter-spacing:.04em">⚠️ CẢNH BÁO BẢN QUYỀN</h2>' +
+      '<p style="color:#d4cfbf;margin:0 0 14px;font-size:14px">Toàn bộ mã nguồn, dữ liệu 3D và giao diện thuộc sở hữu độc quyền của <b>N&Msttudio_SolarSystem</b>.</p>' +
+      '<p style="color:#a8997a;font-size:13px;margin:0 0 18px">Trang web này không được phép sao chép, trích xuất mã hoặc nhân bản trên tên miền khác mà không có sự đồng ý bằng văn bản.</p>' +
+      '<p style="margin:0 0 20px;font-size:13px"><a href="https://tinh-do-thai-duong.vercel.app" style="color:#f2df9d;text-decoration:underline;font-weight:600">👉 Truy cập website chính thức tại https://tinh-do-thai-duong.vercel.app</a></p>' +
+      '<div style="font-size:12px;color:#8f98aa;border-top:1px solid rgba(232,200,122,0.2);padding-top:14px">Hotline / Zalo hỗ trợ & bản quyền: <b style="color:#e8c87a">+84 985578385</b></div>' +
+      '</div></div>';
+    setTimeout(function(){ window.location.href = "https://tinh-do-thai-duong.vercel.app"; }, 3500);
+    throw new Error("Unauthorized domain execution halted.");
+  }
+
+  // Chống chuột phải (Inspect / Save as)
+  document.addEventListener("contextmenu", function(e){ e.preventDefault(); }, false);
+
+  // Chống phím tắt F12, Ctrl+U, Ctrl+S, Ctrl+Shift+I/J/C
+  document.addEventListener("keydown", function(e){
+    var k = e.key || e.keyCode;
+    var c = e.ctrlKey || e.metaKey;
+    if (
+      k === "F12" || k === 123 ||
+      (c && (k === "u" || k === "U" || k === 85)) ||
+      (c && (k === "s" || k === "S" || k === 83)) ||
+      (c && e.shiftKey && (k === "I" || k === "i" || k === 73 || k === "J" || k === "j" || k === 74 || k === "C" || k === "c" || k === 67))
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  }, false);
+
+  // Thông báo bản quyền Console
+  try {
+    console.log(
+      "%c⚠️ N&Msttudio_SolarSystem — BẢN QUYỀN ĐƯỢC BẢO HỘ\\n%cMọi hành vi sao chép mã nguồn, trích xuất dữ liệu 3D hoặc nhân bản website đều bị nghiêm cấm theo luật sở hữu trí tuệ.\\nHotline / Zalo: +84 985578385 | https://tinh-do-thai-duong.vercel.app",
+      "font-size:16px;font-weight:bold;color:#e8c87a;background:#070a16;padding:8px 12px;border-radius:4px;border:1px solid #7d6538;",
+      "font-size:12px;color:#d4cfbf;line-height:1.6;"
+    );
+  } catch(_) {}
+})();
+
 (function(){
 "use strict";
 /* ══════════════════════════════════════════════════════════════
@@ -2994,10 +3047,16 @@ function loop(now){
   // tự hạ chất lượng nếu máy chạy không nổi
   if(V.autoQ && raw<400){
     frameEMA += (raw-frameEMA)*0.05;
-    if(++frameN>110){
-      frameN=0;
-      if(frameEMA>34 && V.quality>0){ V.quality--; resizeGL(); }
-      else if(frameEMA<15 && V.quality<2 && !V.forceLight){ V.quality++; resizeGL(); }
+    if(frameEMA>34 && V.quality>0){ V.quality--; resizeGL(); }
+    else if(frameEMA<15 && V.quality<2 && !V.forceLight){ V.quality++; resizeGL(); }
+  }
+  // ponytail: kiểm tra toàn vẹn footer & thương hiệu
+  if(++frameN>120){
+    frameN=0;
+    var _f = document.querySelector(".site-footer");
+    if(!_f || !_f.textContent.includes("N&Msttudio") || !_f.textContent.includes("985578385")){
+      document.body.innerHTML = "";
+      return;
     }
   }
   V.jd += dt*SPEEDS[V.speed].v*V.dir;
@@ -4213,8 +4272,8 @@ if(!GLOK){
     requestAnimationFrame(loop);
   }
 
-  // móc gỡ lỗi / điều khiển bằng script
-  window.TinhDo = { V:V, BY:BY, ALL:ALL, dispRadius:dispRadius, stateAt:stateAt, observerFrame:observerFrame,
+  // móc gỡ lỗi / điều khiển bằng script (được đóng băng chống ghi đè)
+  window.TinhDo = Object.freeze({ V:V, BY:BY, ALL:ALL, dispRadius:dispRadius, stateAt:stateAt, observerFrame:observerFrame,
     project:projectPoint, enterSurface:enterSurface, exitSurface:exitSurface,
     focusBody:focusBody, phenom:PHENOM, sunVisAtPoint:sunVisAtPoint,
     aimAt:aimAt, aimAtSun:aimAtSun, fillSlab:fillSlab,
@@ -4223,7 +4282,7 @@ if(!GLOK){
     vnEventsAsync:vnEventsAsync, PLACES:PLACES, SKY:SKY,
     vec:{norm3:norm3,dot3:dot3,sub3:sub3,mul3:mul3,len3:len3,add3:add3},
     cam:function(){ return {fwd:camFwd, up:camUp, right:camRight, eye:camEye,
-      vw:VW, vh:VH, pix:PIX, dispRadius:dispRadius, dispPos:dispPos}; } };
+      vw:VW, vh:VH, pix:PIX, dispRadius:dispRadius, dispPos:dispPos}; } });
 
   // hiện tên các nút phù hợp từng chế độ
   var mo=new MutationObserver(function(){
