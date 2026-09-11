@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Tinh Đồ Thái Dương — Đài Quan Sát Hệ Mặt Trời 3D</title>
-<meta name="description" content="Tinh Đồ Thái Dương — đài quan sát hệ Mặt Trời 3D tương tác bằng tiếng Việt: quỹ đạo thật, đứng trên bề mặt hành tinh, xem nhật thực và nguyệt thực.">
+<title>N&Msttudio_SolarSystem — Tinh Đồ Thái Dương 3D</title>
+<meta name="description" content="N&Msttudio_SolarSystem — đài quan sát hệ Mặt Trời 3D tương tác bằng tiếng Việt: quỹ đạo thật, đứng trên bề mặt hành tinh, xem nhật thực. Hotline: +84 985578385.">
 <meta name="theme-color" content="#070A16">
 
 <!-- Favicon SVG tự sinh chống 404 -->
@@ -12,12 +12,12 @@
 
 <!-- Open Graph & Twitter Cards cho Zalo, Facebook, Telegram -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="Tinh Đồ Thái Dương — Đài Quan Sát Hệ Mặt Trời 3D">
-<meta property="og:description" content="Khám phá hệ Mặt Trời 3D tương tác bằng tiếng Việt: quỹ đạo thiên văn thật, đứng trên bề mặt hành tinh, xem nhật thực đúng ngày.">
+<meta property="og:title" content="N&Msttudio_SolarSystem — Tinh Đồ Thái Dương 3D">
+<meta property="og:description" content="Khám phá hệ Mặt Trời 3D tương tác: quỹ đạo thiên văn thật, đứng trên bề mặt hành tinh, xem nhật thực đúng ngày. Hotline: +84 985578385.">
 <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Planets2013.svg/1200px-Planets2013.svg.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Tinh Đồ Thái Dương — Đài Quan Sát Hệ Mặt Trời 3D">
-<meta name="twitter:description" content="Khám phá hệ Mặt Trời 3D tương tác bằng tiếng Việt: quỹ đạo thiên văn thật, đứng trên bề mặt hành tinh, xem nhật thực đúng ngày.">
+<meta name="twitter:title" content="N&Msttudio_SolarSystem — Tinh Đồ Thái Dương 3D">
+<meta name="twitter:description" content="Khám phá hệ Mặt Trời 3D tương tác: quỹ đạo thiên văn thật, đứng trên bề mặt hành tinh, xem nhật thực đúng ngày. Hotline: +84 985578385.">
 
 <!-- Tối ưu kết nối & nạp font -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -50,8 +50,17 @@
   .shell{position:fixed;inset:0;pointer-events:none;z-index:3}
   .shell > *{pointer-events:auto}
 
-  /* masthead */
+  /* masthead & brand */
   .masthead{position:absolute;top:0;left:0;padding:calc(20px + env(safe-area-inset-top, 0px)) 24px 0}
+  .brand-badge{display:flex;align-items:center;gap:11px;margin-bottom:8px}
+  .brand-logo{width:38px;height:38px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(232,200,122,.35));border-radius:6px;flex:none}
+  .brand-meta{display:flex;flex-direction:column}
+  .brand-name{font-family:var(--font-ui);font-weight:600;font-size:13px;letter-spacing:.05em;color:var(--brass);line-height:1.2}
+  .brand-sub{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass-dim);font-weight:500;margin-top:2px}
+  .brand-contact{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:10.5px;
+    color:var(--parchment);text-decoration:none;background:rgba(232,200,122,.08);
+    border:1px solid var(--hairline-soft);padding:3px 9px;border-radius:3px;margin-top:7px;transition:.18s}
+  .brand-contact:hover{background:rgba(232,200,122,.2);color:var(--brass);border-color:var(--hairline)}
   .eyebrow{font-size:9.5px;letter-spacing:.34em;text-transform:uppercase;
     color:var(--brass-dim);margin:0 0 6px;font-weight:500}
   .wordmark{font-family:var(--font-display);font-weight:600;
@@ -64,6 +73,23 @@
     margin:9px 0 2px;font-weight:500;display:none}
   .coords{font-family:var(--font-mono);font-size:10px;color:var(--parchment-dim);display:none}
   body.on-surface .where,body.on-surface .coords{display:block}
+
+  /* footer */
+  .site-footer{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;
+    padding:5px 14px;background:rgba(7,10,22,.86);border:1px solid var(--hairline-soft);
+    border-radius:4px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+    font-size:10.5px;color:var(--parchment-dim);margin-top:1px}
+  .footer-left{display:flex;align-items:center;gap:6px}
+  .footer-logo{width:18px;height:18px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(232,200,122,.3))}
+  .footer-title{font-weight:500;color:var(--parchment);letter-spacing:.03em}
+  .footer-sep{color:var(--brass-dim);opacity:.6}
+  .footer-center{display:flex;align-items:center;gap:6px}
+  .footer-phone{color:var(--brass);font-family:var(--font-mono);text-decoration:none;font-weight:500;transition:.18s}
+  .footer-phone:hover{text-decoration:underline}
+  .footer-zalo{display:inline-block;padding:1px 6px;background:rgba(0,136,255,.2);color:#64B5F6;
+    border:1px solid rgba(100,181,246,.3);border-radius:3px;font-size:9.5px;text-decoration:none;font-weight:500}
+  .footer-zalo:hover{background:rgba(0,136,255,.35);color:#fff}
+  .footer-right{font-size:9.5px;color:#7C7668}
 
   /* thông tin thiên thể */
   .slab{position:absolute;top:calc(20px + env(safe-area-inset-top, 0px));right:24px;width:292px;background:var(--panel);
@@ -245,8 +271,16 @@
     .row dt{font-size:8px}
     .row dd{text-align:left;font-size:11px}
     .masthead{padding:calc(14px + env(safe-area-inset-top, 0px)) 14px 0}
+    .brand-badge{gap:8px;margin-bottom:4px}
+    .brand-logo{width:28px;height:28px}
+    .brand-name{font-size:11px}
+    .brand-sub{font-size:7.5px}
+    .brand-contact{font-size:9.5px;padding:2px 6px;margin-top:4px}
     .wordmark{font-size:22px}
     .console{padding:0 6px calc(10px + env(safe-area-inset-bottom, 0px));gap:6px}
+    .site-footer{font-size:9px;gap:6px;padding:3px 8px;margin-top:0}
+    .footer-logo{width:14px;height:14px}
+    .footer-right{display:none}
     .colophon,.hint{display:none}
     .seg button{font-size:8px;letter-spacing:.08em;padding:6px 6px}
     .ghost,.solid{font-size:8px;letter-spacing:.08em;padding:6px 8px}
@@ -262,7 +296,15 @@
 <div id="loading"><div>Đang dựng hệ Mặt Trời…</div></div>
 <div id="welcome" hidden>
   <div class="wel-box">
-    <p class="eyebrow">Đài quan sát tương tác</p>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <img src="logo/logo.png" alt="N&Msttudio Logo" style="width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(232,200,122,.35))">
+      <div>
+        <p class="eyebrow" style="margin:0">N&Msttudio_SolarSystem</p>
+        <div style="font-size:11px;color:var(--parchment-dim);margin-top:2px">
+          Hotline / Zalo: <a href="tel:+84985578385" style="color:var(--brass);text-decoration:none;font-family:var(--font-mono)">+84 985578385</a>
+        </div>
+      </div>
+    </div>
     <h2>Tinh Đồ Thái Dương</h2>
     <p class="wel-sub">Hệ Mặt Trời dựng theo số liệu thiên văn thật: bạn xem được quỹ đạo,
       đứng lên bề mặt hành tinh, và xem nhật thực đúng ngày nó xảy ra.</p>
@@ -283,10 +325,17 @@
 
 <div class="shell">
   <header class="masthead">
-    <p class="eyebrow">Đài quan sát tương tác</p>
+    <div class="brand-badge">
+      <img src="logo/logo.png" alt="N&Msttudio Logo" class="brand-logo" width="38" height="38">
+      <div class="brand-meta">
+        <span class="brand-name">N&Msttudio_SolarSystem</span>
+        <span class="brand-sub">Đài quan sát tương tác 3D</span>
+      </div>
+    </div>
     <h1 class="wordmark">Tinh Đồ <em>Thái Dương</em></h1>
     <div class="rule"></div>
     <div class="clock" id="clock">—</div>
+    <a href="tel:+84985578385" class="brand-contact" title="Hotline / Zalo">📞 +84 985578385</a>
     <div class="where" id="where"></div>
     <div class="coords" id="coords"></div>
   </header>
@@ -348,6 +397,20 @@
       <button class="ghost" id="btn-back" hidden>Về quỹ đạo</button>
     </div>
     <p class="hint" id="hint"><b>Kéo</b> để quay · <b>Cuộn</b> để phóng · <b>Nhấn</b> vào thiên thể để tới gần</p>
+    <footer class="site-footer">
+      <div class="footer-left">
+        <img src="logo/logo.png" alt="Logo" class="footer-logo" width="18" height="18">
+        <span class="footer-title">N&Msttudio_SolarSystem</span>
+      </div>
+      <span class="footer-sep">·</span>
+      <div class="footer-center">
+        <span>Liên hệ:</span>
+        <a href="tel:+84985578385" class="footer-phone">📞 +84 985578385</a>
+        <a href="https://zalo.me/0985578385" target="_blank" rel="noopener noreferrer" class="footer-zalo">Zalo</a>
+      </div>
+      <span class="footer-sep">·</span>
+      <div class="footer-right">© 2026 N&Msttudio · Thiên văn học 3D</div>
+    </footer>
   </div>
 
   <p class="colophon">Vị trí hành tinh tính từ phần tử Kepler J2000, Mặt Trăng theo chuỗi Meeus rút gọn —

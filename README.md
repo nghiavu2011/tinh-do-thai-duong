@@ -1,6 +1,13 @@
-# 🌌 Tinh Đồ Thái Dương — Đài Quan Sát Hệ Mặt Trời 3D
+# 🌌 N&Msttudio_SolarSystem — Tinh Đồ Thái Dương 3D
 
-**Tinh Đồ Thái Dương** là đài quan sát thiên văn 3D tương tác thuần WebGL 2 bằng tiếng Việt, được xây dựng dựa trên số liệu thiên văn thực tế từ NASA, Hipparcos và các mô hình quỹ đạo Keplerian.
+<div align="center">
+  <img src="logo/logo.png" alt="N&Msttudio Logo" width="120">
+  <h3>Đài Quan Sát Hệ Mặt Trời 3D Tương Tác Thuần WebGL</h3>
+  <p>
+    <b>Website Trực Tuyến:</b> <a href="https://tinh-do-thai-duong.vercel.app">https://tinh-do-thai-duong.vercel.app</a><br>
+    <b>Hotline / Zalo Liên Hệ:</b> <a href="tel:+84985578385">+84 985578385</a>
+  </p>
+</div>
 
 ---
 
@@ -38,3 +45,11 @@ npx serve .
 ```
 
 Sau đó truy cập: `http://localhost:8000`
+
+---
+
+## 📞 Thông Tin Liên Hệ
+
+- **Đơn vị phát triển**: **N&Msttudio**
+- **Dự án**: **N&Msttudio_SolarSystem**
+- **Hotline / Zalo**: [+84 985578385](tel:+84985578385)
