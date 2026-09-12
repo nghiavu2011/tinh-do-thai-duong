@@ -102,6 +102,23 @@
   .row dt{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--parchment-dim)}
   .row dd{margin:0;font-family:var(--font-mono);font-size:12.5px;font-variant-numeric:tabular-nums;text-align:right}
   .row dd small{font-size:9.5px;color:var(--brass-dim)}
+  .slab-toggle{appearance:none;background:rgba(232,200,122,.08);border:1px solid var(--hairline-soft);
+    border-radius:3px;color:var(--brass-dim);font-family:var(--font-ui);font-size:9.5px;
+    padding:3px 8px;cursor:pointer;margin-left:auto;transition:.18s;touch-action:manipulation}
+  .slab-toggle:hover,.slab-toggle:active{background:rgba(232,200,122,.2);color:var(--brass);border-color:var(--brass)}
+  body.slab-collapsed .slab-body,
+  body.slab-collapsed .slab-tag{display:none}
+  body.slab-collapsed .slab{padding:8px 14px}
+
+  /* touch hud controls */
+  .touch-hud{position:absolute;right:18px;bottom:calc(132px + env(safe-area-inset-bottom, 0px));
+    display:flex;flex-direction:column;gap:7px;z-index:4;pointer-events:auto}
+  .th-btn{appearance:none;width:38px;height:38px;border-radius:6px;background:rgba(7,10,22,.86);
+    border:1px solid var(--hairline);color:var(--parchment);font-family:var(--font-mono);
+    font-size:16px;font-weight:600;display:grid;place-items:center;cursor:pointer;
+    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:.16s;touch-action:manipulation;
+    user-select:none;-webkit-user-select:none}
+  .th-btn:active,.th-btn:hover{background:rgba(232,200,122,.22);color:var(--brass);border-color:var(--brass)}
 
   /* nút */
   .ghost,.solid{appearance:none;font-family:var(--font-ui);font-size:10.5px;font-weight:500;
@@ -246,37 +263,65 @@
   .ans.off{opacity:.45}
   .les-fb{font-size:12px;line-height:1.6;color:#CFC8B6;margin:10px 0 0;min-height:1px}
   .les-fb b{color:var(--brass)}
-  @media (max-width:900px){
-    .lesson-card{bottom:calc(96px + env(safe-area-inset-bottom, 0px));padding:12px 14px 11px}
-    .lesson-card h3{font-size:19px}
-    .les-txt{font-size:12.5px;line-height:1.65}
-    body.lesson .slab{display:none}
-  }
-  #loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--void);z-index:9}
-  #loading div{font-family:var(--font-display);font-size:22px;color:var(--brass);letter-spacing:.04em}
-  #nogl{display:none;position:fixed;inset:0;place-items:center;padding:30px;text-align:center;z-index:10;background:var(--void)}
-  #nogl p{max-width:38ch;font-size:13px;line-height:1.7;color:var(--parchment-dim)}
+  /* ══════════════════════════════════════════════
+     CHUẨN HÓA GIAO DIỆN 3 NỀN TẢNG (RESPONSIVE)
+     ══════════════════════════════════════════════ */
 
-  @media (max-width:900px){
-    .slab{top:auto;bottom:calc(96px + env(safe-area-inset-bottom, 0px));left:14px;right:14px;width:auto;padding:11px 13px 9px;background:rgba(7,10,22,.9)}
-    .slab-name{font-size:22px}
-    .slab-tag{font-size:13.5px;margin-top:4px}
-    .readout{grid-template-columns:1fr 1fr;column-gap:16px;margin-top:9px}
-    .row{padding:5px 0;flex-direction:column;align-items:flex-start;gap:0}
-    .row dt{font-size:8px}
-    .row dd{text-align:left;font-size:11px}
-    .masthead{padding:calc(14px + env(safe-area-inset-top, 0px)) 14px 0}
-    .brand-contact{font-size:9.5px;padding:2px 6px;margin-top:4px}
-    .wordmark{font-size:22px}
-    .console{padding:0 6px calc(10px + env(safe-area-inset-bottom, 0px));gap:6px}
-    .site-footer{font-size:9px;gap:6px;padding:3px 8px;margin-top:0}
-    .footer-logo{width:14px;height:14px}
+  /* 1. Máy tính bảng / iPad (768px - 1024px) */
+  @media (min-width:768px) and (max-width:1024px){
+    .slab{top:calc(16px + env(safe-area-inset-top, 0px));right:18px;width:280px;max-height:64vh;overflow-y:auto;padding:13px 15px}
+    .slab-name{font-size:25px}
+    .touch-hud{right:18px;bottom:calc(128px + env(safe-area-inset-bottom, 0px))}
+    .th-btn{width:40px;height:40px;font-size:17px}
+    .console{padding:0 12px calc(12px + env(safe-area-inset-bottom, 0px));gap:7px}
+    .seg button,.ghost,.solid{min-height:36px;padding:7px 10px;font-size:9.5px}
+    .chip{padding:9px 12px 6px;font-size:11px}
+    .phenom{left:18px;bottom:calc(118px + env(safe-area-inset-bottom, 0px));width:280px}
+    .lesson-card{bottom:calc(118px + env(safe-area-inset-bottom, 0px));right:18px;width:340px}
+  }
+
+  /* 2. Điện thoại thông minh / Smartphone (< 768px) */
+  @media (max-width:767px){
+    .masthead{padding:calc(12px + env(safe-area-inset-top, 0px)) 12px 0}
+    .wordmark{font-size:21px}
+    .brand-contact{font-size:9px;padding:2px 6px;margin-top:3px}
+    .rule{margin:7px 0 5px;width:44px}
+    .clock{font-size:10px}
+
+    /* Bảng thông tin thiên thể dạng ngăn kéo đáy có thể thu gọn */
+    .slab{top:auto;bottom:calc(112px + env(safe-area-inset-bottom, 0px));left:10px;right:10px;width:auto;
+      padding:10px 12px 8px;background:rgba(7,10,22,.94);border-radius:6px;max-height:44vh;overflow-y:auto;
+      -webkit-overflow-scrolling:touch}
+    .slab-name{font-size:20px}
+    .slab-tag{font-size:12.5px;margin-top:3px}
+    .readout{grid-template-columns:1fr 1fr;column-gap:12px;margin-top:7px}
+    .row{padding:4px 0;flex-direction:column;align-items:flex-start;gap:0}
+    .row dt{font-size:7.5px}
+    .row dd{text-align:left;font-size:10.5px}
+
+    /* Cụm phím nổi Touch HUD nằm bên cạnh phải vùng trời, tránh che bảng điều khiển */
+    .touch-hud{right:10px;top:calc(82px + env(safe-area-inset-top, 0px));bottom:auto;gap:6px}
+    .th-btn{width:36px;height:36px;font-size:15px;border-radius:5px}
+
+    /* Thanh điều khiển đáy */
+    .console{padding:0 6px calc(8px + env(safe-area-inset-bottom, 0px));gap:5px}
+    .rail{min-height:38px;padding:3px 1px 1px;-webkit-overflow-scrolling:touch}
+    .chip{font-size:11px;padding:9px 9px 5px}
+    .controls{gap:6px}
+    .seg button{font-size:8px;letter-spacing:.06em;padding:6px 6px;min-height:34px}
+    .ghost,.solid{font-size:8px;letter-spacing:.06em;padding:6px 7px;min-height:34px}
+    .site-footer{font-size:8.5px;gap:5px;padding:3px 7px;margin-top:0}
+    .footer-logo{width:13px;height:13px}
     .footer-right{display:none}
     .colophon,.hint{display:none}
-    .seg button{font-size:8px;letter-spacing:.08em;padding:6px 6px}
-    .ghost,.solid{font-size:8px;letter-spacing:.08em;padding:6px 8px}
-    .phenom{left:14px;right:14px;bottom:calc(96px + env(safe-area-inset-bottom, 0px));width:auto;max-height:56vh;overflow-y:auto}
-    #evt{font-size:9.5px;padding:6px 10px;letter-spacing:.1em;top:auto;bottom:calc(100% - 74px)}
+
+    /* Bài học & Hiện tượng */
+    .lesson-card{left:10px;right:10px;width:auto;bottom:calc(112px + env(safe-area-inset-bottom, 0px));padding:12px 14px 11px}
+    .lesson-card h3{font-size:18px}
+    .les-txt{font-size:12px;line-height:1.6}
+    body.lesson .slab{display:none}
+    .phenom{left:10px;right:10px;bottom:calc(112px + env(safe-area-inset-bottom, 0px));width:auto;max-height:50vh;overflow-y:auto}
+    #evt{font-size:9px;padding:5px 9px;letter-spacing:.08em;top:auto;bottom:calc(100% - 68px)}
   }
   @media (prefers-reduced-motion:reduce){ *{transition-duration:.01ms !important} }
 </style>
@@ -329,11 +374,14 @@
     <div class="slab-top">
       <span class="glyph" id="d-glyph"></span>
       <span class="slab-kind" id="d-kind">Hành tinh đá</span>
+      <button class="slab-toggle" id="btn-slab-toggle" title="Thu gọn / Mở rộng" aria-label="Thu gọn/Mở rộng bảng">Thu gọn ▾</button>
     </div>
     <h2 class="slab-name" id="d-name">Trái Đất</h2>
     <p class="slab-tag" id="d-tag"></p>
-    <dl class="readout" id="d-rows"></dl>
-    <button class="solid" id="btn-stand" hidden>Đứng trên Trái Đất</button>
+    <div class="slab-body" id="slab-body">
+      <dl class="readout" id="d-rows"></dl>
+      <button class="solid" id="btn-stand" hidden>Đứng trên Trái Đất</button>
+    </div>
   </section>
 
   <aside class="phenom" id="phenom">
@@ -360,6 +408,12 @@
   <section class="lesson-card" id="lesson"></section>
 
   <div id="evt"></div>
+
+  <div class="touch-hud" id="touch-hud" aria-label="Điều khiển cảm ứng">
+    <button class="th-btn" id="th-in" title="Phóng to" aria-label="Phóng to">+</button>
+    <button class="th-btn" id="th-out" title="Thu nhỏ" aria-label="Thu nhỏ">−</button>
+    <button class="th-btn" id="th-reset" title="Trở về tâm thiên thể" aria-label="Trở về tâm">🎯</button>
+  </div>
 
   <div class="console">
     <nav class="rail" id="rail" aria-label="Chọn thiên thể"></nav>
@@ -2200,6 +2254,7 @@ var V = {
   dust:true, trace:null, quality:2, autoQ:true,
   yaw:-0.7, pitch:0.38, dist:60000,
   wantYaw:-0.7, wantPitch:0.38, wantDist:60000, tgt:[0,0,0], wantTgt:[0,0,0],
+  pan:[0,0,0], wantPan:[0,0,0],
   stand:null, obsLat:21.03, obsLon:105.85, look:{yaw:0, pitch:0.30}, fov:62,
   wantLook:{yaw:0, pitch:0.30}, wantFov:62, exposure:1, eclipseNote:""
 };
@@ -2394,12 +2449,17 @@ function renderOrbit(S){
   V.wantTgt=tgt;
   var e=0.10;
   V.tgt=[V.tgt[0]+(tgt[0]-V.tgt[0])*e, V.tgt[1]+(tgt[1]-V.tgt[1])*e, V.tgt[2]+(tgt[2]-V.tgt[2])*e];
+  if(!V.pan) { V.pan=[0,0,0]; V.wantPan=[0,0,0]; }
+  V.pan[0]+=(V.wantPan[0]-V.pan[0])*e;
+  V.pan[1]+=(V.wantPan[1]-V.pan[1])*e;
+  V.pan[2]+=(V.wantPan[2]-V.pan[2])*e;
+  var effTgt=[V.tgt[0]+V.pan[0], V.tgt[1]+V.pan[1], V.tgt[2]+V.pan[2]];
   V.dist += (V.wantDist-V.dist)*e;
   V.yaw  += (V.wantYaw-V.yaw)*e;
   V.pitch+= (V.wantPitch-V.pitch)*e;
   var cp=Math.cos(V.pitch), sp=Math.sin(V.pitch);
-  camEye=[ V.tgt[0]+V.dist*cp*Math.sin(V.yaw), V.tgt[1]+V.dist*sp, V.tgt[2]+V.dist*cp*Math.cos(V.yaw) ];
-  setCamBasis(sub3(V.tgt,camEye), [0,1,0]);
+  camEye=[ effTgt[0]+V.dist*cp*Math.sin(V.yaw), effTgt[1]+V.dist*sp, effTgt[2]+V.dist*cp*Math.cos(V.yaw) ];
+  setCamBasis(sub3(effTgt,camEye), [0,1,0]);
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, FB.scene.fb);
   gl.viewport(0,0,VW,VH);
@@ -3103,6 +3163,9 @@ function fillSlab(id){
 function focusBody(id, keepDist){
   var b=BY[id]; if(!b) return;
   V.focus=id; fillSlab(id);
+  if(V.wantPan) V.wantPan=[0,0,0];
+  document.body.classList.remove("slab-collapsed");
+  var tBtn=document.getElementById("btn-slab-toggle"); if(tBtn) tBtn.textContent="Thu gọn ▾";
   if(!keepDist){
     var r=dispRadius(b);
     V.wantDist=Math.max(r*4.2, V.trueScale? r*4.2 : r*4.2);
@@ -3111,6 +3174,7 @@ function focusBody(id, keepDist){
 }
 function wideView(){
   V.focus="sun"; fillSlab("sun");
+  if(V.wantPan) V.wantPan=[0,0,0];
   V.wantDist = V.trueScale ? 6.0e6 : 210000;
   V.wantPitch=0.42;
 }
@@ -4159,44 +4223,105 @@ if(!GLOK){
     pl.appendChild(el);
   });
 
-  /* ── con trỏ ── */
-  var pts={}, dragged=false, lx=0, ly=0, pinch=0;
+  /* ── con trỏ & cử chỉ đa chạm (touch gestures) ── */
+  var pts={}, isPanning=false, dragged=false, lx=0, ly=0, pinch=0;
+  var prevMidX=0, prevMidY=0, lastTapT=0, lastTapX=0, lastTapY=0;
+
+  function panOrbit(dx, dy){
+    if(V.mode!=="orbit") return;
+    if(!V.pan) { V.pan=[0,0,0]; V.wantPan=[0,0,0]; }
+    var scale = V.dist * 0.0016;
+    var dX = -dx * scale, dY = dy * scale;
+    V.wantPan[0] += camRight[0]*dX + camUp[0]*dY;
+    V.wantPan[1] += camRight[1]*dX + camUp[1]*dY;
+    V.wantPan[2] += camRight[2]*dX + camUp[2]*dY;
+  }
+
+  function resetPan(){
+    if(!V.pan) { V.pan=[0,0,0]; V.wantPan=[0,0,0]; }
+    V.wantPan=[0,0,0];
+  }
+
   cv.addEventListener("pointerdown",function(ev){
     cv.setPointerCapture(ev.pointerId);
     pts[ev.pointerId]={x:ev.clientX,y:ev.clientY};
     lx=ev.clientX; ly=ev.clientY; dragged=false;
+    isPanning=(ev.button===2 || ev.button===1);
     cv.classList.add("dragging");
     var k=Object.keys(pts);
-    if(k.length===2){ var a=pts[k[0]],b=pts[k[1]]; pinch=Math.hypot(a.x-b.x,a.y-b.y); }
+    if(k.length===2){
+      var a=pts[k[0]], b=pts[k[1]];
+      pinch=Math.hypot(a.x-b.x, a.y-b.y);
+      prevMidX=(a.x+b.x)*0.5; prevMidY=(a.y+b.y)*0.5;
+    }
   });
+
   cv.addEventListener("pointermove",function(ev){
     if(!pts[ev.pointerId]) return;
     pts[ev.pointerId]={x:ev.clientX,y:ev.clientY};
     var k=Object.keys(pts);
     if(k.length>=2){
-      var a=pts[k[0]],b=pts[k[1]], d=Math.hypot(a.x-b.x,a.y-b.y);
-      if(pinch>0) zoom(pinch/d);
-      pinch=d; dragged=true; return;
+      var a=pts[k[0]], b=pts[k[1]];
+      var d=Math.hypot(a.x-b.x, a.y-b.y);
+      var midX=(a.x+b.x)*0.5, midY=(a.y+b.y)*0.5;
+      // 1. Phóng to / Thu nhỏ (Pinch Zoom)
+      if(pinch>0 && Math.abs(d-pinch)>1.2){
+        zoom(pinch/d);
+        pinch=d;
+      }
+      // 2. Kéo 2 ngón tay để dịch chuyển tầm nhìn (2-Finger Pan)
+      var panDx=midX-prevMidX, panDy=midY-prevMidY;
+      if(Math.hypot(panDx, panDy)>0.8){
+        panOrbit(panDx, panDy);
+        prevMidX=midX; prevMidY=midY;
+      }
+      dragged=true; return;
     }
     var dx=ev.clientX-lx, dy=ev.clientY-ly; lx=ev.clientX; ly=ev.clientY;
     if(Math.abs(dx)+Math.abs(dy)>2) dragged=true;
+    if(isPanning){
+      panOrbit(dx, dy);
+      return;
+    }
     if(V.mode==="orbit"){
-      V.wantYaw-=dx*0.0050; V.yaw-=dx*0.0018;
-      V.wantPitch=Math.max(-1.45,Math.min(1.45,V.wantPitch+dy*0.0042));
+      V.wantYaw-=dx*0.0048; V.yaw-=dx*0.0016;
+      V.wantPitch=Math.max(-1.45,Math.min(1.45,V.wantPitch+dy*0.0040));
     } else {
       var k2=V.fov/62*0.0034;
       V.wantLook.yaw+=dx*k2; V.look.yaw+=dx*k2*0.35;
       V.wantLook.pitch=Math.max(-0.45,Math.min(1.45,V.wantLook.pitch+dy*k2));
     }
   });
+
   function endP(ev){
-    cv.classList.remove("dragging");
-    delete pts[ev.pointerId]; pinch=0;
-    if(!dragged && V.mode==="orbit") pick(ev.clientX,ev.clientY);
+    delete pts[ev.pointerId];
+    var rem=Object.keys(pts);
+    if(rem.length===1){
+      // Chuyển ngón mượt mà khi nhấc bớt 1 ngón, không bị giật góc nhìn
+      lx=pts[rem[0]].x; ly=pts[rem[0]].y; pinch=0;
+    } else if(rem.length===0){
+      cv.classList.remove("dragging"); pinch=0; isPanning=false;
+      if(!dragged){
+        var now=performance.now();
+        if(now-lastTapT<320 && Math.hypot(ev.clientX-lastTapX, ev.clientY-lastTapY)<28){
+          // Nhấn đúp (Double-tap) để đưa camera về tâm thiên thể
+          resetPan();
+          lastTapT=0;
+        } else {
+          lastTapT=now; lastTapX=ev.clientX; lastTapY=ev.clientY;
+          if(V.mode==="orbit") pick(ev.clientX,ev.clientY);
+        }
+      }
+    }
   }
   cv.addEventListener("pointerup",endP);
   cv.addEventListener("pointercancel",function(ev){
-    cv.classList.remove("dragging"); delete pts[ev.pointerId]; pinch=0; });
+    delete pts[ev.pointerId];
+    var rem=Object.keys(pts);
+    if(rem.length===1){ lx=pts[rem[0]].x; ly=pts[rem[0]].y; pinch=0; }
+    else if(rem.length===0){ cv.classList.remove("dragging"); pinch=0; isPanning=false; }
+  });
+
   function zoom(f){
     if(V.mode==="orbit"){
       var b=BY[V.focus]||BY.earth, rmin=dispRadius(b)*1.06;
@@ -4210,6 +4335,20 @@ if(!GLOK){
     zoom(1+Math.sign(ev.deltaY)*Math.min(0.2,Math.abs(ev.deltaY)/500));
   },{passive:false});
 
+  // Sự kiện cụm phím nổi Touch HUD
+  var thIn=$("th-in"), thOut=$("th-out"), thReset=$("th-reset");
+  if(thIn) thIn.addEventListener("click",function(e){ e.stopPropagation(); zoom(0.80); });
+  if(thOut) thOut.addEventListener("click",function(e){ e.stopPropagation(); zoom(1.25); });
+  if(thReset) thReset.addEventListener("click",function(e){ e.stopPropagation(); resetPan(); });
+
+  // Nút thu gọn / mở rộng bảng thông tin thiên thể
+  var slabToggle=$("btn-slab-toggle");
+  if(slabToggle) slabToggle.addEventListener("click",function(e){
+    e.stopPropagation();
+    var col=document.body.classList.toggle("slab-collapsed");
+    this.textContent=col?"Mở rộng ▴":"Thu gọn ▾";
+  });
+
   function pick(px,py){
     var r=cv.getBoundingClientRect(), x=px-r.left, y=py-r.top;
     var S=stateAt(V.jd), best=null, bd=1e9;
@@ -4217,7 +4356,7 @@ if(!GLOK){
       var rel=sub3(dispPos(b,S),camEye);
       var p=projectPoint(rel); if(!p) return;
       var rr=dispRadius(b)/len3(rel)*(VH/PIX)/(2*Math.tan(26*D2R));
-      var d=Math.hypot(p.x-x,p.y-y), lim=Math.max(17,rr+11);
+      var d=Math.hypot(p.x-x,p.y-y), lim=Math.max(24,rr+16);
       if(d<lim && d<bd){ bd=d; best=b; }
     });
     if(!best) return;
