@@ -52,6 +52,10 @@
 
   /* masthead */
   .masthead{position:absolute;top:0;left:0;padding:calc(20px + env(safe-area-inset-top, 0px)) 24px 0}
+  .lang-switch{display:inline-flex;align-items:center;background:rgba(7,10,22,.85);border:1px solid var(--hairline);border-radius:4px;overflow:hidden;margin-left:10px;vertical-align:middle}
+  .lang-btn{appearance:none;background:none;border:0;color:var(--parchment-dim);font-family:var(--font-mono);font-size:10px;font-weight:600;padding:3px 8px;cursor:pointer;transition:.18s;letter-spacing:.05em}
+  .lang-btn:hover{color:var(--parchment);background:rgba(232,200,122,.12)}
+  .lang-btn.active{background:var(--brass);color:var(--ink);box-shadow:0 0 8px rgba(232,200,122,.35)}
   .brand-contact{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:10.5px;
     color:var(--parchment);text-decoration:none;background:rgba(232,200,122,.08);
     border:1px solid var(--hairline-soft);padding:3px 9px;border-radius:3px;margin-top:7px;transition:.18s}
@@ -366,6 +370,10 @@
     <div class="rule"></div>
     <div class="clock" id="clock">—</div>
     <a href="tel:+84985578385" class="brand-contact" title="Hotline / Zalo">📞 +84 985578385</a>
+    <div class="lang-switch" role="group" aria-label="Ngôn ngữ / Language">
+      <button class="lang-btn active" id="btn-lang-vi" type="button" title="Tiếng Việt">VN</button>
+      <button class="lang-btn" id="btn-lang-en" type="button" title="English (IAU Standard)">EN</button>
+    </div>
     <div class="where" id="where"></div>
     <div class="coords" id="coords"></div>
   </header>
@@ -583,6 +591,175 @@ var TEXIMG = {
 var AU = 149597870.7;                 // km
 var D2R = Math.PI/180, R2D = 180/Math.PI, TAU = Math.PI*2;
 var J2000 = 2451545.0;
+
+/* ══════════════ song ngữ EN / VN (chuẩn thiên văn học IAU) ══════════════ */
+var LANG = (function(){
+  try { return localStorage.getItem("tinhdo-lang") || "vi"; } catch(e){ return "vi"; }
+})();
+
+var I18N = {
+  vi: {
+    sun: "Mặt Trời", mercury: "Sao Thủy", venus: "Sao Kim", earth: "Trái Đất", luna: "Mặt Trăng",
+    mars: "Sao Hỏa", jupiter: "Sao Mộc", saturn: "Sao Thổ", uranus: "Sao Thiên Vương", neptune: "Sao Hải Vương",
+    phobos: "Phobos", deimos: "Deimos", io: "Io", europa: "Europa", ganymede: "Ganymede",
+    callisto: "Callisto", titan: "Titan", enceladus: "Enceladus", titania: "Titania", triton: "Triton",
+    
+    // Loại thiên thể
+    star: "Ngôi sao",
+    rocky: "Hành tinh đá",
+    gas: "Hành tinh khí",
+    ice: "Hành tinh băng",
+    moon_earth: "Vệ tinh của Trái Đất",
+    moon_mars: "Vệ tinh của Sao Hỏa",
+    moon_jupiter: "Vệ tinh của Sao Mộc",
+    moon_saturn: "Vệ tinh của Sao Thổ",
+    moon_uranus: "Vệ tinh của Sao Thiên Vương",
+    moon_neptune: "Vệ tinh của Sao Hải Vương",
+
+    // Thao tác & Điều khiển
+    stand_on: "Đứng trên ",
+    collapse: "Thu gọn ▾",
+    expand: "Mở rộng ▴",
+    orbit_view: "Về quỹ đạo",
+    land_on: "Thả người xuống",
+    now: "Bây giờ",
+    lessons: "Bài học",
+    phenom: "Hiện tượng",
+    tonight: "Tối nay",
+    more: "Nâng cao",
+    true_scale: "Tỉ lệ thật",
+    constel: "Chòm sao",
+    grid: "Lưới trời",
+    expert: "Chi tiết hơn",
+    light_mode: "Nhẹ máy",
+    reverse: "Ngược",
+    hint_orbit: "<b>Kéo</b> để quay · <b>Cuộn</b> để phóng · <b>Nhấn</b> vào thiên thể để tới gần",
+    hint_surface: "<b>Kéo</b> để nhìn quanh · <b>Cuộn</b> để phóng như ống nhòm · <b>Esc</b> để quay ra",
+    hint_peg: "Nhấn vào <b>Trái Đất, Mặt Trăng, Sao Hỏa, Sao Thủy, Io, Europa, Ganymede, Titan</b> hoặc <b>Triton</b> để đứng lên đó",
+
+    // Nhãn hàng thông số (Rows)
+    diameter: "Đường kính",
+    distance: "Khoảng cách",
+    mass: "Khối lượng",
+    surf_temp: "Nhiệt độ bề mặt",
+    core_temp: "Nhiệt độ nhân",
+    rot_period: "Chu kỳ tự quay",
+    orb_period: "Chu kỳ quỹ đạo",
+    temp: "Nhiệt độ",
+    avg_temp: "Nhiệt độ trung bình",
+    cloud_temp: "Nhiệt độ đỉnh mây",
+    moons: "Mặt trăng",
+    age: "Tuổi",
+    size: "Kích thước",
+    ang_diam: "Đường kính góc",
+    active_volc: "Núi lửa hoạt động",
+    ocean: "Đại dương",
+    special: "Đặc biệt",
+    libration: "Bình động",
+    visible: "Nhìn được",
+    atmosphere: "Khí quyển",
+
+    // Tiêu đề Masthead
+    eyebrow: "Đài quan sát tương tác",
+    title_main: "Tinh Đồ",
+    title_sub: "Thái Dương"
+  },
+  en: {
+    // Chuẩn danh pháp quốc tế IAU cho Hệ Mặt Trời
+    sun: "Sun", mercury: "Mercury", venus: "Venus", earth: "Earth", luna: "Moon",
+    mars: "Mars", jupiter: "Jupiter", saturn: "Saturn", uranus: "Uranus", neptune: "Neptune",
+    phobos: "Phobos", deimos: "Deimos", io: "Io", europa: "Europa", ganymede: "Ganymede",
+    callisto: "Callisto", titan: "Titan", enceladus: "Enceladus", titania: "Titania", triton: "Triton",
+    
+    // Celestial classifications
+    star: "Star",
+    rocky: "Terrestrial Planet",
+    gas: "Gas Giant",
+    ice: "Ice Giant",
+    moon_earth: "Moon of Earth",
+    moon_mars: "Moon of Mars",
+    moon_jupiter: "Moon of Jupiter",
+    moon_saturn: "Moon of Saturn",
+    moon_uranus: "Moon of Uranus",
+    moon_neptune: "Moon of Neptune",
+
+    // Controls & Actions
+    stand_on: "Land on ",
+    collapse: "Collapse ▾",
+    expand: "Expand ▴",
+    orbit_view: "Orbit View",
+    land_on: "Land on Surface",
+    now: "Now",
+    lessons: "Lessons",
+    phenom: "Phenomena",
+    tonight: "Tonight",
+    more: "Advanced",
+    true_scale: "True Scale",
+    constel: "Constellations",
+    grid: "Celestial Grid",
+    expert: "More Details",
+    light_mode: "Lite Mode",
+    reverse: "Reverse",
+    hint_orbit: "<b>Drag</b> to orbit · <b>Scroll</b> to zoom · <b>Tap/Click</b> a body to focus",
+    hint_surface: "<b>Drag</b> to look around · <b>Scroll</b> to zoom binocular · <b>Esc</b> to return to orbit",
+    hint_peg: "Tap <b>Earth, Moon, Mars, Mercury, Io, Europa, Ganymede, Titan</b> or <b>Triton</b> to land",
+
+    // Readout rows
+    diameter: "Diameter",
+    distance: "Distance",
+    mass: "Mass",
+    surf_temp: "Surface Temperature",
+    core_temp: "Core Temperature",
+    rot_period: "Rotation Period",
+    orb_period: "Orbital Period",
+    temp: "Temperature",
+    avg_temp: "Average Temperature",
+    cloud_temp: "Cloud-top Temp",
+    moons: "Moons",
+    age: "Age",
+    size: "Dimensions",
+    ang_diam: "Angular Diameter",
+    active_volc: "Active Volcanoes",
+    ocean: "Ocean",
+    special: "Special Feature",
+    libration: "Libration",
+    visible: "Visible Area",
+    atmosphere: "Atmosphere",
+
+    // Masthead titles
+    eyebrow: "Interactive 3D Observatory",
+    title_main: "Solar",
+    title_sub: "System"
+  }
+};
+
+function getBodyName(b){
+  if(!b) return "";
+  var id = typeof b==="string" ? b : b.id;
+  if(LANG === "en" && I18N.en[id]) return I18N.en[id];
+  return (typeof b==="object" && b.ten) ? b.ten : (I18N.vi[id] || id);
+}
+
+function getBodyKind(b){
+  if(!b) return "";
+  if(LANG==="en"){
+    if(b.id==="sun") return I18N.en.star;
+    if(b.kind==="moon"){
+      var host = b.host;
+      if(host==="earth") return I18N.en.moon_earth;
+      if(host==="mars") return I18N.en.moon_mars;
+      if(host==="jupiter") return I18N.en.moon_jupiter;
+      if(host==="saturn") return I18N.en.moon_saturn;
+      if(host==="uranus") return I18N.en.moon_uranus;
+      if(host==="neptune") return I18N.en.moon_neptune;
+    }
+    if(b.id==="jupiter" || b.id==="saturn") return I18N.en.gas;
+    if(b.id==="uranus" || b.id==="neptune") return I18N.en.ice;
+    return I18N.en.rocky;
+  }
+  return b.loai;
+}
+
 
 function jdFromDate(d){ return d.getTime()/86400000 + 2440587.5; }
 function dateFromJd(jd){ return new Date((jd - 2440587.5)*86400000); }
@@ -2982,7 +3159,7 @@ function hudOrbit(S, list){
     if(pr>Math.min(W,H)*0.42) continue;
     if(b.kind==="moon" && pr<1.6) continue;
     h2.font='500 11px "Be Vietnam Pro",system-ui,sans-serif';
-    var tw=h2.measureText(b.ten).width;
+    var bName=getBodyName(b); var tw=h2.measureText(bName).width;
     var right=(p.x+pr+26+tw)<W-12;
     var ox=right?(pr+8):-(pr+8), tx=right?(p.x+ox+13):(p.x+ox-13-tw);
     var cand=[-pr-9, pr+19, -pr-28, pr+38], oy=null;
@@ -2997,7 +3174,7 @@ function hudOrbit(S, list){
     h2.moveTo(p.x+(right?pr*0.7:-pr*0.7), p.y+(oy<0?-pr*0.7:pr*0.7));
     h2.lineTo(p.x+ox, p.y+oy); h2.lineTo(p.x+ox+(right?9:-9), p.y+oy);
     h2.strokeStyle="rgba(232,200,122,"+(dim*0.55)+")"; h2.lineWidth=0.8; h2.stroke();
-    hudLabel(tx, p.y+oy+4, b.ten, V.focus===b.id?"#F4EEDF":"#DED7C6", dim);
+    hudLabel(tx, p.y+oy+4, bName, V.focus===b.id?"#F4EEDF":"#DED7C6", dim);
   }
 }
 function hudSurface(S,O,sky,sunInfo){
@@ -3023,12 +3200,12 @@ function hudSurface(S,O,sky,sunInfo){
     if(apx>Math.min(W,H)*0.45) return;
     var f=sunlightAt(it.b.id,S);
     if(it.b.kind==="moon" && it.b.host!==O.b.id && it.b.host!==BY[O.b.id].host && apx<1.2) return;
-    var tw=h2.measureText(it.b.ten).width;
+    var itName=getBodyName(it.b); var tw=h2.measureText(itName).width;
     var y0=p.y-apx-20;
     if(!labelFree(p.x+apx+8, y0-10, tw+10, 15)) return;
     h2.beginPath(); h2.arc(p.x,p.y,apx+5,0,TAU);
     h2.strokeStyle="rgba(232,200,122,.34)"; h2.lineWidth=0.8; h2.stroke();
-    hudLabel(p.x+apx+10, y0, it.b.ten, "#E4DDCB", 0.7);
+    hudLabel(p.x+apx+10, y0, itName, "#E4DDCB", 0.7);
   });
   // nhãn chòm sao, sao sáng, Messier
   if(V.constel && sunInfo.vis*Math.max(0,dot3(norm3(mul3(O.pos,-1)),O.up)) < 0.25){
@@ -3146,17 +3323,86 @@ function closePanels(){
 }
 
 /* ══════════ bảng thông tin ══════════ */
+function translateRowLabel(lbl){
+  if(LANG!=="en") return lbl;
+  var map = {
+    "Đường kính": "Diameter", "Khoảng cách": "Distance", "Khối lượng": "Mass",
+    "Nhiệt độ bề mặt": "Surface Temp", "Nhiệt độ nhân": "Core Temp",
+    "Chu kỳ tự quay": "Rotation Period", "Chu kỳ quỹ đạo": "Orbital Period",
+    "Tuổi": "Age", "Nhiệt độ": "Temperature", "Nhiệt độ trung bình": "Mean Temp",
+    "Nhiệt độ đỉnh mây": "Cloud Temp", "Mặt trăng": "Moons", "Kích thước": "Dimensions",
+    "Đường kính góc": "Angular Diam", "Núi lửa hoạt động": "Active Volcanoes",
+    "Đại dương": "Ocean Depth", "Đặc biệt": "Magnetic Field", "Bình động": "Libration",
+    "Nhìn được": "Visible Surface", "Khí quyển": "Atmosphere"
+  };
+  return map[lbl] || lbl;
+}
+
+function translateRowValue(val){
+  if(LANG!=="en") return val;
+  return val
+    .replace(/triệu km/g, "M km")
+    .replace(/tỉ km/g, "B km")
+    .replace(/tỉ năm/g, "B years")
+    .replace(/cả hệ/g, "of system")
+    .replace(/ngày/g, "days")
+    .replace(/giờ/g, "h")
+    .replace(/phút/g, "m")
+    .replace(/giây/g, "s")
+    .replace(/năm/g, "years")
+    .replace(/nghịch/g, "retrograde")
+    .replace(/đồng bộ/g, "synchronous")
+    .replace(/kinh/g, "lon")
+    .replace(/vĩ/g, "lat")
+    .replace(/bề mặt/g, "surface")
+    .replace(/sâu/g, "depth")
+    .replace(/có từ quyển riêng/g, "intrinsic magnetosphere")
+    .replace(/đặc hơn Trái Đất/g, "denser than Earth");
+}
+
+function translateTag(id, tag){
+  if(LANG!=="en") return tag;
+  var tags = {
+    sun: "The stellar engine anchoring the entire system in orbit.",
+    mercury: "Smallest and fastest — searing and freezing within the same day.",
+    venus: "Ocean-dense atmosphere, blistering hotter than Mercury.",
+    earth: "The only known harbor of liquid oceans — and stargazers.",
+    mars: "Iron oxide desert guarding the solar system's tallest peak (Olympus Mons 22 km).",
+    jupiter: "A great red anticyclone roaring for over three centuries.",
+    saturn: "Magnificent rings spanning 80,000 km, yet merely tens of meters thin.",
+    uranus: "Rolling on its side with an axial tilt approaching 98°.",
+    neptune: "Supersonic winds at 2,100 km/h — the fastest in the solar system.",
+    luna: "Tidally locked to Earth — perfectly sized to eclipse the Sun.",
+    phobos: "Rises in the west, sets in the east — only partially eclipsing the Sun.",
+    deimos: "Diminutive moon gleaming like a bright star in Martian skies.",
+    io: "The most volcanically turbulent world in the solar system.",
+    europa: "Fractured ice crust concealing a vast subsurface saltwater ocean.",
+    ganymede: "The solar system's largest moon — even bigger than planet Mercury.",
+    callisto: "Ancient, heavily cratered fossil of primordial impacts.",
+    titan: "Rivers, lakes, and rains — flowing with liquid hydrocarbons.",
+    enceladus: "Cryovolcanic geysers venting ocean water into space.",
+    titania: "Massive rift valleys cleaving through an icy mantle.",
+    triton: "Retrograde orbit suggesting capture from the Kuiper Belt."
+  };
+  return tags[id] || tag;
+}
+
 function fillSlab(id){
   var b=BY[id]; if(!b) return;
-  $("d-name").textContent=b.ten;
-  $("d-kind").textContent=b.loai;
-  $("d-tag").textContent=b.tag;
+  var name = getBodyName(b);
+  $("d-name").textContent=name;
+  $("d-kind").textContent=getBodyKind(b);
+  $("d-tag").textContent=translateTag(b.id, b.tag);
   $("d-glyph").style.color=b.col;
   $("d-rows").innerHTML=b.rows.map(function(r){
-    return '<div class="row"><dt>'+r[0]+'</dt><dd>'+r[1]+'</dd></div>'; }).join("");
+    var lbl = translateRowLabel(r[0]);
+    var val = translateRowValue(r[1]);
+    return '<div class="row"><dt>'+lbl+'</dt><dd>'+val+'</dd></div>'; }).join("");
   var st=$("btn-stand");
-  if(b.stand){ st.hidden=false; st.textContent="Đứng trên "+b.ten; }
-  else st.hidden=true;
+  if(b.stand){
+    st.hidden=false;
+    st.textContent=(LANG==="en"?I18N.en.stand_on:I18N.vi.stand_on) + name;
+  } else st.hidden=true;
   document.querySelectorAll("#rail .chip").forEach(function(c){
     c.setAttribute("aria-current", c.getAttribute("data-id")===id?"true":"false"); });
 }
@@ -3189,7 +3435,7 @@ function enterSurface(id, lat, lon, lookYaw, lookPitch){
   V.look.pitch=V.wantLook.pitch=(lookPitch===undefined?0.22:lookPitch);
   V.fov=V.wantFov=62; V.exposure=1.2;
   document.body.classList.add("on-surface");
-  $("where").textContent = "Đứng trên "+b.ten;
+  $("where").textContent = (LANG==="en" ? "Surface of " : "Đứng trên ") + getBodyName(b);
   $("coords").textContent = fmtLatLon(V.obsLat, V.obsLon);
   fillSlab(id);
   aimAtSun();
@@ -4039,20 +4285,85 @@ if(!GLOK){
 (function(){
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion:reduce)").matches;
 
-  /* thanh chọn thiên thể */
+  /* thanh chọn thiên thể song ngữ */
   var rail=$("rail");
-  ALL.forEach(function(b){
-    if(b.R<300 && b.kind==="moon") return;                 // bỏ vệ tinh quá nhỏ khỏi thanh
-    var el=document.createElement("button");
-    el.className="chip"+(b.kind==="moon"?" moon":"");
-    el.type="button"; el.textContent=b.ten;
-    el.setAttribute("data-id",b.id);
-    el.addEventListener("click",function(){
-      if(V.mode==="surface"){ exitSurface(); }
-      focusBody(b.id);
+  function renderRail(){
+    rail.innerHTML="";
+    ALL.forEach(function(b){
+      if(b.R<300 && b.kind==="moon") return;
+      var el=document.createElement("button");
+      el.className="chip"+(b.kind==="moon"?" moon":"");
+      el.type="button";
+      el.textContent=getBodyName(b);
+      el.setAttribute("data-id",b.id);
+      el.setAttribute("aria-current", V.focus===b.id?"true":"false");
+      el.addEventListener("click",function(){
+        if(V.mode==="surface"){ exitSurface(); }
+        focusBody(b.id);
+      });
+      rail.appendChild(el);
     });
-    rail.appendChild(el);
-  });
+  }
+  renderRail();
+
+  /* Bộ chuyển đổi ngôn ngữ EN / VN */
+  function applyLanguage(lang){
+    LANG = lang;
+    try { localStorage.setItem("tinhdo-lang", lang); } catch(e){}
+    var btnVi=$("btn-lang-vi"), btnEn=$("btn-lang-en");
+    if(btnVi) btnVi.classList.toggle("active", lang==="vi");
+    if(btnEn) btnEn.classList.toggle("active", lang==="en");
+
+    // Masthead & Labels
+    var eb=document.querySelector(".masthead .eyebrow");
+    if(eb) eb.textContent = I18N[lang].eyebrow;
+    var wm=document.querySelector(".masthead .wordmark");
+    if(wm) wm.innerHTML = I18N[lang].title_main + " <em>" + I18N[lang].title_sub + "</em>";
+
+    // Controls
+    $("btn-rev").textContent = I18N[lang].reverse;
+    $("btn-now").textContent = I18N[lang].now;
+    $("btn-lesson").textContent = I18N[lang].lessons;
+    $("btn-phenom").textContent = I18N[lang].phenom;
+    $("btn-tonight").textContent = I18N[lang].tonight;
+    $("btn-peg").textContent = I18N[lang].land_on;
+    $("btn-more").textContent = I18N[lang].more;
+    $("btn-scale").textContent = I18N[lang].true_scale;
+    $("btn-constel").textContent = I18N[lang].constel;
+    $("btn-grid").textContent = I18N[lang].grid;
+    $("btn-expert").textContent = I18N[lang].expert;
+    $("btn-light").textContent = I18N[lang].light_mode;
+    $("btn-back").textContent = I18N[lang].orbit_view;
+
+    var slabTgl = $("btn-slab-toggle");
+    if(slabTgl){
+      var col = document.body.classList.contains("slab-collapsed");
+      slabTgl.textContent = col ? I18N[lang].expand : I18N[lang].collapse;
+    }
+
+    var hintEl = $("hint");
+    if(hintEl){
+      var onSurf = document.body.classList.contains("on-surface");
+      var isPeg = document.body.classList.contains("peg");
+      if(isPeg) hintEl.innerHTML = I18N[lang].hint_peg;
+      else if(onSurf) hintEl.innerHTML = I18N[lang].hint_surface;
+      else hintEl.innerHTML = I18N[lang].hint_orbit;
+    }
+
+    renderRail();
+    fillSlab(V.focus || "earth");
+    if(V.mode==="surface" && V.stand){
+      $("where").textContent = (lang==="en" ? "Surface of " : "Đứng trên ") + getBodyName(BY[V.stand]);
+    }
+    hudClear();
+  }
+
+  var btnVi=$("btn-lang-vi"), btnEn=$("btn-lang-en");
+  if(btnVi) btnVi.addEventListener("click", function(){ applyLanguage("vi"); });
+  if(btnEn) btnEn.addEventListener("click", function(){ applyLanguage("en"); });
+
+  // Khởi động áp dụng ngôn ngữ đã lưu
+  setTimeout(function(){ applyLanguage(LANG); }, 0);
 
   /* tốc độ */
   var segEl=$("speed");
@@ -4200,9 +4511,7 @@ if(!GLOK){
   $("btn-peg").addEventListener("click",function(){
     peg=!peg; document.body.classList.toggle("peg",peg);
     this.setAttribute("aria-pressed", peg?"true":"false");
-    $("hint").innerHTML = peg
-      ? 'Nhấn vào <b>Trái Đất, Mặt Trăng, Sao Hỏa, Sao Thủy, Io, Europa, Ganymede, Titan</b> hoặc <b>Triton</b> để đứng lên đó'
-      : '<b>Kéo</b> để quay · <b>Cuộn</b> để phóng · <b>Nhấn</b> vào thiên thể để tới gần';
+    $("hint").innerHTML = peg ? I18N[LANG].hint_peg : I18N[LANG].hint_orbit;
   });
 
   /* danh sách hiện tượng */
@@ -4429,9 +4738,7 @@ if(!GLOK){
     $("btn-back").hidden=!s;
     $("btn-peg").hidden=s;
     $("btn-scale").hidden=s;
-    $("hint").innerHTML = s
-      ? '<b>Kéo</b> để nhìn quanh · <b>Cuộn</b> để phóng như ống nhòm · <b>Esc</b> để quay ra'
-      : '<b>Kéo</b> để quay · <b>Cuộn</b> để phóng · <b>Nhấn</b> vào thiên thể để tới gần';
+    $("hint").innerHTML = s ? I18N[LANG].hint_surface : I18N[LANG].hint_orbit;
   });
   mo.observe(document.body,{attributes:true,attributeFilter:["class"]});
 })();
