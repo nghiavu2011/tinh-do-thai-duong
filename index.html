@@ -1328,7 +1328,7 @@ float blob(float lon, float lat, float clon, float clat, float rlon, float rlat)
 // hố thiên thạch: lấy min khoảng cách tới các tâm ngẫu nhiên theo ô
 float craters(vec3 p, float scale, float depth){
   float acc=0.0;
-  for(int L=0;L<3;L++){
+  for(int L=0;L<2;L++){
     float s = scale*pow(2.3, float(L));
     vec3 q = p*s;
     vec3 c = floor(q);
@@ -2118,10 +2118,16 @@ function packAux(w,h,bump,spec,night,cloud){
   }
   var B=grab(bump), S=grab(spec), N=grab(night), C=grab(cloud);
   for(i=0;i<n;i++){
-    d[i*4]   = B? B[i*4] : 128;
-    d[i*4+1] = S? S[i*4] : 0;
-    d[i*4+2] = N? Math.max(N[i*4],Math.max(N[i*4+1],N[i*4+2])) : 0;
-    d[i*4+3] = C? C[i*4] : 0;
+    var idx = i << 2;
+    d[idx]   = B? B[idx] : 128;
+    d[idx+1] = S? S[idx] : 0;
+    if(N){
+      var n0 = N[idx], n1 = N[idx+1], n2 = N[idx+2];
+      d[idx+2] = n0 > n1 ? (n0 > n2 ? n0 : n2) : (n1 > n2 ? n1 : n2);
+    } else {
+      d[idx+2] = 0;
+    }
+    d[idx+3] = C? C[idx] : 0;
   }
   g.putImageData(out,0,0);
   return c;
@@ -2142,8 +2148,8 @@ function texFromSource(src, mip){
 /* thiên thể có ảnh thật */
 var REALTEX = {
   earth:{ day:"earth_day", bump:"earth_bump", spec:"earth_spec",
-          night:"earth_night", cloud:"earth_cloud", auxW:2048, auxH:1024 },
-  luna: { day:"luna_day",  bump:"luna_bump", auxW:1024, auxH:512 }
+          night:"earth_night", cloud:"earth_cloud", auxW:1024, auxH:512 },
+  luna: { day:"luna_day",  bump:"luna_bump", auxW:512, auxH:256 }
 };
 function applyRealTextures(){
   for(var id in REALTEX){
@@ -2157,10 +2163,63 @@ function applyRealTextures(){
     b.texel = [1/r.auxW, 1/r.auxH];
     b.uOff  = 0.5;                       // ảnh equirect lấy kinh tuyến gốc ở giữa
     b.real  = true;
+    b._procDone = true;
   }
   if(IMG.milkyway){
     SKY.mw = texFromSource(IMG.milkyway, true);
   }
+}
+
+function hexToRgba(hex){
+  if(!hex || hex[0]!=="#") return [160,160,160,255];
+  var c = parseInt(hex.slice(1), 16);
+  return [(c>>16)&255, (c>>8)&255, c&255, 255];
+}
+function tex1x1(r,g,b,a){
+  var t=gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D,t);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([r,g,b,a]));
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+  return t;
+}
+
+var PROC_FBO=null, PROC_QUEUE=[];
+function renderBodyTexture(b){
+  if(!b || b.real) return;
+  if(!PROC_FBO) PROC_FBO = gl.createFramebuffer();
+  var w = b.kind==="moon" ? (b.R<400?256:512) : 1024, h=w/2;
+  var texA = tex2d(w,h,gl.RGBA8,gl.RGBA,gl.UNSIGNED_BYTE,gl.LINEAR_MIPMAP_LINEAR,gl.REPEAT);
+  var texB = tex2d(w,h,gl.RGBA8,gl.RGBA,gl.UNSIGNED_BYTE,gl.LINEAR_MIPMAP_LINEAR,gl.REPEAT);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, PROC_FBO);
+  gl.useProgram(P.tex);
+  gl.bindVertexArray(MESH.quad.vao);
+  gl.disable(gl.DEPTH_TEST);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,texA,0);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT1,gl.TEXTURE_2D,texB,0);
+  gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
+  gl.viewport(0,0,w,h);
+  gl.uniform1i(P.tex.u.uMode, TEXMODE[b.tex]!==undefined?TEXMODE[b.tex]:1);
+  gl.drawElements(gl.TRIANGLES, MESH.quad.count, gl.UNSIGNED_SHORT, 0);
+  gl.bindTexture(gl.TEXTURE_2D,texA); gl.generateMipmap(gl.TEXTURE_2D);
+  gl.bindTexture(gl.TEXTURE_2D,texB); gl.generateMipmap(gl.TEXTURE_2D);
+  gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.enable(gl.DEPTH_TEST);
+  if(b.texA) gl.deleteTexture(b.texA);
+  if(b.texB) gl.deleteTexture(b.texB);
+  b.texA = texA;
+  b.texB = texB;
+  b.texel = [1/w, 1/h];
+  b._procDone = true;
+}
+function ensureBodyTexture(b){
+  if(!b || b._procDone || b.real) return;
+  renderBodyTexture(b);
+  var idx = PROC_QUEUE.indexOf(b);
+  if(idx >= 0) PROC_QUEUE.splice(idx, 1);
 }
 
 function initGL(){
@@ -2201,35 +2260,26 @@ function initGL(){
 
   buildSkyCatalog();
 
-  // vân bề mặt cho từng thiên thể
-  var f=gl.createFramebuffer();
-  gl.bindFramebuffer(gl.FRAMEBUFFER,f);
-  gl.useProgram(P.tex);
-  gl.bindVertexArray(MESH.quad.vao);
-  gl.disable(gl.DEPTH_TEST);
+  // Khởi tạo texture 1x1 siêu nhẹ cho mọi thiên thể để vẽ ngay tức thì (0ms lag)
   ALL.forEach(function(b){
-    var w = HERO[b.id] ? 2048 : (b.R<400 ? 512 : 1024), h=w/2;
-    if(!HERO[b.id] && b.kind==="moon" && b.R<1200) { w=512; h=256; }
-    b.texA = tex2d(w,h,gl.RGBA8,gl.RGBA,gl.UNSIGNED_BYTE,gl.LINEAR_MIPMAP_LINEAR,gl.REPEAT);
-    b.texB = tex2d(w,h,gl.RGBA8,gl.RGBA,gl.UNSIGNED_BYTE,gl.LINEAR_MIPMAP_LINEAR,gl.REPEAT);
-    b.texel=[1/w,1/h];
-    gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,b.texA,0);
-    gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT1,gl.TEXTURE_2D,b.texB,0);
-    gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
-    gl.viewport(0,0,w,h);
-    gl.uniform1i(P.tex.u.uMode, TEXMODE[b.tex]!==undefined?TEXMODE[b.tex]:1);
-    gl.drawElements(gl.TRIANGLES, MESH.quad.count, gl.UNSIGNED_SHORT, 0);
-    gl.bindTexture(gl.TEXTURE_2D,b.texA); gl.generateMipmap(gl.TEXTURE_2D);
-    gl.bindTexture(gl.TEXTURE_2D,b.texB); gl.generateMipmap(gl.TEXTURE_2D);
+    var col = hexToRgba(b.col);
+    b.texA = tex1x1(col[0], col[1], col[2], 255);
+    b.texB = tex1x1(128, 0, 0, 0);
+    b.texel = [1/512, 1/256];
+    b._procDone = false;
   });
-  gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
-  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
-  gl.deleteFramebuffer(f);
-  gl.enable(gl.DEPTH_TEST);
 
   applyRealTextures();
+
+  // Mặt Trời vẽ ngay vì ở tâm quan sát ban đầu
+  renderBodyTexture(BY.sun);
+
+  // Hàng đợi sinh vân tuần tự cho các hành tinh còn lại (1 thiên thể / khung hình)
+  PROC_QUEUE = ALL.filter(function(b){ return b.id!=="sun" && !b.real; });
+
   window.dumpTex=function(id){
-    var b=BY[id], w=b.texel?Math.round(1/b.texel[0]):1024, h=w/2;
+    var b=BY[id]; ensureBodyTexture(b);
+    var w=b.texel?Math.round(1/b.texel[0]):1024, h=w/2;
     var f=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,f);
     gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,b.texA,0);
     var px=new Uint8Array(w*h*4); gl.readPixels(0,0,w,h,gl.RGBA,gl.UNSIGNED_BYTE,px);
@@ -3300,6 +3350,13 @@ function loop(now){
   var S=stateAt(V.jd);
   if(V.mode==="orbit") renderOrbit(S); else renderSurface(S);
   updateClock();
+  // ponytail: sinh vân tuần tự 1 thiên thể / khung hình để không bao giờ đơ máy
+  if(PROC_QUEUE.length > 0){
+    var nextBody = PROC_QUEUE.shift();
+    if(nextBody && !nextBody._procDone && !nextBody.real){
+      renderBodyTexture(nextBody);
+    }
+  }
   requestAnimationFrame(loop);
 }
 var lastClock="";
@@ -3408,6 +3465,7 @@ function fillSlab(id){
 }
 function focusBody(id, keepDist){
   var b=BY[id]; if(!b) return;
+  ensureBodyTexture(b);
   V.focus=id; fillSlab(id);
   if(V.wantPan) V.wantPan=[0,0,0];
   document.body.classList.remove("slab-collapsed");
@@ -3428,6 +3486,7 @@ function wideView(){
 /* ══════════ đổi chế độ ══════════ */
 function enterSurface(id, lat, lon, lookYaw, lookPitch){
   var b=BY[id]; if(!b||!b.stand) return;
+  ensureBodyTexture(b);
   V.mode="surface"; V.stand=id;
   V.obsLat = (lat===undefined? (id==="earth"?21.03:12) : lat);
   V.obsLon = (lon===undefined? (id==="earth"?105.85:0) : lon);
