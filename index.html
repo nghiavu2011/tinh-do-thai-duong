@@ -1317,303 +1317,192 @@ float ridge(vec3 p, int oct){
     v += a*(1.0-abs(vnoise(p)*2.0-1.0)); n+=a; a*=0.5; p*=2.03; }
   return v/n;
 }
-// vết theo kinh/vĩ độ (radian) — dùng để đặt địa hình thật lên đúng vị trí
-float gauss(float x, float c, float w){ float t=(x-c)/w; return exp(-t*t); }
-float dlon(float a, float b){ return mod(a-b+9.42477796, 6.28318531) - 3.14159265; }
-float blob(float lon, float lat, float clon, float clat, float rlon, float rlat){
-  float dx = dlon(lon,clon)*cos(lat)/rlon;
-  float dy = (lat-clat)/rlat;
-  return 1.0 - smoothstep(0.45, 1.0, sqrt(dx*dx+dy*dy));
-}
-// hố thiên thạch: lấy min khoảng cách tới các tâm ngẫu nhiên theo ô
-float craters(vec3 p, float scale, float depth){
-  float acc=0.0;
-  for(int L=0;L<2;L++){
-    float s = scale*pow(2.3, float(L));
-    vec3 q = p*s;
-    vec3 c = floor(q);
-    for(int i=-1;i<=1;i++) for(int j=-1;j<=1;j++) for(int k=-1;k<=1;k++){
-      vec3 cell = c+vec3(float(i),float(j),float(k));
-      float h = hash13(cell*1.37);
-      if(h < 0.55) continue;
-      vec3 ctr = cell + vec3(hash13(cell*2.1), hash13(cell*3.7), hash13(cell*5.3));
-      float rad = 0.18 + 0.30*hash13(cell*7.9);
-      float d = length(q-ctr)/rad;
-      if(d < 1.0){
-        float rim = smoothstep(1.0,0.82,d)*1.1 - smoothstep(0.80,0.0,d)*1.0;
-        acc += rim*depth/pow(1.9,float(L));
-      }
-    }
-  }
-  return acc;
-}
 `;
 
-/* ── sinh vân bề mặt (equirect 2:1), 2 mục tiêu: albedo + phụ trợ ── */
-var TEXGEN_FS = `#version 300 es
-precision highp float;
-in vec2 vUv;
-layout(location=0) out vec4 oAlb;
-layout(location=1) out vec4 oAux;
-uniform int uMode;
-${GLSL_NOISE}
-void main(){
-  float lon = vUv.x*6.28318530718;
-  float lat = (vUv.y-0.5)*3.14159265359;
-  vec3 d = vec3(cos(lat)*cos(lon), sin(lat), cos(lat)*sin(lon));
-  float alat = abs(sin(lat));
-  vec3 alb = vec3(0.5);
-  float height=0.5, spec=0.0, lights=0.0, cloud=0.0;
+/* ── sinh vân bề mặt (equirect 2:1) bằng 2D Canvas siêu tốc (0ms lag, không đơ máy) ── */
+function generatePlanetCanvas(texType, w, h){
+  var c = document.createElement("canvas"); c.width = w; c.height = h;
+  var ctx = c.getContext("2d");
+  var cAux = document.createElement("canvas"); cAux.width = w; cAux.height = h;
+  var ctxAux = cAux.getContext("2d");
+  ctxAux.fillStyle = "rgb(128,0,0)";
+  ctxAux.fillRect(0,0,w,h);
 
-  if(uMode==0){                                   // Mặt Trời
-    float g = fbm(d*26.0, 5);
-    float g2 = fbm(d*70.0, 4);
-    float sp = smoothstep(0.62,0.78, fbm(d*9.0,4));
-    alb = mix(vec3(1.0,0.62,0.16), vec3(1.0,0.95,0.72), g*0.75+g2*0.35);
-    alb = mix(alb, vec3(0.85,0.35,0.08), sp*0.5);
-    height=g;
-  } else if(uMode==1){                            // đá xám (Thủy, Callisto)
-    float n = fbm(d*7.0,6);
-    float c = craters(d, 6.0, 0.5);
-    float m = clamp(n*0.7 + c*0.5 + 0.22, 0.0, 1.0);
-    alb = mix(vec3(0.20,0.19,0.18), vec3(0.62,0.60,0.57), m);
-    alb = mix(alb, vec3(0.42,0.40,0.39), smoothstep(0.45,0.75,n)*0.4);
-    height = clamp(0.5 + c*0.9 + (n-0.5)*0.5, 0.0, 1.0);
-    spec = 0.02;
-  } else if(uMode==2){                            // Sao Kim (mây acid)
-    float s = fbm(d*vec3(4.0,9.0,4.0), 6);
-    float s2 = ridge(d*vec3(9.0,20.0,9.0), 5);
-    alb = mix(vec3(0.72,0.56,0.28), vec3(0.98,0.93,0.76), s*0.75+s2*0.3);
-    height = s; cloud=0.0; spec=0.02;
-  } else if(uMode==3){                            // Trái Đất
-    float cont = fbm(d*2.3,7);
-    float det  = fbm(d*9.0,5);
-    float land = cont - alat*alat*0.13;
-    if(land > 0.505){
-      float h = (land-0.505)/0.30;
-      float mtn = ridge(d*5.0,6);
-      vec3 green = mix(vec3(0.10,0.26,0.10), vec3(0.20,0.36,0.14), det);
-      vec3 dry   = mix(vec3(0.46,0.37,0.20), vec3(0.62,0.53,0.33), det);
-      float arid = smoothstep(0.35,0.62, fbm(d*3.1+7.0,5) + alat*0.18);
-      alb = mix(green, dry, arid);
-      alb = mix(alb, vec3(0.52,0.50,0.47), smoothstep(0.55,0.95,mtn*h*1.4));
-      height = 0.52 + h*0.18 + mtn*0.10;
-      lights = smoothstep(0.55,0.95, fbm(d*22.0,4)) * (1.0-arid*0.5) * smoothstep(0.72,0.4,alat);
-      spec = 0.0;
-    } else {
-      float dep = land/0.505;
-      alb = mix(vec3(0.015,0.045,0.115), vec3(0.05,0.16,0.30), dep);
-      height = 0.48; spec = 1.0;
+  if(texType === "sun"){
+    var grad = ctx.createRadialGradient(w*0.5, h*0.5, 10, w*0.5, h*0.5, w*0.55);
+    grad.addColorStop(0, "#fff5d0");
+    grad.addColorStop(0.25, "#ffa820");
+    grad.addColorStop(0.65, "#e65500");
+    grad.addColorStop(1, "#ff7b00");
+    ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+    var idata = ctx.getImageData(0,0,w,h), d = idata.data;
+    for(var i=0; i<d.length; i+=4){
+      var n = (Math.random()-0.5)*36;
+      d[i]   = Math.min(255, Math.max(0, d[i]+n));
+      d[i+1] = Math.min(255, Math.max(0, d[i+1]+n*0.75));
+      d[i+2] = Math.min(255, Math.max(0, d[i+2]+n*0.25));
     }
-    float ice = smoothstep(0.74,0.90, alat);
-    alb = mix(alb, vec3(0.88,0.91,0.94), ice);
-    spec = mix(spec, 0.35, ice);
-    float cl = fbm(d*4.4+13.0, 6);
-    float band = 0.55 + 0.16*cos(lat*7.0);
-    cloud = smoothstep(band, band+0.16, cl)*0.95;
-  } else if(uMode==4){                            // Sao Hỏa — vùng sáng/tối thật
-    float n = fbm(d*2.6,7), det = fbm(d*8.0,5), grain = fbm(d*22.0,4);
-    float c = craters(d, 4.5, 0.40);
-    vec3 dust = mix(vec3(0.60,0.35,0.19), vec3(0.82,0.57,0.36), det*0.5+n*0.5);
-    alb = mix(dust, dust*1.06, grain*0.5);
-    // làm méo toạ độ để biên các vùng albedo gồ ghề như ảnh thật
-    float wl = (fbm(d*5.5+2.0,5)-0.5), wb = (fbm(d*5.5+9.0,5)-0.5);
-    float wl2= (fbm(d*14.0+4.0,4)-0.5), wb2=(fbm(d*14.0+7.0,4)-0.5);
-    lon = lon + (wl*0.30 + wl2*0.10)/max(0.25,cos(lat));
-    lat = lat + (wb*0.16 + wb2*0.055);
-    // vùng tối kinh điển — bazan lộ thiên, diện rộng
-    float dark =
-        1.00*blob(lon,lat, 1.22, 0.14, 0.42, 0.42)   // Syrtis Major
-      + 0.95*blob(lon,lat, 3.75,-0.32, 0.95, 0.30)   // Mare Cimmerium–Tyrrhenum
-      + 0.85*blob(lon,lat, 5.95, 0.78, 0.95, 0.34)   // Acidalia
-      + 0.80*blob(lon,lat, 0.30,-0.22, 0.60, 0.22)   // Sinus Sabaeus–Meridiani
-      + 0.72*blob(lon,lat, 4.85,-0.48, 0.34, 0.20)   // Solis Lacus
-      + 0.68*blob(lon,lat, 2.35,-0.46, 0.55, 0.24)   // Mare Hadriacum
-      + 0.60*blob(lon,lat, 5.35,-0.12, 0.40, 0.20)   // Margaritifer
-      + 0.55*blob(lon,lat, 0.95, 0.62, 0.70, 0.26);  // Utopia
-    dark = clamp(dark*(0.70+0.60*det), 0.0, 1.0);
-    alb = mix(alb, mix(vec3(0.28,0.18,0.13), vec3(0.44,0.29,0.20), n), clamp(dark*1.15,0.0,1.0));
-    // vùng sáng phủ bụi
-    float brt =
-        0.95*blob(lon,lat, 1.22,-0.72, 0.52, 0.26)   // Hellas
-      + 0.80*blob(lon,lat, 0.05, 0.30, 0.85, 0.34)   // Arabia
-      + 0.75*blob(lon,lat, 2.65, 0.16, 0.80, 0.34)   // Amazonis–Elysium
-      + 0.60*blob(lon,lat, 4.20,-0.60, 0.50, 0.22);  // Argyre
-    alb = mix(alb, vec3(0.88,0.66,0.44), clamp(brt,0.0,1.0)*0.45);
-    // Valles Marineris
-    float vm = blob(lon,lat, 5.05,-0.14, 0.62, 0.045);
-    alb = mix(alb, vec3(0.29,0.18,0.13), vm*0.85);
-    // núi lửa Tharsis + Olympus Mons
-    float volc = blob(lon,lat, 3.90, 0.32, 0.12, 0.12)
-               + blob(lon,lat, 4.32, 0.20, 0.08, 0.08)
-               + blob(lon,lat, 4.42, 0.02, 0.08, 0.08)
-               + blob(lon,lat, 4.52,-0.16, 0.08, 0.08);
-    volc = clamp(volc,0.0,1.0);
-    alb = mix(alb, vec3(0.70,0.45,0.30), volc*0.55);
-    // mũ băng: chỉ quanh cực (>~75 độ), viền lởm chởm
-    float edge = (fbm(d*9.0+5.0,4)-0.5)*0.045;
-    float icn = smoothstep(0.955,0.998, sin(lat)+edge);
-    float ics = smoothstep(0.975,0.999,-sin(lat)+edge);
-    float ice = clamp(icn + ics, 0.0, 1.0);
-    alb = mix(alb, vec3(0.94,0.94,0.93), ice);
-    // sương mù mỏng vùng vĩ độ cao
-    float haze = smoothstep(0.82,0.97,alat)*(1.0-ice);
-    alb = mix(alb, vec3(0.84,0.72,0.63), haze*0.30);
-    height = clamp(0.5 + c*0.6 + (n-0.5)*0.5 + volc*0.40 - vm*0.30, 0.0, 1.0);
-    spec = ice*0.18;
-    cloud = smoothstep(0.76,0.93, fbm(d*7.0+31.0,4))*0.12;
-  } else if(uMode==5){                            // Sao Mộc — đai/vùng theo vĩ độ thật
-    // dòng chảy đới: xoáy kéo dài theo kinh tuyến
-    float warp  = (fbm(d*vec3(2.2,11.0,2.2), 6)-0.5);
-    float warp2 = (fbm(d*vec3(5.0,26.0,5.0), 5)-0.5);
-    float latd  = degrees(lat) + warp*9.0 + warp2*3.2;   // vĩ độ bị xoáy làm méo
-    // cường độ tối của từng đai (NEB đậm nhất, rồi SEB)
-    float belt = 1.00*gauss(latd, 14.0, 6.0)     // NEB
-               + 0.94*gauss(latd,-15.0, 7.0)     // SEB
-               + 0.58*gauss(latd, 29.0, 4.2)     // NTB
-               + 0.52*gauss(latd,-32.0, 5.0)     // STB
-               + 0.34*gauss(latd, 41.0, 4.0)     // NNTB
-               + 0.32*gauss(latd,-44.0, 4.0);    // SSTB
-    belt = clamp(belt, 0.0, 1.15);
-    float zone = gauss(latd, 0.0, 7.5);          // đới xích đạo sáng
-    vec3 Z  = vec3(0.95,0.90,0.79);              // vùng sáng (zone)
-    vec3 EZ = vec3(0.99,0.95,0.86);              // đới xích đạo
-    vec3 B1 = vec3(0.70,0.45,0.25);              // đai nâu
-    vec3 B2 = vec3(0.46,0.25,0.14);              // lõi đai đậm
-    alb = mix(Z, EZ, zone*0.85);
-    alb = mix(alb, B1, clamp(belt*1.15,0.0,1.0));
-    alb = mix(alb, B2, smoothstep(0.55,1.05,belt)*0.85);
-    // sợi mây mảnh chạy ngang
-    float fine = ridge(d*vec3(6.0,42.0,6.0), 5);
-    alb = mix(alb, vec3(1.0,0.98,0.93), smoothstep(0.62,0.92,fine)*0.22*(1.0-belt*0.4));
-    alb = mix(alb, B2, smoothstep(0.30,0.05,fine)*0.16*belt);
-    // vùng cực xám lam, tối đi ở rìa
-    float pol = smoothstep(0.80,0.995,alat);
-    float polm = fbm(d*vec3(9.0,9.0,9.0),4);
-    alb = mix(alb, mix(vec3(0.44,0.40,0.43), vec3(0.58,0.53,0.52), polm), pol*0.72);
-    // "festoon" — lưỡi mây xanh xám men theo rìa nam NEB
-    float fest = gauss(latd, 7.0, 2.6) * smoothstep(0.55,0.85, ridge(d*vec3(30.0,10.0,30.0),4));
-    alb = mix(alb, vec3(0.52,0.46,0.42), fest*0.55);
-    // Vết Đỏ Lớn: ~22°N nam bán cầu (vĩ độ −22°), rìa nam SEB
-    float grs = blob(lon, lat, 4.05, -0.384, 0.30, 0.105);
-    if(grs > 0.0){
-      float sw = fbm(d*vec3(26.0,26.0,26.0),4);
-      vec3 red = mix(vec3(0.70,0.31,0.17), vec3(0.88,0.55,0.33), sw);
-      alb = mix(alb, vec3(0.97,0.94,0.88), smoothstep(0.0,0.35,grs)*0.55); // quầng sáng bao quanh
-      alb = mix(alb, red, smoothstep(0.30,0.80,grs));
+    ctx.putImageData(idata, 0, 0);
+  } else if(texType === "jupiter"){
+    var grad = ctx.createLinearGradient(0,0,0,h);
+    grad.addColorStop(0.00, "#5a5e66");
+    grad.addColorStop(0.12, "#8c7e6b");
+    grad.addColorStop(0.24, "#cbbca0");
+    grad.addColorStop(0.33, "#704222"); // NTB
+    grad.addColorStop(0.40, "#e2d7c2"); // NTrZ
+    grad.addColorStop(0.46, "#542c14"); // NEB
+    grad.addColorStop(0.50, "#eee6d6"); // EZ
+    grad.addColorStop(0.54, "#66351a"); // SEB
+    grad.addColorStop(0.65, "#d6c9b2"); // STrZ
+    grad.addColorStop(0.72, "#764e32"); // STB
+    grad.addColorStop(0.85, "#9e8f7c");
+    grad.addColorStop(1.00, "#565a62");
+    ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+
+    var idata = ctx.getImageData(0,0,w,h), d = idata.data;
+    for(var y=0; y<h; y++){
+      var rowOff = Math.sin(y*0.25)*12 + Math.cos(y*0.08)*8;
+      for(var x=0; x<w; x++){
+        var idx = (y*w + x)*4;
+        var noise = (Math.sin((x+rowOff)*0.08)*Math.cos(y*0.15))*15;
+        d[idx]   = Math.min(255, Math.max(0, d[idx]+noise));
+        d[idx+1] = Math.min(255, Math.max(0, d[idx+1]+noise*0.8));
+        d[idx+2] = Math.min(255, Math.max(0, d[idx+2]+noise*0.6));
+      }
     }
-    // vài xoáy trắng nhỏ (ovals BA & chuỗi bạch đốm)
-    float ov = blob(lon,lat, 1.70,-0.58, 0.13,0.055) + blob(lon,lat, 2.90,-0.60, 0.10,0.045)
-             + blob(lon,lat, 5.60, 0.40, 0.09,0.040);
-    alb = mix(alb, vec3(0.99,0.97,0.93), clamp(ov,0.0,1.0)*0.8);
-    height = 0.5 + (0.5-belt*0.5)*0.25;
-  } else if(uMode==6){                            // Sao Thổ — đai nhạt, vàng kem
-    float warp = (fbm(d*vec3(2.0,10.0,2.0), 6)-0.5);
-    float latd = degrees(lat) + warp*6.0;
-    float belt = 0.80*gauss(latd, 17.0, 7.0)
-               + 0.74*gauss(latd,-20.0, 7.5)
-               + 0.46*gauss(latd, 38.0, 6.0)
-               + 0.42*gauss(latd,-40.0, 6.0)
-               + 0.30*gauss(latd, 55.0, 6.0)
-               + 0.28*gauss(latd,-56.0, 6.0);
-    float zone = gauss(latd, 0.0, 10.0);
-    vec3 Z = vec3(0.96,0.90,0.74), B1 = vec3(0.80,0.66,0.43), B2=vec3(0.66,0.52,0.33);
-    alb = mix(Z, B1, clamp(belt,0.0,1.0));
-    alb = mix(alb, B2, smoothstep(0.55,0.95,belt)*0.5);
-    alb = mix(alb, vec3(0.99,0.95,0.83), zone*0.35);
-    float fine = ridge(d*vec3(5.0,30.0,5.0), 5);
-    alb = mix(alb, vec3(1.0,0.98,0.90), smoothstep(0.66,0.94,fine)*0.14);
-    // cực bắc lam (xoáy lục giác), cực nam sẫm
-    float np = smoothstep(0.86,0.998, sin(lat));
-    float sp2= smoothstep(0.90,0.999,-sin(lat));
-    alb = mix(alb, vec3(0.42,0.50,0.60), np*0.70);
-    alb = mix(alb, vec3(0.58,0.50,0.40), sp2*0.50);
-    height = 0.5 + (0.5-belt*0.5)*0.2;
-  } else if(uMode==7){                            // Thiên Vương — gần như trơn, xanh lơ
-    float n = fbm(d*vec3(3.0,8.0,3.0),5);
-    float latd = degrees(lat) + (n-0.5)*5.0;
-    float band = 0.22*gauss(latd,32.0,14.0) + 0.20*gauss(latd,-34.0,14.0);
-    alb = mix(vec3(0.52,0.78,0.80), vec3(0.64,0.87,0.87), n*0.5+0.25);
-    alb = mix(alb, vec3(0.54,0.76,0.80), clamp(band,0.0,1.0));
-    alb = mix(alb, vec3(0.80,0.94,0.93), smoothstep(0.70,0.95,alat)*0.35); // mũ cực sáng
-    height=0.5;
-  } else if(uMode==8){                            // Hải Vương — lam đậm, dải mây trắng
-    float n = fbm(d*vec3(3.0,10.0,3.0),6);
-    float latd = degrees(lat) + (n-0.5)*8.0;
-    float band = 0.55*gauss(latd, 28.0, 11.0) + 0.50*gauss(latd,-30.0, 11.0);
-    alb = mix(vec3(0.06,0.15,0.50), vec3(0.12,0.26,0.66), n*0.5+0.3);
-    alb = mix(alb, vec3(0.10,0.20,0.54), clamp(band,0.0,1.0)*0.8);
-    float cirrus = smoothstep(0.84,0.96, ridge(d*vec3(7.0,34.0,7.0),4));
-    alb = mix(alb, vec3(0.90,0.95,1.0), cirrus*0.55*smoothstep(0.60,0.15,alat));
-    float gds = blob(lon,lat, 2.10,-0.38, 0.34,0.13);   // Vết Tối Lớn
-    alb = mix(alb, vec3(0.04,0.08,0.30), smoothstep(0.05,0.95,gds)*0.75);
-    float sc = blob(lon,lat, 2.45,-0.50, 0.16,0.05);    // "Scooter" trắng
-    alb = mix(alb, vec3(0.88,0.93,1.0), sc*0.55);
-    height=0.5;
-  } else if(uMode==9){                            // Mặt Trăng
-    float n = fbm(d*6.0,6);
-    float c = craters(d, 7.0, 0.6);
-    float mare = smoothstep(0.54,0.44, fbm(d*2.1,5));
-    alb = mix(vec3(0.34,0.33,0.31), vec3(0.62,0.60,0.57), n*0.6+0.25);
-    alb = mix(alb, vec3(0.20,0.20,0.20), mare*0.75);
-    alb += vec3(max(0.0,c)*0.16);
-    height = clamp(0.5 + c*1.0 + (n-0.5)*0.3, 0.0, 1.0);
-    spec=0.0;
-  } else if(uMode==10){                           // Io
-    float n = fbm(d*5.0,6), s=fbm(d*13.0,5);
-    alb = mix(vec3(0.84,0.66,0.18), vec3(0.97,0.88,0.52), n*0.7+s*0.3);
-    alb = mix(alb, vec3(0.76,0.30,0.10), smoothstep(0.58,0.80,ridge(d*8.0,5))*0.70);
-    alb = mix(alb, vec3(0.20,0.14,0.10), smoothstep(0.72,0.86,fbm(d*17.0,4))*0.5);
-    height=0.5+ (n-0.5)*0.3;
-  } else if(uMode==11){                           // Europa
-    float cr = ridge(d*vec3(7.0,7.0,7.0),6);
-    float cr2 = ridge(d*vec3(17.0,3.0,11.0),5);
-    alb = mix(vec3(0.76,0.72,0.66), vec3(0.94,0.92,0.88), fbm(d*9.0,4));
-    float lin = smoothstep(0.70,0.86,cr)+smoothstep(0.74,0.90,cr2);
-    alb = mix(alb, vec3(0.55,0.36,0.26), clamp(lin,0.0,1.0)*0.55);
-    height=0.5; spec=0.25;
-  } else if(uMode==12){                           // Ganymede
-    float n=fbm(d*5.0,6);
-    float g = smoothstep(0.45,0.62, ridge(d*vec3(11.0,11.0,11.0),5));
-    float c = craters(d, 8.0, 0.4);
-    alb = mix(vec3(0.30,0.29,0.28), vec3(0.60,0.58,0.55), n*0.7+0.2);
-    alb = mix(alb, vec3(0.68,0.67,0.66), g*0.45);
-    alb += vec3(max(0.0,c)*0.12);
-    height = clamp(0.5+c*0.8,0.0,1.0);
-  } else if(uMode==13){                           // Titan
-    float n=fbm(d*3.0,6);
-    alb = mix(vec3(0.72,0.50,0.20), vec3(0.90,0.72,0.38), n);
-    alb = mix(alb, vec3(0.60,0.40,0.16), smoothstep(0.42,0.30,n)*0.35);
-    float hood = smoothstep(0.70,0.99, sin(lat));                      // mũ mù cực bắc
-    alb = mix(alb, vec3(0.66,0.50,0.26), hood*0.45);
-    height=0.5; cloud=0.55;
-  } else if(uMode==15){                           // Sao Thủy — hố dày đặc + lòng chảo Caloris
-    float n = fbm(d*5.0,6), det = fbm(d*16.0,5);
-    float c  = craters(d, 7.0, 0.58);
-    float m  = clamp(n*0.6 + 0.28 + det*0.15, 0.0, 1.0);
-    alb = mix(vec3(0.26,0.24,0.22), vec3(0.64,0.61,0.56), m);
-    // đồng bằng phẳng sẫm hơn
-    float plain = smoothstep(0.56,0.38, fbm(d*2.4,5));
-    alb = mix(alb, vec3(0.36,0.34,0.32), plain*0.6);
-    // lòng chảo Caloris — nhẵn, sáng hơn nền
-    float cal = blob(lon,lat, 3.32, 0.52, 0.42, 0.38);
-    alb = mix(alb, vec3(0.62,0.59,0.53), cal*0.55);
-    // tia sáng từ các hố trẻ
-    float ray = smoothstep(0.74,0.95, ridge(d*13.0,4));
-    alb = mix(alb, vec3(0.80,0.78,0.74), ray*0.35);
-    alb += vec3(max(0.0,c)*0.14);
-    height = clamp(0.5 + c*1.0 + (n-0.5)*0.4 - cal*0.12, 0.0, 1.0);
-    spec = 0.02;
-  } else {                                        // băng (Enceladus, Triton)
-    float n=fbm(d*7.0,6);
-    float cr=ridge(d*vec3(12.0,12.0,12.0),5);
-    alb = mix(vec3(0.72,0.76,0.80), vec3(0.97,0.98,1.0), n);
-    alb = mix(alb, vec3(0.62,0.68,0.74), smoothstep(0.68,0.88,cr)*0.5);
-    height=0.5+(n-0.5)*0.4; spec=0.30;
+    ctx.putImageData(idata, 0, 0);
+
+    // Vết Đỏ Lớn (GRS) tại ~22°N nam bán cầu (y ≈ 0.60)
+    var grsX = w*0.62, grsY = h*0.60;
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(grsX, grsY, w*0.052, h*0.036, 0, 0, Math.PI*2);
+    ctx.fillStyle = "#b84220";
+    ctx.shadowColor = "rgba(235,220,195,0.6)";
+    ctx.shadowBlur = 8;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(grsX, grsY, w*0.034, h*0.022, 0, 0, Math.PI*2);
+    ctx.fillStyle = "#cc5430";
+    ctx.fill();
+    ctx.restore();
+  } else if(texType === "saturn"){
+    var grad = ctx.createLinearGradient(0,0,0,h);
+    grad.addColorStop(0.00, "#5d6e7e"); // Cực bắc lam (xoáy lục giác)
+    grad.addColorStop(0.20, "#b8a67a");
+    grad.addColorStop(0.35, "#d8c89a");
+    grad.addColorStop(0.48, "#a8905e");
+    grad.addColorStop(0.50, "#f4eac9"); // Đới xích đạo sáng
+    grad.addColorStop(0.55, "#b89c6c");
+    grad.addColorStop(0.70, "#cbb788");
+    grad.addColorStop(0.85, "#9c885e");
+    grad.addColorStop(1.00, "#666455"); // Cực nam
+    ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+  } else if(texType === "mars"){
+    ctx.fillStyle = "#b85e2c"; ctx.fillRect(0,0,w,h);
+    // Vùng tối bazan lộ thiên
+    ctx.fillStyle = "rgba(64,38,26,0.58)";
+    ctx.beginPath(); ctx.ellipse(w*0.20, h*0.48, w*0.07, h*0.12, 0.2, 0, Math.PI*2); ctx.fill(); // Syrtis Major
+    ctx.beginPath(); ctx.ellipse(w*0.60, h*0.60, w*0.16, h*0.08, -0.1, 0, Math.PI*2); ctx.fill(); // Mare Cimmerium
+    ctx.beginPath(); ctx.ellipse(w*0.95, h*0.25, w*0.14, h*0.09, 0, 0, Math.PI*2); ctx.fill(); // Acidalia
+    ctx.beginPath(); ctx.ellipse(w*0.05, h*0.56, w*0.10, h*0.05, 0, 0, Math.PI*2); ctx.fill(); // Sinus Sabaeus
+    // Lòng chảo Hellas sáng bụi
+    ctx.fillStyle = "rgba(218,154,104,0.42)";
+    ctx.beginPath(); ctx.ellipse(w*0.20, h*0.72, w*0.08, h*0.08, 0, 0, Math.PI*2); ctx.fill();
+
+    var idata = ctx.getImageData(0,0,w,h), d = idata.data;
+    for(var i=0; i<d.length; i+=4){
+      var n = (Math.random()-0.5)*22;
+      d[i]   = Math.min(255, Math.max(0, d[i]+n));
+      d[i+1] = Math.min(255, Math.max(0, d[i+1]+n*0.7));
+      d[i+2] = Math.min(255, Math.max(0, d[i+2]+n*0.4));
+    }
+    ctx.putImageData(idata, 0, 0);
+
+    // Mũ băng cực bắc & cực nam
+    ctx.fillStyle = "#f2f5f8";
+    ctx.beginPath(); ctx.ellipse(w*0.5, 0, w*0.24, h*0.06, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(w*0.5, h, w*0.22, h*0.05, 0, 0, Math.PI*2); ctx.fill();
+  } else if(texType === "venus"){
+    var grad = ctx.createLinearGradient(0,0,0,h);
+    grad.addColorStop(0, "#e8d69e");
+    grad.addColorStop(0.3, "#f4e6bc");
+    grad.addColorStop(0.5, "#faeed4");
+    grad.addColorStop(0.7, "#efe0b2");
+    grad.addColorStop(1, "#e2ce92");
+    ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+  } else if(texType === "uranus"){
+    var grad = ctx.createLinearGradient(0,0,0,h);
+    grad.addColorStop(0, "#a4e1ec");
+    grad.addColorStop(0.5, "#70c6d6");
+    grad.addColorStop(1, "#a2dfec");
+    ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+  } else if(texType === "neptune"){
+    var grad = ctx.createLinearGradient(0,0,0,h);
+    grad.addColorStop(0, "#1a429a");
+    grad.addColorStop(0.35, "#2a60c2");
+    grad.addColorStop(0.5, "#2252b2");
+    grad.addColorStop(0.75, "#1c46a2");
+    grad.addColorStop(1, "#163a8a");
+    ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+    // Dải mây ti trắng
+    ctx.fillStyle = "rgba(235,245,255,0.45)";
+    ctx.fillRect(0, h*0.38, w, Math.max(1, h*0.015));
+    ctx.fillRect(0, h*0.68, w, Math.max(1, h*0.012));
+    // Vết Tối Lớn
+    ctx.fillStyle = "rgba(10,22,68,0.52)";
+    ctx.beginPath(); ctx.ellipse(w*0.35, h*0.58, w*0.05, h*0.03, 0, 0, Math.PI*2); ctx.fill();
+  } else if(texType === "mercury" || texType === "rock"){
+    ctx.fillStyle = "#666461"; ctx.fillRect(0,0,w,h);
+    var idata = ctx.getImageData(0,0,w,h), d = idata.data;
+    for(var i=0; i<d.length; i+=4){
+      var n = (Math.random()-0.5)*44;
+      d[i]   = Math.min(255, Math.max(0, d[i]+n));
+      d[i+1] = Math.min(255, Math.max(0, d[i+1]+n));
+      d[i+2] = Math.min(255, Math.max(0, d[i+2]+n));
+    }
+    ctx.putImageData(idata, 0, 0);
+    // Lòng chảo Caloris & đốm va chạm
+    ctx.fillStyle = "rgba(144,140,134,0.42)";
+    ctx.beginPath(); ctx.arc(w*0.52, h*0.35, w*0.08, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(w*0.25, h*0.70, w*0.05, 0, Math.PI*2); ctx.fill();
+  } else if(texType === "io"){
+    ctx.fillStyle = "#d4b036"; ctx.fillRect(0,0,w,h);
+    // Vùng tích tụ lưu huỳnh đỏ-cam quanh núi lửa
+    ctx.fillStyle = "rgba(182,60,20,0.62)";
+    ctx.beginPath(); ctx.arc(w*0.30, h*0.40, w*0.042, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(w*0.70, h*0.60, w*0.048, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(w*0.50, h*0.50, w*0.032, 0, Math.PI*2); ctx.fill();
+  } else if(texType === "europa"){
+    ctx.fillStyle = "#e4e1da"; ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle = "rgba(140,84,58,0.45)"; ctx.lineWidth = 1.5;
+    for(var j=0; j<8; j++){
+      ctx.beginPath();
+      ctx.moveTo((j*67)%w, (j*31)%h);
+      ctx.bezierCurveTo((j*97)%w, (j*71)%h, (j*131)%w, (j*113)%h, (j*181)%w, (j*151)%h);
+      ctx.stroke();
+    }
+    ctxAux.fillStyle = "rgb(128,64,0)"; ctxAux.fillRect(0,0,w,h); // Specular phản chiếu băng
+  } else if(texType === "ganymede"){
+    ctx.fillStyle = "#5a5650"; ctx.fillRect(0,0,w,h);
+    ctx.fillStyle = "rgba(158,154,146,0.45)";
+    ctx.fillRect(0, h*0.24, w, h*0.18);
+    ctx.fillRect(0, h*0.60, w, h*0.15);
+  } else if(texType === "titan"){
+    var grad = ctx.createLinearGradient(0,0,0,h);
+    grad.addColorStop(0, "#a66622"); // Mũ mù cực bắc sẫm
+    grad.addColorStop(0.3, "#d49442");
+    grad.addColorStop(0.7, "#d49442");
+    grad.addColorStop(1, "#b6762e");
+    ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+    ctxAux.fillStyle = "rgb(128,0,0,140)"; ctxAux.fillRect(0,0,w,h); // Cloud layer
+  } else { // ice (Enceladus, Triton, Mimas)
+    ctx.fillStyle = "#dae8f2"; ctx.fillRect(0,0,w,h);
+    ctxAux.fillStyle = "rgb(128,75,0)"; ctxAux.fillRect(0,0,w,h);
   }
-  oAlb = vec4(alb, spec);
-  oAux = vec4(height, spec, lights, cloud);
-}`;
+
+  return { albedo: c, aux: cAux };
+}
 
 var QUAD_VS = `#version 300 es
 layout(location=0) in vec2 aPos;
@@ -1946,7 +1835,6 @@ out vec4 oCol;
 uniform mat4 uInvVP;
 uniform vec3 uUp, uSunDir, uRayCol, uMieCol, uGroundCol;
 uniform float uDensity, uMieAmt, uSunVis, uExposure, uSunAng;
-${GLSL_NOISE}
 void main(){
   vec4 p = uInvVP*vec4(vUv*2.0-1.0, 1.0, 1.0);
   vec3 d = normalize(p.xyz/p.w);
@@ -2186,28 +2074,14 @@ function tex1x1(r,g,b,a){
   return t;
 }
 
-var PROC_FBO=null, PROC_QUEUE=[];
+var PROC_QUEUE=[];
 function renderBodyTexture(b){
   if(!b || b.real) return;
-  if(!PROC_FBO) PROC_FBO = gl.createFramebuffer();
-  var w = b.kind==="moon" ? (b.R<400?256:512) : 1024, h=w/2;
-  var texA = tex2d(w,h,gl.RGBA8,gl.RGBA,gl.UNSIGNED_BYTE,gl.LINEAR_MIPMAP_LINEAR,gl.REPEAT);
-  var texB = tex2d(w,h,gl.RGBA8,gl.RGBA,gl.UNSIGNED_BYTE,gl.LINEAR_MIPMAP_LINEAR,gl.REPEAT);
-  gl.bindFramebuffer(gl.FRAMEBUFFER, PROC_FBO);
-  gl.useProgram(P.tex);
-  gl.bindVertexArray(MESH.quad.vao);
-  gl.disable(gl.DEPTH_TEST);
-  gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,texA,0);
-  gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT1,gl.TEXTURE_2D,texB,0);
-  gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
-  gl.viewport(0,0,w,h);
-  gl.uniform1i(P.tex.u.uMode, TEXMODE[b.tex]!==undefined?TEXMODE[b.tex]:1);
-  gl.drawElements(gl.TRIANGLES, MESH.quad.count, gl.UNSIGNED_SHORT, 0);
-  gl.bindTexture(gl.TEXTURE_2D,texA); gl.generateMipmap(gl.TEXTURE_2D);
-  gl.bindTexture(gl.TEXTURE_2D,texB); gl.generateMipmap(gl.TEXTURE_2D);
-  gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
-  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-  gl.enable(gl.DEPTH_TEST);
+  var _t0 = performance.now();
+  var w = b.kind==="moon" ? (b.R<400?256:512) : 512, h=w/2;
+  var canvases = generatePlanetCanvas(b.tex, w, h);
+  var texA = texFromSource(canvases.albedo, true);
+  var texB = texFromSource(canvases.aux, true);
   if(b.texA) gl.deleteTexture(b.texA);
   if(b.texB) gl.deleteTexture(b.texB);
   b.texA = texA;
@@ -2223,7 +2097,6 @@ function ensureBodyTexture(b){
 }
 
 function initGL(){
-  P.tex   = prog(QUAD_VS, TEXGEN_FS, "texgen");
   P.body  = prog(BODY_VS, BODY_FS, "body");
   P.atmo  = prog(BODY_VS, ATMO_FS, "atmo");
   P.ring  = prog(RING_VS, RING_FS, "ring");
