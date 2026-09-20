@@ -222,24 +222,76 @@
   body.panel .colophon,body.lesson .colophon{display:none}
   .colophon{position:absolute;top:186px;left:24px;max-width:228px;text-align:left;
     font-size:8.5px;line-height:1.7;color:#55534C}
-  /* màn chào */
+  /* màn chào & thông báo */
   #welcome{position:fixed;inset:0;z-index:8;display:grid;place-items:center;
-    background:rgba(4,6,14,.88);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);padding:20px}
-  .wel-box{max-width:680px;width:100%;border:1px solid var(--hairline);
-    background:rgba(8,11,22,.9);padding:26px 28px 22px}
-  .wel-box h2{font-family:var(--font-display);font-size:clamp(28px,5vw,42px);font-weight:600;
-    margin:2px 0 10px;color:var(--parchment)}
-  .wel-sub{font-size:13px;line-height:1.65;color:#BDB6A6;margin:0 0 20px;max-width:58ch}
+    background:rgba(4,6,14,.88);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+    padding:calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .wel-box{max-width:680px;width:100%;max-height:calc(100vh - 36px);max-height:calc(100dvh - 36px);
+    overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative;border:1px solid var(--hairline);
+    background:rgba(8,11,22,.96);padding:26px 28px 22px;border-radius:8px;box-shadow:0 12px 40px rgba(0,0,0,.7)}
+  .wel-close{position:absolute;top:10px;right:12px;background:none;border:none;color:var(--parchment-dim);
+    font-size:22px;cursor:pointer;padding:4px 8px;line-height:1;border-radius:4px;transition:.15s}
+  .wel-close:hover{color:var(--parchment);background:rgba(232,200,122,.12)}
+  .wel-box h2{font-family:var(--font-display);font-size:clamp(26px,5vw,40px);font-weight:600;
+    margin:2px 0 8px;color:var(--parchment)}
+  .wel-sub{font-size:13px;line-height:1.65;color:#BDB6A6;margin:0 0 18px;max-width:58ch}
   .wel-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .wel-card{appearance:none;text-align:left;cursor:pointer;padding:13px 14px;
     border:1px solid var(--hairline-soft);background:rgba(232,200,122,.045);
-    color:var(--parchment);font-family:var(--font-ui);transition:.18s}
+    color:var(--parchment);font-family:var(--font-ui);transition:.18s;border-radius:4px}
   .wel-card:hover{background:rgba(232,200,122,.13);border-color:var(--hairline)}
   .wel-card b{display:block;font-size:14px;font-weight:500;margin-bottom:4px}
   .wel-card span{display:block;font-size:11px;line-height:1.5;color:var(--parchment-dim)}
   .wel-skip{display:flex;align-items:center;gap:7px;margin:16px 0 0;font-size:11px;color:#8A8476;cursor:pointer}
   .wel-skip input{accent-color:var(--brass);width:15px;height:15px}
-  @media (max-width:640px){ .wel-grid{grid-template-columns:1fr} .wel-box{padding:20px 18px 18px} }
+  @media (max-width:640px){
+    .wel-box{padding:18px 14px 14px;max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px)}
+    .wel-box h2{font-size:22px;margin:2px 0 6px}
+    .wel-sub{font-size:11.5px;margin:0 0 12px;line-height:1.5}
+    .wel-grid{grid-template-columns:1fr;gap:7px}
+    .wel-card{padding:9px 11px}
+    .wel-card b{font-size:12.5px;margin-bottom:2px}
+    .wel-card span{font-size:10px;line-height:1.35}
+    .wel-skip{margin:10px 0 0;font-size:10px}
+  }
+
+  /* loading spinner */
+  #loading{position:fixed;inset:0;z-index:9;display:grid;place-items:center;
+    background:var(--void);color:var(--parchment);font-family:var(--font-ui);
+    transition:opacity .3s;pointer-events:none}
+  #loading > div{padding:14px 22px;border:1px solid var(--hairline);
+    background:rgba(7,10,22,.85);border-radius:6px;font-size:12.5px;
+    letter-spacing:.06em;color:var(--brass);display:flex;align-items:center;gap:10px}
+  #loading > div::before{content:"";width:14px;height:14px;border:2px solid var(--brass);
+    border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* thông báo khi trình duyệt / webview không bật WebGL2 */
+  #nogl{position:fixed;inset:0;z-index:99;display:none;place-items:center;
+    background:var(--void);color:var(--parchment);padding:20px;overflow-y:auto}
+  .nogl-box{max-width:440px;width:100%;background:rgba(10,14,28,.96);
+    border:1px solid var(--hairline);padding:24px 22px;border-radius:8px;
+    text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.8)}
+  .nogl-box h3{font-family:var(--font-display);font-size:22px;color:var(--brass);margin:0 0 10px}
+  .nogl-box p{font-size:12.5px;line-height:1.6;color:var(--parchment-dim);margin:0 0 14px}
+  .nogl-guide{background:rgba(232,200,122,.06);border:1px solid var(--hairline-soft);
+    border-radius:6px;padding:12px 14px;margin-bottom:16px}
+  .nogl-guide b{color:var(--parchment);font-size:12px}
+  .nogl-btn{display:inline-block;width:100%;padding:11px 16px;background:var(--brass);
+    color:var(--ink);font-weight:600;font-size:12px;letter-spacing:.04em;border-radius:5px;
+    border:none;cursor:pointer;transition:.18s;font-family:var(--font-ui)}
+  .nogl-btn:hover{background:#F0D590}
+
+  /* thanh mẹo mở trình duyệt ngoài cho người dùng Zalo/Facebook */
+  #iab-banner{position:fixed;top:0;left:0;right:0;z-index:90;display:flex;align-items:center;
+    justify-content:space-between;gap:8px;padding:calc(6px + env(safe-area-inset-top, 0px)) 12px 6px;
+    background:linear-gradient(90deg, rgba(139,118,66,.95), rgba(7,10,22,.95));
+    color:#FFF8E7;font-size:11px;line-height:1.4;border-bottom:1px solid var(--brass);
+    box-shadow:0 2px 10px rgba(0,0,0,.5)}
+  .iab-content{display:flex;align-items:center;gap:6px}
+  #btn-iab-close{appearance:none;background:none;border:none;color:#FFF;
+    font-size:15px;cursor:pointer;padding:2px 8px;line-height:1;border-radius:3px}
 
   /* thẻ bài học */
   .lesson-card{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(104px + env(safe-area-inset-bottom, 0px));
@@ -330,14 +382,23 @@
   @media (prefers-reduced-motion:reduce){ *{transition-duration:.01ms !important} }
 </style>
 
+<div id="iab-banner" hidden>
+  <div class="iab-content">
+    <span style="font-size:13px">💡</span>
+    <span>Mẹo: Chạm dấu <b>⋮</b> hoặc <b>⋯</b> ở góc trên và chọn <b>"Mở bằng trình duyệt ngoài"</b> (Chrome/Safari) để xem 3D nét nhất!</span>
+  </div>
+  <button id="btn-iab-close" title="Đóng">✕</button>
+</div>
+
 <canvas id="stage"></canvas>
 <canvas id="hud"></canvas>
 
 <div id="loading"><div>Đang dựng hệ Mặt Trời…</div></div>
 <div id="welcome" hidden>
   <div class="wel-box">
+    <button class="wel-close" id="wel-close" aria-label="Đóng" title="Đóng">✕</button>
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-      <img src="logo/logo.png" alt="N&Mstudio Logo" style="width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(232,200,122,.35))">
+      <img src="logo/logo.png" alt="N&Mstudio Logo" style="width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(232,200,122,.35))">
       <div>
         <p class="eyebrow" style="margin:0">N&Mstudio_SolarSystem</p>
         <div style="font-size:11px;color:var(--parchment-dim);margin-top:2px">
@@ -361,7 +422,22 @@
     <label class="wel-skip"><input type="checkbox" id="wel-never"> Lần sau không hiện bảng này</label>
   </div>
 </div>
-<div id="nogl"><p>Thiết bị hoặc trình duyệt này chưa bật WebGL 2, nên phần dựng hình 3D không chạy được. Thử mở lại bằng Chrome, Edge hoặc Safari phiên bản mới.</p></div>
+<div id="nogl">
+  <div class="nogl-box">
+    <div style="font-size:38px;margin-bottom:8px">🪐</div>
+    <h3>Chưa hỗ trợ WebGL 2</h3>
+    <p>Trình duyệt hoặc ứng dụng hiện tại (Zalo / Facebook / TikTok) đang giới hạn đồ họa 3D nên không tải được Hệ Mặt Trời.</p>
+    <div class="nogl-guide">
+      <b>Cách mở xem mượt mà 100%:</b>
+      <ol style="text-align:left;font-size:12px;color:#DED7C6;line-height:1.75;margin:8px 0 14px 18px;padding:0">
+        <li>Chạm vào biểu tượng dấu <b>⋮</b> hoặc <b>⋯</b> (ở góc trên màn hình)</li>
+        <li>Chọn <b>"Mở bằng trình duyệt ngoài"</b> (hoặc <b>Safari / Chrome</b>)</li>
+      </ol>
+    </div>
+    <button class="nogl-btn" id="btn-copy-link">Sao chép liên kết (Copy Link)</button>
+    <div id="nogl-copied" style="font-size:11px;color:#7FD0B8;margin-top:8px;display:none">✓ Đã sao chép liên kết! Hãy dán vào Chrome hoặc Safari để mở.</div>
+  </div>
+</div>
 
 <div class="shell">
   <header class="masthead">
@@ -1157,6 +1233,16 @@ function sunlightAt(id, S){
    LÕI WEBGL2 — khởi tạo, shader, mesh, FBO, bloom
    ══════════════════════════════════════════════════════════════ */
 var cv = document.getElementById("stage");
+cv.addEventListener("webglcontextlost", function(e){
+  e.preventDefault();
+  console.warn("WebGL context lost");
+}, false);
+cv.addEventListener("webglcontextrestored", function(){
+  console.info("WebGL context restored");
+  extCBF = gl ? gl.getExtension("EXT_color_buffer_float") : null;
+  extAni = gl ? gl.getExtension("EXT_texture_filter_anisotropic") : null;
+  try { initGL(); resizeGL(); } catch(e){ console.error(e); }
+}, false);
 var gl = cv.getContext("webgl2", {antialias:false, alpha:false, depth:true,
           powerPreference:"high-performance", preserveDrawingBuffer:false});
 var GLOK = !!gl;
@@ -1274,12 +1360,17 @@ function tex2d(w,h,internal,format,type,filter,wrap){
 }
 function fbo(w,h,float,depth){
   var f=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,f);
-  var c=float ? tex2d(w,h,gl.RGBA16F,gl.RGBA,gl.HALF_FLOAT) : tex2d(w,h,gl.RGBA8,gl.RGBA,gl.UNSIGNED_BYTE);
+  var useFloat = !!(float && extCBF);
+  var c=useFloat ? tex2d(w,h,gl.RGBA16F,gl.RGBA,gl.HALF_FLOAT) : tex2d(w,h,gl.RGBA8,gl.RGBA,gl.UNSIGNED_BYTE);
   gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,c,0);
   var d=null;
   if(depth){
     d=gl.createRenderbuffer(); gl.bindRenderbuffer(gl.RENDERBUFFER,d);
-    gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT24,w,h);
+    try {
+      gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT24,w,h);
+    } catch(e) {
+      gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16,w,h);
+    }
     gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,d);
   }
   gl.bindFramebuffer(gl.FRAMEBUFFER,null);
@@ -2432,16 +2523,28 @@ var ORB_N=256;
 /* ── kích thước khung vẽ ── */
 var VW=0, VH=0, PIX=1;
 function resizeGL(){
-  PIX = V.quality<1 ? 1 : Math.min(window.devicePixelRatio||1, V.quality<2?1.5:2);
+  if(!gl) return;
+  var isMobile = (window.innerWidth < 768) || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  var maxPix = isMobile ? 1.5 : (V.quality < 2 ? 1.5 : 2);
+  PIX = V.quality < 1 ? 1 : Math.min(window.devicePixelRatio || 1, maxPix);
   var w=cv.clientWidth||window.innerWidth, h=cv.clientHeight||window.innerHeight;
   VW=Math.max(2,Math.round(w*PIX)); VH=Math.max(2,Math.round(h*PIX));
   cv.width=VW; cv.height=VH;
-  hud.width=VW; hud.height=VH;
-  h2.setTransform(PIX,0,0,PIX,0,0);
+  if(hud){
+    hud.width=VW; hud.height=VH;
+    if(h2) h2.setTransform(PIX,0,0,PIX,0,0);
+  }
   var hw=Math.max(1,VW>>1), hh=Math.max(1,VH>>1);
   var qw=Math.max(1,VW>>2), qh=Math.max(1,VH>>2);
-  if(FB.scene){ [FB.scene,FB.b1,FB.b2,FB.b3].forEach(function(f){
-      gl.deleteTexture(f.tex); gl.deleteFramebuffer(f.fb); if(f.depth) gl.deleteRenderbuffer(f.depth); }); }
+  if(FB && FB.scene){
+    [FB.scene,FB.b1,FB.b2,FB.b3].forEach(function(f){
+      if(f){
+        if(f.tex) gl.deleteTexture(f.tex);
+        if(f.fb) gl.deleteFramebuffer(f.fb);
+        if(f.depth) gl.deleteRenderbuffer(f.depth);
+      }
+    });
+  }
   FB.scene = fbo(VW,VH,true,true);
   FB.b1 = fbo(hw,hh,true,false);
   FB.b2 = fbo(hw,hh,true,false);
@@ -3209,13 +3312,13 @@ var $=function(id){ return document.getElementById(id); };
 function hudClear(){ h2.setTransform(PIX,0,0,PIX,0,0); h2.clearRect(0,0,VW/PIX,VH/PIX); }
 function hudLabel(x,y,text,col,dim,align){
   h2.font='500 11px "Be Vietnam Pro",system-ui,sans-serif';
-  if("letterSpacing" in h2) h2.letterSpacing="0.05em";
+  try { if("letterSpacing" in h2) h2.letterSpacing="0.05em"; } catch(e){}
   h2.textAlign=align||"left"; h2.textBaseline="alphabetic";
   h2.globalAlpha=dim;
   h2.fillStyle=col||"#EDE6D6";
   h2.fillText(text,x,y);
   h2.globalAlpha=1;
-  if("letterSpacing" in h2) h2.letterSpacing="0px";
+  try { if("letterSpacing" in h2) h2.letterSpacing="0px"; } catch(e){}
 }
 var placedLab=[];
 function labelFree(x0,y0,w,h){
@@ -4619,6 +4722,11 @@ if(!GLOK){
     try{ if($("wel-never").checked) localStorage.setItem("tinhdo-welcome","off"); }catch(e){}
     $("welcome").hidden=true;
   }
+  var welClose = $("wel-close");
+  if(welClose) welClose.addEventListener("click", closeWelcome);
+  $("welcome").addEventListener("click", function(ev){
+    if(ev.target === $("welcome")) closeWelcome();
+  });
   $("wel-free").addEventListener("click", closeWelcome);
   $("wel-lesson").addEventListener("click",function(){ closeWelcome(); $("btn-lesson").click(); });
   $("wel-tonight").addEventListener("click",function(){ closeWelcome(); $("btn-tonight").click(); });
@@ -4628,6 +4736,48 @@ if(!GLOK){
     $("pnote").textContent="Đang dò thời điểm…";
     setTimeout(function(){ if(p) $("pnote").textContent=p.run()||""; },16);
   });
+
+  /* nút sao chép link khi không có WebGL */
+  var btnCopy = $("btn-copy-link");
+  if(btnCopy){
+    btnCopy.addEventListener("click", function(){
+      var url = window.location.href;
+      function showCopied(){
+        var msg = $("nogl-copied");
+        if(msg){ msg.style.display = "block"; setTimeout(function(){ msg.style.display = "none"; }, 3500); }
+      }
+      function fallbackCopy(){
+        var t = document.createElement("input");
+        t.value = url;
+        document.body.appendChild(t);
+        t.select();
+        try { document.execCommand("copy"); showCopied(); } catch(e){}
+        document.body.removeChild(t);
+      }
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(url).then(showCopied, fallbackCopy);
+      } else {
+        fallbackCopy();
+      }
+    });
+  }
+
+  /* thanh mẹo mở trình duyệt ngoài cho In-App Browser (Zalo, FB, TikTok, Messenger) */
+  var ua = navigator.userAgent || "";
+  var isIAB = /FBAN|FBAV|Instagram|Line|Zalo|TikTok|MicroMessenger/i.test(ua);
+  var iabBanner = $("iab-banner");
+  var iabClosed = false;
+  try { iabClosed = sessionStorage.getItem("tinhdo-iab-closed") === "1"; } catch(e){}
+  if(isIAB && !iabClosed && iabBanner){
+    iabBanner.hidden = false;
+  }
+  var btnIABClose = $("btn-iab-close");
+  if(btnIABClose){
+    btnIABClose.addEventListener("click", function(){
+      if(iabBanner) iabBanner.hidden = true;
+      try { sessionStorage.setItem("tinhdo-iab-closed", "1"); } catch(e){}
+    });
+  }
 
   $("btn-more").addEventListener("click",function(){
     var on=!document.body.classList.contains("more");
@@ -4827,21 +4977,30 @@ if(!GLOK){
   window.addEventListener("resize",function(){ resizeGL(); });
 
   /* khởi động */
-  try{
-    resizeGL();
-    loadImages(function(){ try{ initGL(); startApp(); }catch(e){ console.error(e);
-      $("loading").style.display="none"; $("nogl").style.display="grid"; } });
-  }catch(err){
-    console.error(err);
+  if(!gl){
     $("loading").style.display="none";
     $("nogl").style.display="grid";
-    return;
+  } else {
+    try{
+      resizeGL();
+      loadImages(function(){ try{ initGL(); startApp(); }catch(e){ console.error(e);
+        $("loading").style.display="none"; $("nogl").style.display="grid"; } });
+    }catch(err){
+      console.error(err);
+      $("loading").style.display="none";
+      $("nogl").style.display="grid";
+    }
   }
   function startApp(){
     V.speed = reduce?2:3;
     $("speed").querySelectorAll("button").forEach(function(x,j){
       x.setAttribute("aria-pressed", j===V.speed?"true":"false"); });
     fillSlab("earth");
+    if(window.innerWidth < 768){
+      document.body.classList.add("slab-collapsed");
+      var tBtn = $("btn-slab-toggle");
+      if(tBtn) tBtn.textContent = "Mở rộng ▴";
+    }
     V.focus="sun";
     V.tgt=[0,0,0];
     V.dist=reduce?200000:420000; V.wantDist=200000;
