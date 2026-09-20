@@ -637,24 +637,44 @@ earthGroup.add(cursorMarker);
 const measureGroup = new THREE.Group();
 earthGroup.add(measureGroup);
 
+// Hàm nạp asset an toàn hỗ trợ đa môi trường (Vercel cleanUrls, Local server, Absolute path)
+async function fetchAsset(relPath) {
+  const candidates = [
+    `/Dia%20Hinh%20The%20Gioi%203D/${relPath}`,
+    `./${relPath}`,
+    `${relPath}`,
+    `/${relPath}`
+  ];
+  for (const url of candidates) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) return res;
+    } catch (e) {}
+  }
+  throw new Error(`HTTP 404: Không thể nạp ${relPath}`);
+}
+
 // Khởi chạy nạp đồng bộ dữ liệu
 async function initApplication() {
   try {
     // 1. Nạp Unified Relief Grid
-    const resRelief = await fetch('data/relief_grid.bin');
+    const resRelief = await fetchAsset('data/relief_grid.bin');
     const buf = await resRelief.arrayBuffer();
+    if (buf.byteLength % 2 !== 0) {
+      throw new Error(`Dữ liệu relief_grid không hợp lệ (${buf.byteLength} bytes)`);
+    }
     reliefGrid = new Int16Array(buf);
 
     // 2. Nạp Landmarks Database
-    const resLm = await fetch('data/landmarks.json');
+    const resLm = await fetchAsset('data/landmarks.json');
     landmarksData = await resLm.json();
 
     // 3. Nạp Plate Boundaries
-    const resPb = await fetch('data/plate_boundaries.json');
+    const resPb = await fetchAsset('data/plate_boundaries.json');
     tectonicData = await resPb.json();
 
     // 4. Nạp Challenges
-    const resCh = await fetch('data/challenges.json');
+    const resCh = await fetchAsset('data/challenges.json');
     challengesData = await resCh.json();
 
     // 5. Nạp Textures

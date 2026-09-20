@@ -1,5 +1,11 @@
 {
   "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/data/:path*",
+      "destination": "/Dia%20Hinh%20The%20Gioi%203D/data/:path*"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
