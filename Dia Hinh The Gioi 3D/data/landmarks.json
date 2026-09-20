@@ -565,5 +565,167 @@
         107.3
       ]
     }
+  },
+  {
+    "id": "alps_sys",
+    "name_vi": "Dãy Alps (Hệ thống uốn nếp châu Âu)",
+    "name_en": "Alps Mountain Range",
+    "category": "Vành đai uốn nếp va chạm mảng",
+    "lat": 46.5,
+    "lon": 10.0,
+    "elev_m": 4808.0,
+    "status": "VERIFIED",
+    "plate": "Mảng châu Phi húc Mảng Á-Âu",
+    "where": "Trung và Nam Âu, trải dài qua 8 quốc gia.",
+    "what": "Dãy núi cao nhất và rộng lớn nhất hoàn toàn nằm trong châu Âu.",
+    "why_there": "Hình thành do mảng châu Phi di chuyển về phía bắc va chạm với mảng Á-Âu, làm biến dạng các lớp đá trầm tích biển Tethys cổ đại.",
+    "why_care": "Tháp nước châu Âu, nuôi dưỡng 4 lưu vực sông lớn nhất Tây Âu.",
+    "what_if": "Sự thu hẹp nhanh chóng của các sông băng trên dãy Alps đang đe dọa trực tiếp lượng nước mùa hè của sông Rhine và sông Danube.",
+    "transect": {
+      "name": "Đồng bằng Bắc Âu ➔ Dãy Alps ➔ Biển Địa Trung Hải",
+      "p1": [
+        48.0,
+        10.0
+      ],
+      "p2": [
+        43.5,
+        10.0
+      ]
+    }
+  },
+  {
+    "id": "colorado_plateau",
+    "name_vi": "Cao Nguyên Colorado (Xứ sở Hẻm vực)",
+    "name_en": "Colorado Plateau",
+    "category": "Cao nguyên nâng khối tảng bóc mòn",
+    "lat": 37.0,
+    "lon": -110.0,
+    "elev_m": 1900.0,
+    "status": "VERIFIED",
+    "plate": "Mảng Bắc Mỹ",
+    "where": "Tây Nam Hoa Kỳ, bao trùm 4 bang (Four Corners).",
+    "what": "Cao nguyên sa thạch rộng lớn với độ cao trung bình gần 2,000m, nơi tọa lạc của Grand Canyon.",
+    "why_there": "Được nâng bổng đồng đều trong kỷ Đệ Tam mà các tầng đá trầm tích hầu như không bị uốn nếp, tạo điều kiện cho sông ngòi bào mòn thành các hẻm vực sâu.",
+    "why_care": "Bảo tàng địa mạo sa thạch vĩ đại nhất thế giới với các cột đá (hoodoos), vòm đá tự nhiên và hẻm vực kỳ quan.",
+    "what_if": "Sự phân rã của sa thạch dưới tác động của nhiệt độ và gió đang tiếp tục định hình lại cảnh quan cao nguyên mỗi năm.",
+    "transect": {
+      "name": "Bồn địa Lớn ➔ Cao nguyên Colorado ➔ Dãy Rocky",
+      "p1": [
+        37.0,
+        -114.0
+      ],
+      "p2": [
+        37.0,
+        -106.0
+      ]
+    }
+  },
+  {
+    "id": "congo_basin",
+    "name_vi": "Bồn Địa Congo (Trái tim châu Phi)",
+    "name_en": "Congo Basin",
+    "category": "Bồn địa sụt lún nội lục Craton",
+    "lat": 0.0,
+    "lon": 22.0,
+    "elev_m": 350.0,
+    "status": "VERIFIED",
+    "plate": "Nền cổ châu Phi (African Craton)",
+    "where": "Trung Phi, diện tích khoảng 3.7 triệu km².",
+    "what": "Bồn địa trũng lớn thứ hai thế giới sau Amazon, phủ kín bởi rừng mưa nhiệt đới rậm rạp.",
+    "why_there": "Hình thành do sụt lún uốn võng nhiệt chậm của nền đá cổ châu Phi qua hàng trăm triệu năm.",
+    "why_care": "Khu rừng nhiệt đới lớn thứ hai hành tinh, lưu trữ lượng carbon khổng lồ trong các đầm lầy than bùn.",
+    "what_if": "Đầm lầy than bùn bồn địa Congo lưu giữ lượng carbon tương đương 3 năm khí thải toàn cầu; nếu bị khô hạn do biến đổi khí hậu, nó sẽ trở thành quả bom carbon khổng lồ.",
+    "transect": {
+      "name": "Sống núi Cameroon ➔ Đáy bồn địa Congo ➔ Vết nứt Đông Phi",
+      "p1": [
+        4.0,
+        10.0
+      ],
+      "p2": [
+        -1.0,
+        29.0
+      ]
+    }
+  },
+  {
+    "id": "puerto_rico_trench",
+    "name_vi": "Rãnh Puerto Rico (Vực sâu nhất Đại Tây Dương)",
+    "name_en": "Puerto Rico Trench",
+    "category": "Đới hút chìm biến dạng xiên (Oblique Subduction)",
+    "lat": 19.83,
+    "lon": -66.5,
+    "elev_m": -8376.0,
+    "status": "VERIFIED (Milwaukee Deep)",
+    "plate": "Mảng Bắc Mỹ chui dưới Mảng Caribe",
+    "where": "Phía bắc đảo Puerto Rico, ranh giới giữa Đại Tây Dương và Biển Caribe.",
+    "what": "Điểm sâu nhất của toàn bộ Đại Tây Dương (-8,376m tại Vực sâu Milwaukee).",
+    "why_there": "Hình thành do mảng Bắc Mỹ vừa hút chìm vừa trượt ngang bên dưới mảng Caribe.",
+    "why_care": "Nguy cơ tiềm ẩn các trận động đất siêu lớn và sóng thần tàn phá các đảo vùng Caribe và bờ đông Hoa Kỳ.",
+    "what_if": "Nghiên cứu đáy rãnh cho thấy nguy cơ sạt lở ngầm quy mô lớn có thể kích hoạt sóng thần cao hàng chục mét.",
+    "transect": {
+      "name": "Đảo Puerto Rico ➔ Vực Milwaukee ➔ Đáy Đại Tây Dương",
+      "p1": [
+        18.0,
+        -66.5
+      ],
+      "p2": [
+        22.0,
+        -66.5
+      ]
+    }
+  },
+  {
+    "id": "caspian_sea",
+    "name_vi": "Biển Caspi (Hồ lớn nhất thế giới)",
+    "name_en": "Caspian Sea",
+    "category": "Vực nước nội lục khép kín (Endorheic Basin)",
+    "lat": 42.0,
+    "lon": 51.0,
+    "elev_m": -28.0,
+    "status": "VERIFIED (Mặt hồ ở -28m)",
+    "plate": "Mảng Á-Âu nội lục",
+    "where": "Giáp ranh giữa châu Âu và châu Á, tiếp giáp 5 quốc gia.",
+    "what": "Hồ có diện tích lớn nhất thế giới (~371,000 km²), nước có độ mặn khoảng 1.2% (bằng 1/3 nước biển).",
+    "why_there": "Là tàn tích còn sót lại của đại dương Paratethys cổ đại bị cô lập hoàn toàn do sự va chạm của các mảng kiến tạo.",
+    "why_care": "Chứa trữ lượng dầu mỏ và khí đốt khổng lồ, quê hương của cá tầm sản xuất trứng cá muối caviar quý giá.",
+    "what_if": "Mực nước biển Caspi đang giảm nhanh chóng do nhiệt độ tăng và nước sông Volga bị chặn cho nông nghiệp.",
+    "transect": {
+      "name": "Dãy Caucasus ➔ Đáy Biển Caspi (-1,025m) ➔ Sa mạc Karakum",
+      "p1": [
+        42.0,
+        47.0
+      ],
+      "p2": [
+        42.0,
+        56.0
+      ]
+    }
+  },
+  {
+    "id": "east_african_rift",
+    "name_vi": "Thung Lũng Tách Giãn Đông Phi (Great Rift Valley)",
+    "name_en": "East African Rift System",
+    "category": "Đới tách giãn lục địa đang hoạt động (Continental Rift)",
+    "lat": 0.5,
+    "lon": 36.0,
+    "elev_m": 1800.0,
+    "status": "VERIFIED",
+    "plate": "Tiểu mảng Nubia ↔ Tiểu mảng Somalia",
+    "where": "Đông Phi, kéo dài hơn 6,000 km từ Biển Đỏ đến Mozambique.",
+    "what": "Vết nứt kiến tạo vĩ đại nhất trên đất liền Trái Đất, nơi châu Phi đang dần tách làm đôi.",
+    "why_there": "Cột magma nóng bốc lên từ manti làm vòm vỏ Trái Đất phồng lên rồi nứt toác thành các đứt gãy sụt lún dạng bậc thang.",
+    "why_care": "Cái nôi của loài người (Cradle of Humankind) - nơi tìm thấy hầu hết các hóa thạch người vượn cổ đại đầu tiên.",
+    "what_if": "Trong 10 triệu năm tới, thung lũng này sẽ bị nước biển tràn vào, biến vùng Sừng châu Phi thành một hòn đảo lớn trên Ấn Độ Dương!",
+    "transect": {
+      "name": "Bờ Tây Rift ➔ Đáy thung lũng sụt lún ➔ Bờ Đông Rift",
+      "p1": [
+        0.5,
+        35.0
+      ],
+      "p2": [
+        0.5,
+        37.5
+      ]
+    }
   }
 ]
