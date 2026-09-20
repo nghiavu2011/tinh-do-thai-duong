@@ -1,0 +1,51 @@
+{
+  "name": "Unified Global Topography & Bathymetry Grid (Resampled)",
+  "provenance": "NOAA ETOPO / NASA Blue Marble Topology / PB2002 / GEBCO 2024 Calibration",
+  "width": 720,
+  "height": 360,
+  "resolution_deg": 0.5,
+  "data_type": "int16_little_endian",
+  "unit": "meters",
+  "test_points": {
+    "everest": {
+      "lat": 27.99,
+      "lon": 86.93,
+      "expected_m": 8849
+    },
+    "fansipan": {
+      "lat": 22.3,
+      "lon": 103.78,
+      "expected_m": 3147
+    },
+    "mariana": {
+      "lat": 11.37,
+      "lon": 142.59,
+      "expected_m": -10984
+    },
+    "dead_sea": {
+      "lat": 31.5,
+      "lon": 35.5,
+      "expected_m": -430
+    },
+    "red_river_delta": {
+      "lat": 21.0,
+      "lon": 105.8,
+      "expected_m": 15
+    },
+    "gulf_of_tonkin": {
+      "lat": 20.0,
+      "lon": 107.5,
+      "expected_m": -45
+    },
+    "pacific_open": {
+      "lat": 0.0,
+      "lon": -140.0,
+      "expected_m": -4200
+    },
+    "mid_atlantic_ridge": {
+      "lat": 0.0,
+      "lon": -25.0,
+      "expected_m": -2200
+    }
+  }
+}

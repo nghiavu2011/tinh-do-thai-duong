@@ -1,0 +1,1555 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>N&Mstudio — Trái Đất 3D: Tự Quay & Công Chuyển</title>
+<meta name="description" content="Chuyên đề Trái Đất 3D thuộc seri N&Mstudio SolarSystem: mô phỏng chuẩn thiên văn học về sự tự quay, công chuyển quanh Mặt Trời, ngày đêm, 4 mùa, điểm trực xạ, vòm trời chân trời, lực Coriolis và thiên đỉnh tại Việt Nam. Hotline: +84 985578385.">
+<meta name="theme-color" content="#070A16">
+
+<!-- Favicon SVG đồng bộ seri Tinh Đồ Thái Dương -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='38' fill='%23E8C87A'/><circle cx='50' cy='50' r='46' fill='none' stroke='%23E8C87A' stroke-width='4' stroke-dasharray='6 6'/></svg>">
+
+<!-- Tối ưu kết nối & nạp font chuẩn Cormorant Garamond / Be Vietnam Pro / IBM Plex Mono -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Be+Vietnam+Pro:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<!-- Nạp bộ texture chuẩn độ nét cao từ Tinh Đồ Thái Dương -->
+<script src="earth-textures.js"></script>
+
+<style>
+/* ═══ 1. DESIGN TOKENS (ĐỒNG BỘ TINH ĐỒ THÁI DƯƠNG) ═══ */
+:root{
+  --void:#070A16; --ink:#04060E;
+  --brass:#E8C87A; --brass-dim:#8B7642;
+  --parchment:#F2ECDE; --parchment-dim:#A39C89;
+  --hairline:rgba(232,200,122,.22); --hairline-soft:rgba(232,200,122,.11);
+  --panel:rgba(7,10,22,.82);
+  --font-display:"Cormorant Garamond","Times New Roman",serif;
+  --font-ui:"Be Vietnam Pro","Segoe UI",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,monospace;
+  --r:4px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--void);color:var(--parchment);font-family:var(--font-ui);font-weight:300;font-size:12.5px;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--hairline);border-radius:2px}
+
+/* ═══ 2. CANVAS & LAYOUT ═══ */
+#c{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
+.labels{position:fixed;inset:0;pointer-events:none;z-index:1}
+
+/* ═══ 3. MASTHEAD (GÓC TRÁI TRÊN) ═══ */
+.masthead{position:absolute;top:0;left:0;padding:calc(16px + env(safe-area-inset-top,0px)) 22px 0;z-index:20;pointer-events:none}
+.masthead>*{pointer-events:auto}
+.eyebrow{font-size:9px;letter-spacing:.32em;text-transform:uppercase;color:var(--brass-dim);margin:0 0 5px;font-weight:500}
+.wordmark{font-family:var(--font-display);font-weight:600;font-size:clamp(22px,3.2vw,34px);line-height:.98;margin:0;color:var(--parchment)}
+.wordmark em{font-style:normal;color:var(--brass)}
+.rule{width:56px;height:1px;background:linear-gradient(90deg,var(--brass),transparent);margin:9px 0 6px}
+.mast-actions{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap}
+.brand-link{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:10px;color:var(--parchment);text-decoration:none;background:rgba(232,200,122,.08);border:1px solid var(--hairline-soft);padding:3px 8px;border-radius:3px;transition:.18s}
+.brand-link:hover{background:rgba(232,200,122,.2);color:var(--brass);border-color:var(--hairline)}
+
+/* Selectors trên Masthead */
+.mast-select{appearance:none;background:rgba(7,10,22,.85);border:1px solid var(--hairline);border-radius:3px;color:var(--parchment);font-family:var(--font-ui);font-size:10.5px;padding:3px 8px;cursor:pointer;outline:none;transition:.18s}
+.mast-select:hover{border-color:var(--brass);color:var(--brass)}
+
+/* ═══ 4. DẢI ĐO LƯỜNG (TELEMETRY STRIP TRÊN CÙNG) ═══ */
+#telemetry{position:fixed;top:0;left:0;right:0;z-index:18;display:flex;align-items:center;justify-content:center;gap:8px;padding:calc(4px + env(safe-area-inset-top,0px)) 16px 4px;background:rgba(7,10,22,.86);border-bottom:1px solid var(--hairline-soft);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-family:var(--font-mono);font-size:10.5px;overflow-x:auto;white-space:nowrap}
+.ti{display:flex;align-items:center;gap:4px}
+.ti-l{color:var(--brass-dim);font-size:9px;text-transform:uppercase;letter-spacing:.08em}
+.ti-v{color:var(--parchment);font-variant-numeric:tabular-nums}
+.ti-sep{color:var(--hairline);padding:0 2px}
+.ti-pill{display:inline-block;padding:1px 5px;background:rgba(232,200,122,.12);border:1px solid var(--hairline);border-radius:2px;font-size:9.5px;color:var(--brass)}
+
+/* ═══ 5. SLAB / PANEL KIỂU TINH ĐỒ THÁI DƯƠNG ═══ */
+.slab{position:fixed;z-index:15;background:var(--panel);-webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);border:1px solid var(--hairline);padding:14px 16px 12px;font-size:12px;transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .3s}
+.slab-top{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
+.glyph{width:8px;height:8px;border-radius:50%;flex:none;transform:translateY(-2px);box-shadow:0 0 10px 1px currentColor;background:currentColor}
+.slab-kind{font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass-dim);font-weight:500}
+.slab-name{font-family:var(--font-display);font-size:24px;font-weight:600;line-height:1.06;margin:0;color:var(--parchment)}
+.slab-close{margin-left:auto;background:none;border:none;color:var(--parchment-dim);font-size:16px;cursor:pointer;line-height:1;transition:.15s}
+.slab-close:hover{color:var(--brass)}
+
+/* Readout rows */
+.readout{margin-top:8px;border-top:1px solid var(--hairline-soft);display:grid}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:5px 0;border-bottom:1px solid var(--hairline-soft)}
+.row dt{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--parchment-dim)}
+.row dd{margin:0;font-family:var(--font-mono);font-size:11.5px;font-variant-numeric:tabular-nums;text-align:right;color:var(--parchment)}
+.row dd small{font-size:9px;color:var(--brass-dim)}
+
+/* Panel Trái: Phân tích điểm */
+#left-slab{top:calc(110px + env(safe-area-inset-top,0px));left:22px;width:286px;max-height:calc(100vh - 200px);overflow-y:auto;display:none}
+#left-slab canvas{display:block;width:100%;margin:6px 0 4px;border:1px solid var(--hairline-soft);background:rgba(4,6,14,.7);border-radius:2px}
+.zenith-box{margin:8px 0 4px;padding:6px 9px;background:rgba(232,200,122,.07);border:1px solid var(--hairline-soft);border-radius:2px;font-size:10.5px;line-height:1.5;color:var(--brass)}
+
+/* Panel Phải: Bài học & Thí nghiệm */
+#right-slab{top:calc(50px + env(safe-area-inset-top,0px));right:22px;width:310px;max-height:calc(100vh - 140px);overflow-y:auto}
+#right-slab.collapsed{transform:translateX(calc(100% + 30px));opacity:0;pointer-events:none}
+#right-tab{position:fixed;top:calc(50px + env(safe-area-inset-top,0px));right:0;z-index:16;writing-mode:vertical-rl;background:rgba(7,10,22,.86);border:1px solid var(--hairline);border-right:0;color:var(--brass);font-family:var(--font-mono);font-size:10.5px;font-weight:500;padding:12px 6px;border-radius:4px 0 0 4px;cursor:pointer;letter-spacing:.08em;transition:.18s;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#right-tab:hover{background:rgba(232,200,122,.2);color:var(--parchment)}
+
+/* Tab Bar */
+.seg-tab{display:flex;border:1px solid var(--hairline-soft);margin-bottom:8px}
+.seg-tab button{appearance:none;background:none;border:0;border-right:1px solid var(--hairline-soft);color:var(--parchment-dim);font-family:var(--font-ui);font-size:9.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:6px 8px;cursor:pointer;flex:1;text-align:center;transition:.18s}
+.seg-tab button:last-child{border-right:0}
+.seg-tab button:hover{color:var(--parchment)}
+.seg-tab button.active{color:var(--ink);background:var(--brass)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* Accordion */
+details.accord{border-bottom:1px solid var(--hairline-soft);padding:0}
+details.accord summary{padding:7px 0;font-size:11px;font-weight:500;color:var(--parchment);cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px}
+details.accord summary::before{content:'▸';color:var(--brass-dim);font-size:9.5px;transition:transform .2s}
+details.accord[open] summary::before{transform:rotate(90deg);color:var(--brass)}
+details.accord p{font-size:10.5px;color:var(--parchment-dim);line-height:1.6;padding:0 0 7px}
+details.accord p b{color:var(--brass);font-weight:500}
+
+#right-slab canvas{display:block;width:100%;margin:6px 0;border:1px solid var(--hairline-soft);background:rgba(4,6,14,.7);border-radius:2px}
+
+/* ═══ 6. CONSOLE ĐIỀU KHIỂN DƯỚI ĐÁY ═══ */
+.console{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:0 14px calc(6px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
+.console>*{pointer-events:auto}
+
+.controls-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;padding:5px 12px;background:rgba(7,10,22,.86);border:1px solid var(--hairline-soft);border-radius:4px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font-size:10.5px}
+
+.cg{display:flex;align-items:center;gap:5px}
+.cl{color:var(--parchment-dim);font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)}
+.cv{color:var(--brass);font-family:var(--font-mono);font-size:10px;min-width:32px;text-align:right}
+
+/* Switch & Slider đồng bộ */
+.sw{position:relative;width:30px;height:16px;flex-shrink:0}
+.sw input{opacity:0;width:0;height:0;position:absolute}
+.sw b{position:absolute;inset:0;background:rgba(232,200,122,.12);border-radius:8px;cursor:pointer;border:1px solid var(--hairline-soft);transition:.2s}
+.sw b::after{content:'';position:absolute;width:12px;height:12px;left:1px;top:1px;background:var(--brass-dim);border-radius:50%;transition:.2s}
+.sw input:checked+b{background:var(--brass);border-color:var(--brass)}
+.sw input:checked+b::after{transform:translateX(14px);background:var(--ink)}
+
+input[type=range]{-webkit-appearance:none;appearance:none;width:65px;height:3px;background:var(--hairline-soft);border-radius:2px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;background:var(--brass);border-radius:50%;cursor:pointer;box-shadow:0 0 6px rgba(232,200,122,.4)}
+#timeline{width:120px}
+
+/* Nút bấm ghost & solid */
+.ghost{appearance:none;font-family:var(--font-ui);font-size:9.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;cursor:pointer;transition:.16s;border:1px solid var(--hairline-soft);background:none;color:var(--brass);border-radius:3px}
+.ghost:hover{background:rgba(232,200,122,.12);border-color:var(--hairline)}
+.ghost.on{background:var(--brass);color:var(--ink);border-color:var(--brass)}
+.ghost-season{color:var(--parchment);border-color:var(--hairline-soft)}
+.ghost-season:hover{border-color:var(--brass);color:var(--brass)}
+.sep{width:1px;height:16px;background:var(--hairline-soft);margin:0 2px}
+
+/* ═══ 7. SITE FOOTER ĐỒNG BỘ ═══ */
+.site-footer{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:3px 12px;background:rgba(7,10,22,.86);border:1px solid var(--hairline-soft);border-radius:3px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font-size:10px;color:var(--parchment-dim)}
+.footer-left{display:flex;align-items:center;gap:5px}
+.footer-logo{width:16px;height:16px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(232,200,122,.3))}
+.footer-title{font-weight:500;color:var(--parchment);letter-spacing:.02em}
+.footer-phone{color:var(--brass);font-family:var(--font-mono);text-decoration:none;font-weight:500;transition:.16s}
+.footer-phone:hover{text-decoration:underline}
+.footer-zalo{display:inline-block;padding:1px 5px;background:rgba(0,136,255,.2);color:#64B5F6;border:1px solid rgba(100,181,246,.3);border-radius:3px;font-size:9px;text-decoration:none;font-weight:500}
+.footer-zalo:hover{background:rgba(0,136,255,.35);color:#fff}
+
+/* ═══ 8. MODAL PHÒNG THÍ NGHIỆM ═══ */
+#lab-modal{position:fixed;inset:0;z-index:100;background:rgba(4,6,14,.88);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:16px}
+#lab-modal.show{display:flex}
+.modal-box{background:rgba(8,11,22,.96);border:1px solid var(--hairline);border-radius:6px;max-width:640px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.7);padding:20px 22px}
+.modal-head{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--hairline-soft);padding-bottom:10px;margin-bottom:14px}
+.modal-head h2{font-family:var(--font-display);font-size:24px;font-weight:600;color:var(--parchment);margin:0}
+.lab-card{background:rgba(232,200,122,.04);border:1px solid var(--hairline-soft);border-radius:4px;padding:11px 13px;margin-bottom:12px}
+.lab-card h4{font-family:var(--font-ui);font-size:11.5px;font-weight:600;color:var(--brass);margin-bottom:4px}
+.lab-card p{font-size:10.5px;color:var(--parchment-dim);line-height:1.6}
+.lab-interactive{margin-top:8px;background:rgba(4,6,14,.6);border:1px solid var(--hairline-soft);border-radius:3px;padding:8px 10px}
+
+/* ═══ 9. 3D LABELS ═══ */
+.l3{color:var(--parchment);font-family:var(--font-ui);font-size:9.5px;text-shadow:0 1px 4px rgba(0,0,0,.95),0 0 2px #000;pointer-events:none;white-space:nowrap;user-select:none;font-weight:500}
+.l3-sun{color:var(--brass);font-family:var(--font-display);font-size:16px;font-weight:700}
+.l3-ssn{color:var(--parchment);font-size:12px;font-weight:600;text-shadow:0 0 10px rgba(232,200,122,.4)}
+.l3-city{color:#64B5F6;font-size:9px;font-weight:500}
+.l3-time{color:var(--brass);font-family:var(--font-mono);font-size:9.5px;font-weight:500}
+.l3-sub{color:#ff6644;font-size:9px;font-weight:600}
+.l3-lat{font-size:8px;font-family:var(--font-mono);letter-spacing:.02em}
+.l3-lat.eq{color:#00ccee}
+.l3-lat.tropic{color:var(--brass)}
+.l3-lat.arctic{color:#8899aa}
+
+/* ═══ 10. LOADING ═══ */
+#loading{position:fixed;inset:0;z-index:999;background:var(--void);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;transition:opacity .5s}
+#loading.done{opacity:0;pointer-events:none}
+.ld-ring{width:40px;height:40px;border:2px solid var(--hairline-soft);border-top-color:var(--brass);border-radius:50%;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:768px){
+  .masthead{padding:12px 14px 0}
+  .wordmark{font-size:20px}
+  #left-slab{width:240px;left:10px}
+  #right-slab{width:250px;right:10px}
+  #timeline{width:70px}
+  .controls-bar{gap:4px 6px;padding:4px 8px}
+  #telemetry{font-size:9.5px;gap:5px;padding:3px 8px}
+@media(prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOADING ═══ -->
+<div id="loading">
+  <div class="ld-ring"></div>
+  <p style="font-family:var(--font-mono);font-size:11px;color:var(--parchment-dim)">Đang nạp mô hình Trái Đất 3D…</p>
+</div>
+
+<!-- ═══ DẢI ĐO LƯỜNG THIÊN VĂN (TELEMETRY STRIP) ═══ -->
+<div id="telemetry">
+  <div class="ti"><span class="ti-l">Thời gian</span><span class="ti-v" id="t-date">20/09</span></div><span class="ti-sep">·</span>
+  <div class="ti"><span class="ti-l">Mùa</span><span class="ti-pill" id="t-season">🍂 Thu</span></div><span class="ti-sep">·</span>
+  <div class="ti"><span class="ti-l">Xích vĩ trực xạ δ</span><span class="ti-v" id="t-decl">+0.0°</span></div><span class="ti-sep">·</span>
+  <div class="ti"><span class="ti-l">Khoảng cách</span><span class="ti-v" id="t-dist">150.0 tr km</span></div><span class="ti-sep">·</span>
+  <div class="ti"><span class="ti-l">Vận tốc quỹ đạo</span><span class="ti-v" id="t-spd">29.8 km/s</span></div><span class="ti-sep">·</span>
+  <div class="ti"><span class="ti-l">Phương trình thời gian</span><span class="ti-v" id="t-eot">+0.0 ph</span></div><span class="ti-sep">·</span>
+  <div class="ti"><span class="ti-pill" title="Độ lệch tâm quỹ đạo Trái Đất chỉ khoảng e ≈ 0.0167 nên hình dạng ở tỉ lệ toàn cảnh gần như đường tròn. Số liệu khoảng cách và vận tốc được tính riêng từ mô hình quỹ đạo elip.">Quỹ đạo: Tỉ lệ trực quan (e ≈ 0.0167)</span></div>
+</div>
+
+<!-- ═══ MASTHEAD THƯƠNG HIỆU N&MSTUDIO ═══ -->
+<div class="masthead">
+  <div class="eyebrow">N&Mstudio · Chuyên Đề Thiên Văn</div>
+  <h1 class="wordmark">Trái Đất <em>& 4 Mùa</em></h1>
+  <div class="rule"></div>
+  
+  <div class="mast-actions">
+    <!-- Nút trở về Đài Quan Sát Tổng Thể (index.html) -->
+    <a href="index.html" class="brand-link" title="Mở Đài Quan Sát Hệ Mặt Trời">
+      <span>🌌</span> Tinh Đồ Thái Dương
+    </a>
+    <a href="Dia Hinh The Gioi 3D/index.html" class="brand-link" title="Mở Chuyên Đề Địa Hình Thế Giới 3D">
+      <span>🌍</span> Địa Hình 3D
+    </a>
+    
+    <!-- Chọn nhanh thành phố / Vĩ độ -->
+    <select class="mast-select" id="sel-loc" onchange="onLocationSelect(this.value)">
+      <option value="">📍 Vị trí khảo sát...</option>
+      <optgroup label="🇻🇳 Việt Nam (Nội chí tuyến)">
+        <option value="21.03,105.85">🏛️ Hà Nội (21.03°B)</option>
+        <option value="16.05,108.20">🌉 Đà Nẵng (16.05°B)</option>
+        <option value="10.82,106.63">🏙️ TP. Hồ Chí Minh (10.82°B)</option>
+      </optgroup>
+      <optgroup label="🌐 Vĩ độ địa lý đặc biệt">
+        <option value="0,105.0">⭕ Xích đạo (0°)</option>
+        <option value="23.44,105.0">☀️ Chí tuyến Bắc (23.44°B)</option>
+        <option value="-23.44,105.0">🌙 Chí tuyến Nam (23.44°N)</option>
+        <option value="66.56,105.0">❄️ Vòng cực Bắc (66.56°B)</option>
+        <option value="90,0">🧭 Cực Bắc (90°B)</option>
+      </optgroup>
+    </select>
+
+    <!-- Chọn góc nhìn camera -->
+    <select class="mast-select" id="sel-cam" onchange="onCamPreset(this.value)">
+      <option value="earth">🛰️ Cận cảnh Trái Đất</option>
+      <option value="orbit">🌌 Toàn cảnh Quỹ đạo</option>
+      <option value="sun">☀️ Nhìn từ Mặt Trời</option>
+      <option value="pole">🧭 Nhìn từ Cực Bắc</option>
+    </select>
+
+    <!-- Nút mở Phòng Thí Nghiệm -->
+    <button class="brand-link" onclick="toggleModal('lab-modal')">
+      <span>🧪</span> Thí Nghiệm
+    </button>
+  </div>
+</div>
+
+<!-- ═══ SLAB TRÁI: PHÂN TÍCH ĐỊA ĐIỂM (POINT ANALYSIS) ═══ -->
+<div id="left-slab" class="slab">
+  <div class="slab-top">
+    <div class="glyph" style="color:var(--brass)"></div>
+    <div class="slab-kind">Khảo Sát Địa Điểm</div>
+    <button class="slab-close" onclick="$('left-slab').style.display='none';selMarker.visible=false">✕</button>
+  </div>
+  <h3 class="slab-name" id="p-title">Tọa Độ Mặt Đất</h3>
+
+  <dl class="readout">
+    <div class="row"><dt>Tọa độ</dt><dd id="p-coord">—</dd></div>
+    <div class="row"><dt>Đới khí hậu</dt><dd id="p-zone">—</dd></div>
+    <div class="row"><dt>Giờ mặt trời (LST)</dt><dd id="p-lst">—</dd></div>
+    <div class="row"><dt>Góc trưa cực đại</dt><dd id="p-alt">—</dd></div>
+    <div class="row"><dt>Mặt trời mọc</dt><dd id="p-rise">—</dd></div>
+    <div class="row"><dt>Mặt trời lặn</dt><dd id="p-set">—</dd></div>
+    <div class="row"><dt>Độ dài ngày</dt><dd id="p-daylen">—</dd></div>
+    <div class="row"><dt>Tỷ lệ bóng cọc</dt><dd id="p-shadow">—</dd></div>
+    <div class="row"><dt>Quang thông trưa</dt><dd id="p-flux">—</dd></div>
+  </dl>
+
+  <div id="p-zenith-box" class="zenith-box" style="display:none"></div>
+  <div style="font-size:10px;color:var(--parchment-dim);margin:6px 0 2px" id="p-trend"></div>
+
+  <div style="font-size:9px;color:var(--brass-dim);text-transform:uppercase;letter-spacing:.08em;margin-top:6px">Biến thiên độ dài ngày cả năm</div>
+  <canvas id="ch-dl" width="250" height="100"></canvas>
+
+  <div style="font-size:9px;color:var(--brass-dim);text-transform:uppercase;letter-spacing:.08em;margin-top:4px">Vòm trời: Quỹ đạo biểu kiến Mặt Trời hôm nay</div>
+  <canvas id="ch-horizon" width="250" height="95"></canvas>
+</div>
+
+<!-- ═══ RIGHT TAB & SLAB (BÀI HỌC & DỮ LIỆU) ═══ -->
+<div id="right-tab" onclick="toggleRight()">Sổ Tay Thiên Văn ▴</div>
+
+<div id="right-slab" class="slab collapsed">
+  <div class="slab-top">
+    <div class="glyph" style="color:var(--brass)"></div>
+    <div class="slab-kind">Sổ Tay Tri Thức</div>
+    <button class="slab-close" onclick="toggleRight()">✕</button>
+  </div>
+  <h3 class="slab-name" style="font-size:20px;margin-bottom:8px">Hệ Thống Trái Đất</h3>
+
+  <div class="seg-tab">
+    <button class="active" onclick="switchTab('teach',this)">Bài học</button>
+    <button onclick="switchTab('season',this)">4 Mùa</button>
+    <button onclick="switchTab('chart',this)">Biểu đồ</button>
+  </div>
+
+  <!-- Tab 1: Bài học -->
+  <div class="tab-content active" id="tc-teach">
+    <details class="accord" open>
+      <summary>🔄 1. Tự quay quanh trục & Chu kỳ ngày đêm</summary>
+      <p>Trái Đất tự quay từ <b>Tây sang Đông</b> với chu kỳ <b>23 giờ 56 phút 04 giây</b> (ngày sao). Do hình cầu, tại mỗi thời điểm chỉ có 1 nửa được chiếu sáng (bán cầu ngày) và 1 nửa chìm trong bóng tối (bán cầu đêm). Đường ranh giới này gọi là <b>đường phân chia ngày đêm (terminator)</b>.</p>
+    </details>
+    <details class="accord">
+      <summary>📐 2. Trục nghiêng 23,44° & Ý nghĩa sống còn</summary>
+      <p>Trục Trái Đất nghiêng <b>23°26' (23,44°)</b> so với pháp tuyến mặt phẳng hoàng đạo và phương nghiêng không đổi trong suốt quá trình công chuyển (hướng về phía sao Bắc Cực - Polaris). Đây là nguyên nhân duy nhất sinh ra <b>4 mùa</b> và sự dài ngắn khác nhau của ngày đêm theo vĩ độ.</p>
+    </details>
+    <details class="accord">
+      <summary>☀️ 3. Mặt Trời lên thiên đỉnh tại Việt Nam</summary>
+      <p>Việt Nam nằm hoàn toàn trong vùng <b>Nội chí tuyến Bắc</b> (từ ~8°34'B đến 23°23'B). Do đó, mỗi năm mọi địa điểm tại Việt Nam đều có <b>2 lần Mặt Trời đi qua thiên đỉnh</b> (buổi trưa Mặt Trời chiếu vuông góc 90°, cọc cắm thẳng đứng không có bóng):<br>
+      • <b>TP. Hồ Chí Minh</b> (10.8°B): ~16/4 và ~26/8<br>
+      • <b>Đà Nẵng</b> (16.0°B): ~11/5 và ~1/8<br>
+      • <b>Hà Nội</b> (21.0°B): ~25/5 và ~18/7</p>
+    </details>
+    <details class="accord">
+      <summary>🌪️ 4. Lực Coriolis & Chuyển động lệch hướng</summary>
+      <p>Do Trái Đất tự quay, mọi vật thể chuyển động trên bề mặt đều chịu tác dụng của <b>lực quán tính Coriolis</b>:<br>
+      • <b>Bắc bán cầu</b>: Bị lệch về <b>bên phải</b> theo hướng chuyển động.<br>
+      • <b>Nam bán cầu</b>: Bị lệch về <b>bên trái</b>.<br>
+      Hệ quả: Các dòng sông ở Bắc bán cầu thường xói lở bờ phải; các xoáy bão ở Bắc bán cầu quay ngược chiều kim đồng hồ.</p>
+    </details>
+    <details class="accord">
+      <summary>📏 5. Chống hiểu lầm: Khoảng cách vs Các mùa</summary>
+      <p><b>Sai lầm phổ biến</b>: Cho rằng mùa hè do Trái Đất ở gần Mặt Trời hơn.<br>
+      <b>Sự thật thiên văn</b>: Điểm cận nhật (gần nhất, 147.1 triệu km) rơi vào khoảng ngày <b>3/1</b> — tức là đang giữa mùa Đông ở Bắc bán cầu! Khoảng cách chỉ biến thiên ~3.3% và không quyết định các mùa. Các mùa hoàn toàn do <b>góc nghiêng của trục</b> tạo nên.</p>
+    </details>
+  </div>
+
+  <!-- Tab 2: Phân tích 4 mùa -->
+  <div class="tab-content" id="tc-season"></div>
+
+  <!-- Tab 3: Biểu đồ -->
+  <div class="tab-content" id="tc-chart">
+    <div style="font-size:10px;color:var(--brass-dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Vĩ độ điểm trực xạ qua các tháng</div>
+    <canvas id="ch-ss" width="270" height="110"></canvas>
+    
+    <div style="font-size:10px;color:var(--brass-dim);text-transform:uppercase;letter-spacing:.08em;margin:8px 0 4px">Phương trình thời gian (EoT)</div>
+    <canvas id="ch-eot" width="270" height="90"></canvas>
+  </div>
+</div>
+
+<!-- ═══ MODAL PHÒNG THÍ NGHIỆM ═══ -->
+<div id="lab-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>Thí Nghiệm Tương Tác Thiên Văn</h2>
+      <button class="slab-close" onclick="toggleModal('lab-modal')">✕</button>
+    </div>
+    
+    <!-- Thí nghiệm 1: Coriolis -->
+    <div class="lab-card">
+      <h4>🌪️ 1. Mô Phỏng Trực Quan Hiệu Ứng Coriolis <span class="ti-pill">DIAGRAM · APPROXIMATION</span></h4>
+      <p>Quan sát luồng hạt / vật thể phóng từ Xích đạo lên Cực Bắc. Khi Trái Đất tự quay từ Tây sang Đông, đường đi thực tế trên mặt đất bị bẻ cong lệch sang bên phải theo định luật Ferrel.</p>
+      <p style="font-size:10.5px;color:var(--parchment-dim);margin-top:5px;border-left:2px solid var(--brass-dim);padding-left:8px;line-height:1.5"><em>Lưu ý khoa học:</em> Đây là mô hình trực quan minh họa xu hướng lệch biểu kiến trong hệ quy chiếu quay, không phải bộ giải động lực học đầy đủ của phương trình Coriolis.</p>
+      <div class="lab-interactive">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="ghost" id="btn-coriolis-fire" onclick="fireCoriolisDemo()">🚀 Phóng luồng hạt từ Xích đạo</button>
+          <button class="ghost" onclick="clearCoriolisDemo()">🧹 Xóa vết quỹ đạo</button>
+          <span id="coriolis-status" style="font-family:var(--font-mono);font-size:10.5px;color:var(--parchment-dim)">Sẵn sàng</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thí nghiệm 2: Góc chiếu & Định luật Cosine -->
+    <div class="lab-card">
+      <h4>☀️ 2. Góc Nhập Xạ & Mật Độ Năng Lượng (Định Luật Cosine)</h4>
+      <p>Cùng một chùm ánh sáng Mặt Trời tiết diện $1\text{ m}^2$, khi chiếu vuông góc (90°), năng lượng tập trung trong $1\text{ m}^2$. Khi chiếu xiên (30°), chùm sáng trải dài trên diện tích $2\text{ m}^2$, làm nhiệt lượng suy giảm 50%!</p>
+      <div class="lab-interactive">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:11px;color:var(--parchment-dim)">Góc nhập xạ α:</span>
+          <span id="insolation-angle" style="font-family:var(--font-mono);color:var(--brass);font-weight:600">60°</span>
+        </div>
+        <input type="range" min="5" max="90" value="60" style="width:100%" oninput="updateInsolationDemo(this.value)">
+        <div style="display:flex;justify-content:space-around;margin-top:8px;text-align:center">
+          <div>
+            <div style="font-size:9px;color:var(--brass-dim);text-transform:uppercase">Diện tích trải dài</div>
+            <div id="insolation-area" style="font-size:13px;font-family:var(--font-mono);color:var(--brass)">1.15 m²</div>
+          </div>
+          <div>
+            <div style="font-size:9px;color:var(--brass-dim);text-transform:uppercase">Hiệu suất nhiệt</div>
+            <div id="insolation-power" style="font-size:13px;font-family:var(--font-mono);color:#3dd68c">86.6%</div>
+          </div>
+          <div>
+            <div style="font-size:9px;color:var(--brass-dim);text-transform:uppercase">Quang thông mặt đất</div>
+            <div id="insolation-flux" style="font-size:13px;font-family:var(--font-mono);color:var(--parchment)">1,178 W/m²</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thí nghiệm 3: Tỷ lệ thực tế -->
+    <div class="lab-card">
+      <h4>📏 3. Chống Ngộ Nhận: Tỷ Lệ Thực Tế Vũ Trụ <span class="ti-pill">VISUAL SCALE</span></h4>
+      <p>Nếu thu nhỏ Trái Đất bằng quả bóng <b>4 cm</b>: Mặt Trời sẽ là quả cầu lửa <b>4.36 mét</b> và đặt cách xa tít tắp <b>470 mét</b>! Các mô hình 3D bắt buộc phải phóng to Trái Đất gấp ngàn lần để có thể quan sát được.</p>
+    </div>
+
+    <!-- Thí nghiệm 4: Nguồn khoa học & Phân loại mô hình -->
+    <div class="lab-card">
+      <h4>📚 4. Nguồn Dữ Liệu Khoa Học & Phân Loại Mô Hình</h4>
+      <ul style="font-size:11px;color:var(--parchment);line-height:1.6;margin-left:16px">
+        <li><b>Vị trí Mặt Trời, Xích vĩ & Phương trình thời gian (EoT):</b> Chuỗi Fourier Spencer (1971) — <i>Model / Educational Approximation</i>.</li>
+        <li><b>Góc giờ & Thời điểm Mọc/Lặn:</b> Thuật toán Meeus (1998) kèm hiệu chỉnh khúc xạ khí quyển chuẩn -0.833° — <i>Model</i>.</li>
+        <li><b>Hằng số & Tham số quỹ đạo:</b> NASA Planetary Fact Sheet / JPL J2000 — <i>Data</i>.</li>
+        <li><b>Bản đồ bề mặt Trái Đất:</b> NASA Earth Observatory (Blue Marble: Day, Night, Specular, Clouds) — <i>Data / WGS84</i>.</li>
+        <li><b>Chùm tia sáng & Quỹ đạo Coriolis:</b> Mô hình minh họa hình học — <i>Diagram · Not to physical scale</i>.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CONSOLE ĐIỀU KHIỂN ĐỒNG BỘ TINH ĐỒ THÁI DƯƠNG ═══ -->
+<div class="console">
+  <div class="controls-bar">
+    <!-- Tự quay -->
+    <div class="cg">
+      <span class="cl">Tự quay</span>
+      <label class="sw"><input type="checkbox" id="tog-rot" checked><b></b></label>
+      <input type="range" id="spd-rot" min="0.1" max="50" step="0.1" value="1">
+      <span class="cv" id="vr">1.0×</span>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- Công chuyển -->
+    <div class="cg">
+      <span class="cl">Công chuyển</span>
+      <label class="sw"><input type="checkbox" id="tog-rev"><b></b></label>
+      <input type="range" id="spd-rev" min="0.1" max="10" step="0.1" value="1">
+      <span class="cv" id="vv">1.0×</span>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- Lớp hiển thị -->
+    <div class="cg">
+      <button class="ghost on" id="b-term" onclick="tf('term')">Sáng/Tối</button>
+      <button class="ghost on" id="b-tmark" onclick="tf('tmark')">Thời khắc</button>
+      <button class="ghost" id="b-grid" onclick="tf('grid')">Lưới tọa độ</button>
+      <button class="ghost on" id="b-ray" onclick="tf('ray')" title="DIAGRAM · NOT TO SCALE: Các tia sáng được phóng đại để minh họa hình học chiếu sáng. Kích thước, số lượng và chiều rộng của tia không biểu diễn mật độ photon hay kích thước vật lý thực.">Tia nắng <span style="font-size:8px;opacity:.8">DIAGRAM</span></button>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- Timeline ngày trong năm -->
+    <div class="cg">
+      <span class="cl">Ngày</span>
+      <input type="range" id="timeline" min="0" max="365" step="0.5" value="263">
+      <span class="cv" id="vd">20/09</span>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- 4 Mùa đặc biệt -->
+    <div class="cg">
+      <button class="ghost ghost-season" onclick="goS(79)">🌸 Xuân phân</button>
+      <button class="ghost ghost-season" onclick="goS(172)">☀️ Hạ chí</button>
+      <button class="ghost ghost-season" onclick="goS(266)">🍂 Thu phân</button>
+      <button class="ghost ghost-season" onclick="goS(356)">❄️ Đông chí</button>
+    </div>
+  </div>
+
+  <!-- Site Footer đồng bộ Tinh Đồ Thái Dương -->
+  <footer class="site-footer">
+    <div class="footer-left">
+      <img src="logo/logo.png" alt="N&Mstudio Logo" class="footer-logo" onerror="this.style.display='none'">
+      <span class="footer-title">N&Mstudio · Tinh Đồ Thái Dương Seri</span>
+    </div>
+    <span class="footer-sep">|</span>
+    <div class="footer-center">
+      <span>Hotline/Zalo:</span>
+      <a href="tel:+84985578385" class="footer-phone">+84 985578385</a>
+      <a href="https://zalo.me/0985578385" target="_blank" rel="noopener" class="footer-zalo">Zalo</a>
+    </div>
+    <span class="footer-sep">|</span>
+    <div class="footer-right">© N&Mstudio. Đồ họa WebGL 3D & Thiên văn học</div>
+  </footer>
+</div>
+
+<!-- ═══ THREE.JS MODULES & THIÊN VĂN HỌC ═══ -->
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"}}
+</script>
+<script type="module">
+import*as THREE from'three';
+import{OrbitControls}from'three/addons/controls/OrbitControls.js';
+import{CSS2DRenderer,CSS2DObject}from'three/addons/renderers/CSS2DRenderer.js';
+
+/* ══════════════════════════════════════════════════
+   1. CẤU HÌNH VẬT LÝ & THIÊN VĂN HỌC (J2000 / NASA)
+   ══════════════════════════════════════════════════ */
+const CFG={
+  earthR:2.5,sunR:4,orbitR:32,
+  rotPeriod:10,   // giây / vòng tự quay ở 1x
+  revPeriod:120,  // giây / vòng công chuyển ở 1x
+  texDay:'https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg',
+  texNight:'https://unpkg.com/three-globe/example/img/earth-night.jpg',
+  texCloud:'https://unpkg.com/three-globe/example/img/earth-clouds.png',
+  cities:[
+    {n:'🏛️ Hà Nội',lat:21.03,lon:105.85},
+    {n:'🌉 Đà Nẵng',lat:16.05,lon:108.20},
+    {n:'🏙️ TP. HCM',lat:10.82,lon:106.63},
+  ]
+};
+const PHYS={
+  AU_KM:149597870.7,
+  tilt:23.43928,       // Độ nghiêng trục Trái Đất (J2000)
+  ecc:0.0167086,
+  solarConstant:1361,  // W/m²
+  avgOrbV:29.78        // km/s
+};
+const DEG=Math.PI/180,RAD=180/Math.PI;
+
+/* ══════════════════════════════════════════════════
+   2. MÔ HÌNH THIÊN VĂN HỌC (Spencer 1971 / Meeus - Xấp xỉ phục vụ giáo dục)
+   ══════════════════════════════════════════════════ */
+function gamma(d){return 2*Math.PI*(d-1)/365;}
+function solarDecl(d){
+  const g=gamma(d);
+  return 0.006918 - 0.399912*Math.cos(g) + 0.070257*Math.sin(g)
+       - 0.006758*Math.cos(2*g) + 0.000907*Math.sin(2*g)
+       - 0.002697*Math.cos(3*g) + 0.00148*Math.sin(3*g);
+}
+function eot(d){
+  const g=gamma(d);
+  return 229.18*(0.000075 + 0.001868*Math.cos(g) - 0.032077*Math.sin(g)
+               - 0.014615*Math.cos(2*g) - 0.04089*Math.sin(2*g));
+}
+function eSunDist(d){
+  const g=gamma(d);
+  return 1.00014 - 0.01671*Math.cos(g) - 0.00014*Math.cos(2*g);
+}
+function orbSpeed(d){
+  const r=eSunDist(d);
+  return PHYS.avgOrbV*Math.sqrt(Math.max(0,2/r-1));
+}
+function sunriseHA(lat,decl){
+  const ref=-0.833*DEG;
+  const c=(Math.sin(ref)-Math.sin(lat*DEG)*Math.sin(decl))/(Math.cos(lat*DEG)*Math.cos(decl));
+  if(c<-1)return Math.PI;
+  if(c>1)return 0;
+  return Math.acos(c);
+}
+function dayLen(lat,d){return 2*sunriseHA(lat,solarDecl(d))*RAD/15;}
+function sunriseLST(lat,d){const ha=sunriseHA(lat,solarDecl(d));return 12-eot(d)/60-ha*RAD/15;}
+function sunsetLST(lat,d){const ha=sunriseHA(lat,solarDecl(d));return 12-eot(d)/60+ha*RAD/15;}
+function noonAlt(lat,declRad){return 90-Math.abs(lat-declRad*RAD);}
+function shadowR(alt){return alt<=0?Infinity:1/Math.tan(alt*DEG);}
+function sunriseAz(lat,decl){
+  const c=Math.sin(decl)/Math.cos(lat*DEG);
+  return Math.acos(Math.max(-1,Math.min(1,c)))*RAD;
+}
+function azStr(az){const d=['Bắc','Đông-Bắc','Đông','Đông-Nam','Nam','Tây-Nam','Tây','Tây-Bắc'];return d[Math.round(az/45)%8];}
+function hrStr(h){
+  h=((h%24)+24)%24;
+  const hh=Math.floor(h),mm=Math.floor((h-hh)*60);
+  return`${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+}
+const MD=[31,29,31,30,31,30,31,31,30,31,30,31];
+function doyStr(d){
+  let v=Math.floor(((d%365.25)+365.25)%365.25);
+  for(let m=0;m<12;m++){if(v<MD[m])return`${String(v+1).padStart(2,'0')}/${String(m+1).padStart(2,'0')}`;v-=MD[m];}
+  return'31/12';
+}
+function seasonInfo(d){
+  d=((d%365.25)+365.25)%365.25;
+  if(d>=79&&d<172)return{name:'Xuân',icon:'🌸'};
+  if(d>=172&&d<266)return{name:'Hạ',icon:'☀️'};
+  if(d>=266&&d<356)return{name:'Thu',icon:'🍂'};
+  return{name:'Đông',icon:'❄️'};
+}
+function latLonXYZ(lat,lon,R){
+  const p=(lon+180)*DEG,t=(90-lat)*DEG;
+  return new THREE.Vector3(-R*Math.cos(p)*Math.sin(t),R*Math.cos(t),R*Math.sin(p)*Math.sin(t));
+}
+
+/* ══════════════════════════════════════════════════
+   3. TRẠNG THÁI HỆ THỐNG
+   ══════════════════════════════════════════════════ */
+const S={
+  doy:263,eRot:Math.PI,rotOn:true,rotSpd:1,revOn:false,revSpd:1,
+  term:true,tmark:true,grid:false,ray:true,
+  selLat:null,selLon:null
+};
+let camTgt=null,ctrlTgt=null;
+
+/* ══════════════════════════════════════════════════
+   4. THIẾT LẬP THREE.JS & CSS2D RENDERER
+   ══════════════════════════════════════════════════ */
+const rdr=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
+rdr.setPixelRatio(Math.min(devicePixelRatio,2));
+rdr.setSize(innerWidth,innerHeight);
+rdr.domElement.id='c';
+document.body.prepend(rdr.domElement);
+
+const lRdr=new CSS2DRenderer();
+lRdr.setSize(innerWidth,innerHeight);
+lRdr.domElement.className='labels';
+document.body.appendChild(lRdr.domElement);
+
+const sc=new THREE.Scene();
+sc.background=new THREE.Color(0x070A16); // Đồng bộ --void
+
+const cam=new THREE.PerspectiveCamera(46,innerWidth/innerHeight,0.1,2000);
+cam.position.set(0,18,52);
+
+const ctl=new OrbitControls(cam,rdr.domElement);
+ctl.enableDamping=true;
+ctl.dampingFactor=0.07;
+ctl.minDistance=4.5;
+ctl.maxDistance=220;
+sc.add(new THREE.AmbientLight(0x181c2c,0.14));
+
+/* ══════════════════════════════════════════════════
+   5. BẦU TRỜI SAO VŨ TRỤ
+   ══════════════════════════════════════════════════ */
+{
+  const N=3000,p=new Float32Array(N*3);
+  for(let i=0;i<N;i++){
+    const r=350+Math.random()*250,t=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);
+    p[i*3]=r*Math.sin(ph)*Math.cos(t);p[i*3+1]=r*Math.sin(ph)*Math.sin(t);p[i*3+2]=r*Math.cos(ph);
+  }
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.BufferAttribute(p,3));
+  sc.add(new THREE.Points(g,new THREE.PointsMaterial({color:0xE8C87A,size:.48,sizeAttenuation:true,transparent:true,opacity:0.85})));
+}
+
+/* ══════════════════════════════════════════════════
+   6. MẶT TRỜI & PHÁT QUANG
+   ══════════════════════════════════════════════════ */
+const sunG=new THREE.Group();sc.add(sunG);
+sunG.add(new THREE.Mesh(new THREE.SphereGeometry(CFG.sunR,32,24),new THREE.MeshBasicMaterial({color:0xE8C87A})));
+
+const gc=document.createElement('canvas');gc.width=gc.height=256;
+const gx=gc.getContext('2d'),gr=gx.createRadialGradient(128,128,0,128,128,128);
+gr.addColorStop(0,'rgba(255,245,210,1)');gr.addColorStop(.15,'rgba(232,200,122,.55)');
+gr.addColorStop(.4,'rgba(232,160,70,.12)');gr.addColorStop(1,'rgba(232,160,70,0)');
+gx.fillStyle=gr;gx.fillRect(0,0,256,256);
+
+const gSprite=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(gc),blending:THREE.AdditiveBlending,transparent:true,depthWrite:false}));
+gSprite.scale.set(24,24,1);sunG.add(gSprite);
+sunG.add(new THREE.PointLight(0xfff5dd,2.2,200));
+
+const slD=document.createElement('div');slD.className='l3 l3-sun';slD.textContent='Mặt Trời';
+const slL=new CSS2DObject(slD);slL.position.set(0,CFG.sunR+2.2,0);sunG.add(slL);
+
+/* ══════════════════════════════════════════════════
+   7. QUỸ ĐẠO ELIP & 4 ĐIỂM MÙA
+   ══════════════════════════════════════════════════ */
+const orbPts=[];
+for(let i=0;i<=360;i++){const a=i*DEG;orbPts.push(new THREE.Vector3(CFG.orbitR*Math.cos(a),0,CFG.orbitR*Math.sin(a)));}
+sc.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(orbPts),new THREE.LineBasicMaterial({color:0x8B7642,transparent:true,opacity:.3})));
+
+const SEASONS=[
+  {doy:79,l:'Xuân phân',e:'🌸',date:'~20/03',clr:0x44dd88},
+  {doy:172,l:'Hạ chí',e:'☀️',date:'~21/06',clr:0xE8C87A},
+  {doy:266,l:'Thu phân',e:'🍂',date:'~23/09',clr:0xff8844},
+  {doy:356,l:'Đông chí',e:'❄️',date:'~22/12',clr:0x66bbff},
+];
+SEASONS.forEach(s=>{
+  const a=(s.doy-79)/365.25*2*Math.PI,x=CFG.orbitR*Math.cos(a),z=CFG.orbitR*Math.sin(a);
+  sc.add(new THREE.Mesh(new THREE.SphereGeometry(.4,10,8),new THREE.MeshBasicMaterial({color:s.clr})).translateX(x).translateZ(z));
+  const d=document.createElement('div');d.className='l3 l3-ssn';d.textContent=`${s.e} ${s.l}`;
+  const lb=new CSS2DObject(d);lb.position.set(x,3,z);sc.add(lb);
+});
+
+/* ══════════════════════════════════════════════════
+   8. HỆ TRỤC TRÁI ĐẤT
+   ══════════════════════════════════════════════════ */
+const eG=new THREE.Group();
+const eAxis=new THREE.Group();
+const eSpin=new THREE.Group();
+eAxis.rotation.x=-PHYS.tilt*DEG;
+eAxis.add(eSpin);eG.add(eAxis);sc.add(eG);
+
+/* ══════════════════════════════════════════════════
+   9. EARTH SHADER (Đồng bộ chuẩn Tinh Đồ Thái Dương: Day, Night, Specular & Clouds)
+   ══════════════════════════════════════════════════ */
+const EU={
+  uAlb:{value:null},
+  uNight:{value:null},
+  uSpec:{value:null},
+  uCloud:{value:null},
+  hasNight:{value:false},
+  hasSpec:{value:false},
+  hasCloud:{value:false},
+  sunDir:{value:new THREE.Vector3(1,0,0)}
+};
+
+const eMat=new THREE.ShaderMaterial({
+  uniforms:EU,
+  vertexShader:`
+    varying vec3 vWN;
+    varying vec3 vWP;
+    varying vec2 vUv;
+    void main(){
+      vWN=normalize(mat3(modelMatrix)*normal);
+      vWP=(modelMatrix*vec4(position,1.0)).xyz;
+      vUv=uv;
+      gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);
+    }`,
+  fragmentShader:`
+    uniform sampler2D uAlb;
+    uniform sampler2D uNight;
+    uniform sampler2D uSpec;
+    uniform sampler2D uCloud;
+    uniform bool hasNight;
+    uniform bool hasSpec;
+    uniform bool hasCloud;
+    uniform vec3 sunDir;
+    varying vec3 vWN;
+    varying vec3 vWP;
+    varying vec2 vUv;
+
+    void main(){
+      vec3 N=normalize(vWN);
+      vec3 V=normalize(cameraPosition-vWP);
+      vec3 Ldir=sunDir;
+
+      vec4 albTex=texture2D(uAlb, vUv);
+      vec3 alb=albTex.rgb;
+      float nl=dot(N, Ldir);
+
+      // Độ khuếch tán ánh sáng và làm dịu ranh giới ngày đêm (Terminator Diffusion)
+      float diff=max(nl, 0.0) + pow(max(0.0, 1.0 - abs(nl)), 3.0) * 0.025;
+      vec3 sunCol=vec3(1.0, 0.98, 0.94);
+      vec3 lit=alb * diff * sunCol * 1.4;
+
+      // Phản chiếu ánh sáng mặt trời trên đại dương (từ Specular Map của Tinh Đồ Thái Dương)
+      if(hasSpec){
+        float sp=texture2D(uSpec, vUv).r;
+        if(sp > 0.02){
+          vec3 H=normalize(Ldir + V);
+          float s=pow(max(dot(N, H), 0.0), 110.0);
+          lit += sunCol * s * sp * 0.85 * step(0.0, nl);
+        }
+      }
+
+      // Lớp mây bề mặt (từ Cloud Map của Tinh Đồ Thái Dương)
+      float cl=0.0;
+      if(hasCloud){
+        cl=smoothstep(0.04, 0.70, texture2D(uCloud, vUv).r) * 0.82;
+        vec3 cloudLit=vec3(0.98, 0.98, 1.0) * (diff * 1.1 + 0.02);
+        lit=mix(lit, cloudLit, cl);
+      }
+
+      // Đèn đêm thành phố rực rỡ màu vàng kim ấm áp (từ Night Map của Tinh Đồ Thái Dương)
+      if(hasNight){
+        float night=smoothstep(0.06, -0.16, nl);
+        vec3 nightColor=texture2D(uNight, vUv).rgb;
+        vec3 cityLights=vec3(1.0, 0.76, 0.38) * nightColor * 3.8 * (1.0 - cl * 0.82);
+        lit += cityLights * night;
+      }
+
+      // Hào quang tán xạ khí quyển ở rìa Trái Đất (Atmospheric Horizon Rim)
+      float fres=pow(1.0 - max(dot(N, V), 0.0), 3.2);
+      float fwd=pow(max(dot(V, -Ldir), 0.0), 3.0);
+      vec3 uAtmo=vec3(0.28, 0.55, 1.0);
+      lit += uAtmo * fres * (diff * 0.9 + fwd * 1.4) * 0.75;
+
+      // Ánh sáng đêm vũ trụ giúp lục địa ban đêm không bị tối mịt
+      float nightDark=smoothstep(0.08, -0.15, nl);
+      lit += (alb * 0.10 + vec3(0.008, 0.016, 0.038)) * nightDark;
+
+      // Cân chỉnh độ bão hòa màu sống động (Vibrance boost từ Tinh Đồ Thái Dương)
+      float g=dot(lit, vec3(0.299, 0.587, 0.114));
+      lit=mix(vec3(g), lit, 1.18);
+
+      gl_FragColor=vec4(lit, 1.0);
+    }`,
+});
+const eMesh=new THREE.Mesh(new THREE.SphereGeometry(CFG.earthR,72,54),eMat);
+eSpin.add(eMesh);
+
+/* ══════════════════════════════════════════════════
+   10. BẦU KHÍ QUYỂN PHÁT QUANG (Radiant Atmosphere Glow)
+   ══════════════════════════════════════════════════ */
+const atU={sunDir:{value:EU.sunDir.value}};
+const atMat=new THREE.ShaderMaterial({
+  uniforms:atU,
+  transparent:true,
+  depthWrite:false,
+  blending:THREE.AdditiveBlending,
+  side:THREE.BackSide,
+  vertexShader:`
+    varying vec3 vWN;
+    varying vec3 vWP;
+    void main(){
+      vWN=normalize(mat3(modelMatrix)*normal);
+      vWP=(modelMatrix*vec4(position,1.0)).xyz;
+      gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);
+    }`,
+  fragmentShader:`
+    uniform vec3 sunDir;
+    varying vec3 vWN;
+    varying vec3 vWP;
+    void main(){
+      vec3 N=normalize(vWN);
+      vec3 V=normalize(cameraPosition-vWP);
+      vec3 Ldir=sunDir;
+      float mu=max(dot(N, V), 0.0);
+      float limb=pow(1.0 - mu, 2.2);
+      float nl=dot(N, Ldir);
+      float lightAmt=clamp((nl + 0.22) / 0.5, 0.0, 1.0);
+      float fwd=pow(max(dot(V, -Ldir), 0.0), 5.0);
+      vec3 uAtmo=vec3(0.3, 0.6, 1.0);
+      vec3 c=uAtmo * (limb * (0.6 * lightAmt + 1.8 * fwd * lightAmt)) * 1.6;
+      c += uAtmo * vec3(1.4, 0.5, 0.25) * limb * fwd * lightAmt;
+      gl_FragColor=vec4(c, limb * lightAmt);
+    }`,
+});
+eG.add(new THREE.Mesh(new THREE.SphereGeometry(CFG.earthR*1.15,64,48),atMat));
+
+/* ══════════════════════════════════════════════════
+   11. TRỤC TỰ QUAY
+   ══════════════════════════════════════════════════ */
+const axL=CFG.earthR*1.7;
+eAxis.add(new THREE.Line(
+  new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,-axL,0),new THREE.Vector3(0,axL,0)]),
+  new THREE.LineBasicMaterial({color:0xff3344,transparent:true,opacity:.55})
+));
+
+/* ══════════════════════════════════════════════════
+   12. LƯỚI TỌA ĐỘ
+   ══════════════════════════════════════════════════ */
+const gridG=new THREE.Group();gridG.visible=S.grid;eSpin.add(gridG);
+const SPEC_LATS=[
+  {lat:0,   name:'Xích đạo',       cls:'eq',    clr:0x00ccee},
+  {lat:23.44,name:'Chí tuyến Bắc', cls:'tropic',clr:0xE8C87A},
+  {lat:-23.44,name:'Chí tuyến Nam',cls:'tropic',clr:0xE8C87A},
+  {lat:66.56,name:'Vòng cực Bắc',  cls:'arctic',clr:0x8899aa},
+  {lat:-66.56,name:'Vòng cực Nam', cls:'arctic',clr:0x8899aa},
+];
+function buildGrid(){
+  const R=CFG.earthR*1.002,mL=new THREE.LineBasicMaterial({color:0x8B7642,transparent:true,opacity:.18});
+  for(let lat=-60;lat<=60;lat+=30){
+    if(SPEC_LATS.find(s=>Math.abs(s.lat-lat)<1))continue;
+    const pts=[],th=(90-lat)*DEG,r=R*Math.sin(th),y=R*Math.cos(th);
+    for(let i=0;i<=72;i++){const a=i/72*2*Math.PI;pts.push(new THREE.Vector3(-r*Math.cos(a),y,r*Math.sin(a)));}
+    gridG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),mL));
+  }
+  SPEC_LATS.forEach(s=>{
+    const pts=[],th=(90-s.lat)*DEG,r=R*Math.sin(th),y=R*Math.cos(th);
+    for(let i=0;i<=72;i++){const a=i/72*2*Math.PI;pts.push(new THREE.Vector3(-r*Math.cos(a),y,r*Math.sin(a)));}
+    gridG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:s.clr,transparent:true,opacity:.45})));
+    const d=document.createElement('div');d.className=`l3 l3-lat ${s.cls}`;d.textContent=`${s.name} (${Math.abs(s.lat)}°${s.lat>=0?'B':'N'})`;
+    const lb=new CSS2DObject(d);lb.position.copy(latLonXYZ(s.lat,0,R*1.03));
+    gridG.add(lb);
+  });
+  for(let lon=-180;lon<180;lon+=30){
+    const pts=[];for(let i=0;i<=72;i++){pts.push(latLonXYZ(90-i/72*180,lon,R));}
+    gridG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),mL));
+  }
+}
+buildGrid();
+
+/* ══════════════════════════════════════════════════
+   13. KINH TUYẾN THỜI KHẮC (0h, 6h, 12h, 18h)
+   ══════════════════════════════════════════════════ */
+const tmG=new THREE.Group();tmG.visible=S.tmark;eAxis.add(tmG);
+const TM_DATA=[
+  {a:0,l:'12:00 (Trưa)',c:0xE8C87A},
+  {a:Math.PI/2,l:'18:00 (Hoàng hôn)',c:0xff8844},
+  {a:Math.PI,l:'0:00 (Nửa đêm)',c:0x4488ff},
+  {a:3*Math.PI/2,l:'6:00 (Bình minh)',c:0x3dd68c}
+];
+TM_DATA.forEach(t=>{
+  const R=CFG.earthR*1.003,pts=[];
+  for(let j=0;j<=64;j++){const th=j/64*Math.PI;pts.push(new THREE.Vector3(Math.sin(th)*Math.sin(t.a)*R,Math.cos(th)*R,Math.sin(th)*Math.cos(t.a)*R));}
+  tmG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:t.c,transparent:true,opacity:.55})));
+  const d=document.createElement('div');d.className='l3 l3-time';d.textContent=t.l;d.style.color='#'+t.c.toString(16).padStart(6,'0');
+  const lb=new CSS2DObject(d);lb.position.set(Math.sin(t.a)*R*1.12,0,Math.cos(t.a)*R*1.12);tmG.add(lb);
+});
+
+/* ══════════════════════════════════════════════════
+   14. ĐƯỜNG PHÂN CHIA NGÀY ĐÊM (Terminator)
+   ══════════════════════════════════════════════════ */
+const termPts=[];
+for(let i=0;i<=128;i++){const a=i/128*Math.PI*2;termPts.push(new THREE.Vector3(Math.cos(a)*CFG.earthR*1.003,Math.sin(a)*CFG.earthR*1.003,0));}
+const termLine=new THREE.Line(new THREE.BufferGeometry().setFromPoints(termPts),new THREE.LineBasicMaterial({color:0x00ddff,transparent:true,opacity:.65}));
+termLine.visible=S.term;eG.add(termLine);
+
+/* ══════════════════════════════════════════════════
+   15. CHÙM TIA NẮNG MẶT TRỜI ĐẾN TRÁI ĐẤT (Solar Rays & Light Beam)
+   ══════════════════════════════════════════════════ */
+const solarRaysGroup=new THREE.Group();
+solarRaysGroup.visible=S.ray;
+sc.add(solarRaysGroup);
+
+// 5 tia nắng song song: Trung tâm (90° trực xạ), 2 tia chí tuyến, 2 tia vòng cực
+const NUM_RAYS=5;
+const rayLines=[];
+const rayOffsets=[0, 1.15, -1.15, 2.25, -2.25];
+const rayColors=[0xffea88, 0xE8C87A, 0xE8C87A, 0xffaa44, 0xffaa44];
+
+for(let i=0;i<NUM_RAYS;i++){
+  const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3()]);
+  const m=new THREE.LineBasicMaterial({
+    color:rayColors[i],
+    transparent:true,
+    opacity:i===0?0.9:0.5,
+    linewidth:i===0?2:1
+  });
+  const l=new THREE.Line(g,m);
+  solarRaysGroup.add(l);
+  rayLines.push(l);
+}
+
+// Ống chùm sáng hình trụ bán trong suốt biểu diễn luồng ánh sáng Mặt Trời chiếu tới
+const beamGeom=new THREE.CylinderGeometry(CFG.earthR*0.96,CFG.earthR*0.96,16,32,1,true);
+beamGeom.rotateX(Math.PI/2);
+const beamMat=new THREE.MeshBasicMaterial({
+  color:0xE8C87A,
+  transparent:true,
+  opacity:0.07,
+  side:THREE.DoubleSide,
+  depthWrite:false,
+  blending:THREE.AdditiveBlending
+});
+const beamMesh=new THREE.Mesh(beamGeom,beamMat);
+solarRaysGroup.add(beamMesh);
+
+const ssM=new THREE.Mesh(new THREE.SphereGeometry(.075,8,6),new THREE.MeshBasicMaterial({color:0xff4400}));
+eSpin.add(ssM);
+const ssD=document.createElement('div');ssD.className='l3 l3-sub';ssD.textContent='☀️ Điểm trực xạ';
+const ssL=new CSS2DObject(ssD);ssL.position.set(0,.18,0);ssM.add(ssL);
+
+/* ══════════════════════════════════════════════════
+   16. ĐÁNH DẤU 3 THÀNH PHỐ VIỆT NAM
+   ══════════════════════════════════════════════════ */
+CFG.cities.forEach(c=>{
+  const p=latLonXYZ(c.lat,c.lon,CFG.earthR*1.005);
+  eSpin.add(new THREE.Mesh(new THREE.SphereGeometry(.045,6,4),new THREE.MeshBasicMaterial({color:0x64B5F6})).translateX(p.x).translateY(p.y).translateZ(p.z));
+  const d=document.createElement('div');d.className='l3 l3-city';d.textContent=c.n;
+  const lb=new CSS2DObject(d);lb.position.copy(p).multiplyScalar(1.05);eSpin.add(lb);
+});
+
+/* ══════════════════════════════════════════════════
+   17. ĐIỂM ĐƯỢC CHỌN
+   ══════════════════════════════════════════════════ */
+const selMarker=new THREE.Mesh(new THREE.SphereGeometry(.065,8,6),new THREE.MeshBasicMaterial({color:0xff3366}));
+selMarker.visible=false;eSpin.add(selMarker);
+window.selMarker=selMarker;
+
+/* ══════════════════════════════════════════════════
+   18. MÔ PHỎNG CORIOLIS 3D
+   ══════════════════════════════════════════════════ */
+const coriolisTrailGroup=new THREE.Group();
+eSpin.add(coriolisTrailGroup);
+let coriolisPoints=[],coriolisAnim=null;
+
+function clearCoriolisDemo(){
+  if(coriolisAnim)cancelAnimationFrame(coriolisAnim);
+  while(coriolisTrailGroup.children.length>0)coriolisTrailGroup.remove(coriolisTrailGroup.children[0]);
+  coriolisPoints=[];
+  const st=document.getElementById('coriolis-status');if(st)st.textContent='Đã xóa vết';
+}
+window.clearCoriolisDemo=clearCoriolisDemo;
+
+function fireCoriolisDemo(){
+  clearCoriolisDemo();
+  const st=document.getElementById('coriolis-status');if(st)st.textContent='Đang phóng luồng hạt...';
+  let lat=0,lon=105;
+  const speedLat=0.4;
+  const geom=new THREE.BufferGeometry();
+  const line=new THREE.Line(geom,new THREE.LineBasicMaterial({color:0xE8C87A,linewidth:2}));
+  coriolisTrailGroup.add(line);
+
+  function step(){
+    lat+=speedLat;
+    const dLon=0.7*Math.sin(lat*DEG);
+    lon+=dLon;
+    if(lat<=85){
+      coriolisPoints.push(latLonXYZ(lat,lon,CFG.earthR*1.01));
+      geom.setFromPoints(coriolisPoints);
+      coriolisAnim=requestAnimationFrame(step);
+    }else{
+      if(st)st.textContent='Hoàn thành: Vệt hạt lệch phải (Đông)!';
+    }
+  }
+  step();
+}
+window.fireCoriolisDemo=fireCoriolisDemo;
+
+/* ══════════════════════════════════════════════════
+   19. LOAD TEXTURES (Đồng bộ chuẩn Tinh Đồ Thái Dương)
+   ══════════════════════════════════════════════════ */
+let cloudM=null;
+const ld=new THREE.TextureLoader();
+async function loadTex(){
+  const daySrc = (window.EARTH_TEX && window.EARTH_TEX.day) || CFG.texDay;
+  const nightSrc = (window.EARTH_TEX && window.EARTH_TEX.night) || CFG.texNight;
+  const specSrc = (window.EARTH_TEX && window.EARTH_TEX.spec);
+  const cloudSrc = (window.EARTH_TEX && window.EARTH_TEX.cloud) || CFG.texCloud;
+
+  try {
+    const dt = await ld.loadAsync(daySrc);
+    dt.colorSpace = THREE.SRGBColorSpace;
+    dt.wrapS = dt.wrapT = THREE.RepeatWrapping;
+    EU.uAlb.value = dt;
+    const lEl = document.getElementById('loading');
+    if(lEl) lEl.classList.add('done');
+  } catch(e) {
+    console.warn('Lỗi nạp day texture:', e);
+    const lEl = document.getElementById('loading');
+    if(lEl) lEl.classList.add('done');
+  }
+
+  ld.loadAsync(nightSrc).then(t=>{
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    EU.uNight.value = t;
+    EU.hasNight.value = true;
+  }).catch(e=>console.warn('Lỗi nạp night texture:', e));
+
+  if(specSrc){
+    ld.loadAsync(specSrc).then(t=>{
+      t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      EU.uSpec.value = t;
+      EU.hasSpec.value = true;
+    }).catch(e=>console.warn('Lỗi nạp spec texture:', e));
+  }
+
+  if(cloudSrc){
+    ld.loadAsync(cloudSrc).then(t=>{
+      t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      EU.uCloud.value = t;
+      EU.hasCloud.value = true;
+    }).catch(e=>console.warn('Lỗi nạp cloud texture:', e));
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   20. ĐIỀU KHIỂN & UI
+   ══════════════════════════════════════════════════ */
+const $=id=>document.getElementById(id);
+
+function tf(k){
+  S[k]=!S[k];
+  const b=$('b-'+k);if(b)b.classList.toggle('on');
+  if(k==='grid')gridG.visible=S.grid;
+  if(k==='term')termLine.visible=S.term;
+  if(k==='tmark')tmG.visible=S.tmark;
+  if(k==='ray')solarRaysGroup.visible=S.ray;
+}
+window.tf=tf;
+
+function goS(d){
+  S.doy=d;
+  $('timeline').value=d;
+  $('vd').textContent=doyStr(d);
+  const a=(d-79)/365.25*2*Math.PI,x=CFG.orbitR*Math.cos(a),z=CFG.orbitR*Math.sin(a);
+  camTgt=new THREE.Vector3(x+10,10,z+22);
+  ctrlTgt=new THREE.Vector3(x,0,z);
+  updAll();
+}
+window.goS=goS;
+
+function toggleRight(){$('right-slab').classList.toggle('collapsed');}
+window.toggleRight=toggleRight;
+
+function toggleModal(id){
+  const el=$(id);
+  if(el)el.classList.toggle('show');
+}
+window.toggleModal=toggleModal;
+
+function switchTab(id,btn){
+  document.querySelectorAll('#right-slab .tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('#right-slab .seg-tab button').forEach(b=>b.classList.remove('active'));
+  $('tc-'+id).classList.add('active');btn.classList.add('active');
+  if(id==='season')updSeason();if(id==='chart')updCharts();
+}
+window.switchTab=switchTab;
+
+function onLocationSelect(val){
+  if(!val)return;
+  const[lat,lon]=val.split(',').map(Number);
+  selectPt(lat,lon);
+}
+window.onLocationSelect=onLocationSelect;
+
+function onCamPreset(mode){
+  const a=(S.doy-79)/365.25*2*Math.PI;
+  const ex=CFG.orbitR*Math.cos(a),ez=CFG.orbitR*Math.sin(a);
+
+  if(mode==='earth'){
+    camTgt=new THREE.Vector3(ex+5,4,ez+9);
+    ctrlTgt=new THREE.Vector3(ex,0,ez);
+  }else if(mode==='orbit'){
+    camTgt=new THREE.Vector3(0,55,50);
+    ctrlTgt=new THREE.Vector3(0,0,0);
+  }else if(mode==='sun'){
+    camTgt=new THREE.Vector3(0,2,0);
+    ctrlTgt=new THREE.Vector3(ex,0,ez);
+  }else if(mode==='pole'){
+    camTgt=new THREE.Vector3(ex,24,ez);
+    ctrlTgt=new THREE.Vector3(ex,0,ez);
+  }
+}
+window.onCamPreset=onCamPreset;
+
+$('tog-rot').onchange=e=>{S.rotOn=e.target.checked;};
+$('tog-rev').onchange=e=>{S.revOn=e.target.checked;};
+$('spd-rot').oninput=e=>{S.rotSpd=+e.target.value;$('vr').textContent=S.rotSpd.toFixed(1)+'×';};
+$('spd-rev').oninput=e=>{S.revSpd=+e.target.value;$('vv').textContent=S.revSpd.toFixed(1)+'×';};
+$('timeline').oninput=e=>{S.doy=+e.target.value;$('vd').textContent=doyStr(S.doy);updAll();};
+
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
+  switch(e.key){
+    case' ':e.preventDefault();S.rotOn=!S.rotOn;$('tog-rot').checked=S.rotOn;break;
+    case'r':case'R':S.revOn=!S.revOn;$('tog-rev').checked=S.revOn;break;
+    case'g':case'G':tf('grid');break;case't':case'T':tf('term');break;case'm':case'M':tf('tmark');break;
+    case'1':goS(79);break;case'2':goS(172);break;case'3':goS(266);break;case'4':goS(356);break;
+  }
+});
+
+/* ══════════════════════════════════════════════════
+   21. RAYCASTING: CLICK CHỌN ĐIỂM
+   ══════════════════════════════════════════════════ */
+const rc=new THREE.Raycaster(),mv=new THREE.Vector2();
+let pDown=null;
+rdr.domElement.addEventListener('pointerdown',e=>{pDown={x:e.clientX,y:e.clientY,t:Date.now()};});
+rdr.domElement.addEventListener('pointerup',e=>{
+  if(!pDown)return;const dx=e.clientX-pDown.x,dy=e.clientY-pDown.y;
+  if(Math.hypot(dx,dy)<5&&Date.now()-pDown.t<400){
+    mv.x=(e.clientX/innerWidth)*2-1;mv.y=-(e.clientY/innerHeight)*2+1;
+    rc.setFromCamera(mv,cam);const h=rc.intersectObject(eMesh);
+    if(h.length){
+      const lp=eMesh.worldToLocal(h[0].point.clone()).normalize();
+      const lat=90-Math.acos(Math.max(-1,Math.min(1,lp.y)))*RAD;
+      const phi=Math.atan2(lp.z,-lp.x);let lon=phi*RAD-180;
+      if(lon<-180)lon+=360;if(lon>180)lon-=360;
+      selectPt(lat,lon);
+    }
+  }pDown=null;
+});
+
+/* ══════════════════════════════════════════════════
+   22. PHÂN TÍCH CHI TIẾT TẠI MỘT TỌA ĐỘ
+   ══════════════════════════════════════════════════ */
+function selectPt(lat,lon){
+  S.selLat=lat;S.selLon=lon;
+  selMarker.position.copy(latLonXYZ(lat,lon,CFG.earthR*1.008));
+  selMarker.visible=true;
+
+  const decl=solarDecl(S.doy);
+  const ha=sunriseHA(lat,decl);
+  const dl=dayLen(lat,S.doy);
+  const alt=noonAlt(lat,decl);
+  const shd=shadowR(alt);
+
+  const sL=eMesh.worldToLocal(new THREE.Vector3(0,0,0)).normalize();
+  const ssPhi=Math.atan2(sL.z,-sL.x);let ssLon=ssPhi*RAD-180;
+  if(ssLon<-180)ssLon+=360;if(ssLon>180)ssLon-=360;
+  let diff=lon-ssLon;while(diff>180)diff-=360;while(diff<-180)diff+=360;
+  const lst=((12+diff/15)%24+24)%24;
+
+  const rAz=sunriseAz(lat,decl);
+  const sAz=360-rAz;
+
+  const fL=`${Math.abs(lat).toFixed(2)}°${lat>=0?'B':'N'}`;
+  const fN=`${Math.abs(lon).toFixed(2)}°${lon>=0?'Đ':'T'}`;
+
+  // Đặt tên tiêu đề slab
+  const matchedCity=CFG.cities.find(c=>Math.hypot(c.lat-lat,c.lon-lon)<1.5);
+  $('p-title').textContent=matchedCity?matchedCity.n:`${fL}, ${fN}`;
+
+  $('p-coord').textContent=`${fL}, ${fN}`;
+  
+  let zone='Ôn đới';
+  if(Math.abs(lat)<=23.44)zone='Nhiệt đới (Nội chí tuyến)';
+  else if(Math.abs(lat)>=66.56)zone='Hàn đới (Vùng cực)';
+  $('p-zone').textContent=zone;
+
+  $('p-lst').textContent=hrStr(lst);
+  $('p-alt').textContent=alt>0?`${alt.toFixed(1)}°`:'0° (Dưới chân trời)';
+  $('p-shadow').textContent=alt>0?(shd<10?shd.toFixed(2)+'×':'Dài vô cực'):'—';
+
+  const flux=alt>0?Math.round(PHYS.solarConstant*Math.sin(alt*DEG)) : 0;
+  $('p-flux').textContent=`${flux.toLocaleString()} W/m²`;
+
+  if(ha>0&&ha<Math.PI){
+    $('p-rise').innerHTML=`${hrStr(sunriseLST(lat,S.doy))} <small>(${azStr(rAz)})</small>`;
+    $('p-set').innerHTML=`${hrStr(sunsetLST(lat,S.doy))} <small>(${azStr(sAz)})</small>`;
+    $('p-daylen').textContent=`${dl.toFixed(1)} giờ`;
+  }else if(ha>=Math.PI){
+    $('p-rise').textContent='— (Mặt Trời không lặn)';$('p-set').textContent='—';$('p-daylen').textContent='24h (Ngày trắng)';
+  }else{
+    $('p-rise').textContent='— (Đêm vùng cực)';$('p-set').textContent='—';$('p-daylen').textContent='0h (Đêm dài)';
+  }
+
+  const dlNow=dl,dlLater=dayLen(lat,(S.doy+30)%365.25);
+  const diffMin=Math.round((dlLater-dlNow)*60);
+  $('p-trend').textContent=diffMin>0?`📈 Ngày đang dài ra (+${diffMin} ph trong 30 ngày tới)`:`📉 Ngày đang ngắn lại (${diffMin} ph trong 30 ngày tới)`;
+
+  const zBox=$('p-zenith-box');
+  if(Math.abs(lat)<=23.44){
+    let z1=null,z2=null;
+    for(let d=1;d<=365;d++){
+      const d1=solarDecl(d)*RAD, d2=solarDecl(d+1)*RAD;
+      if((d1<=lat&&d2>=lat)||(d1>=lat&&d2<=lat)){
+        if(z1===null)z1=d;else if(z2===null)z2=d;
+      }
+    }
+    zBox.style.display='block';
+    zBox.innerHTML=`☀️ <b>Mặt Trời lên thiên đỉnh tại đây:</b><br>
+      • Lần 1: Ngày <b>${doyStr(z1||1)}</b> · Lần 2: Ngày <b>${doyStr(z2||1)}</b><br>
+      <i>(Chính trưa 2 ngày này, góc chiếu 90°, cọc thẳng đứng không có bóng).</i>`;
+  }else{
+    zBox.style.display='none';
+  }
+
+  $('left-slab').style.display='block';
+  drawDLChart(lat);
+  drawHorizonChart(lat,decl);
+}
+
+/* ══════════════════════════════════════════════════
+   23. ĐỒ THỊ VÒM TRỜI ĐỊA PHƯƠNG
+   ══════════════════════════════════════════════════ */
+function drawHorizonChart(lat,decl){
+  const c=$('ch-horizon'),ctx=c.getContext('2d'),W=c.width,H=c.height;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#070A16';ctx.fillRect(0,0,W,H);
+  
+  const p={l:28,r:14,t:10,b:18},cw=W-p.l-p.r,ch=H-p.t-p.b;
+  const yHorizon=p.t+ch;
+
+  ctx.strokeStyle='rgba(232,200,122,.25)';ctx.beginPath();
+  ctx.moveTo(p.l,yHorizon);ctx.lineTo(p.l+cw,yHorizon);ctx.stroke();
+
+  ctx.fillStyle='#8B7642';ctx.font='8.5px "IBM Plex Mono",monospace';ctx.textAlign='center';
+  ctx.fillText('Đông',p.l+cw*0.15,H-3);
+  ctx.fillText('12h Trưa',p.l+cw*0.5,H-3);
+  ctx.fillText('Tây',p.l+cw*0.85,H-3);
+
+  const alt=noonAlt(lat,decl);
+  const ha=sunriseHA(lat,decl);
+
+  if(ha>0){
+    ctx.strokeStyle='#E8C87A';ctx.lineWidth=1.6;ctx.beginPath();
+    for(let i=0;i<=60;i++){
+      const t=i/60;
+      const currentH=Math.sin(t*Math.PI)*alt;
+      const x=p.l+cw*(0.15+t*0.7);
+      const y=yHorizon-Math.max(0,currentH/90*ch);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+
+    const noonX=p.l+cw*0.5;
+    const noonY=yHorizon-Math.max(0,alt/90*ch);
+    ctx.beginPath();ctx.arc(noonX,noonY,3.5,0,Math.PI*2);
+    ctx.fillStyle='#ff4444';ctx.fill();
+    ctx.strokeStyle='#F2ECDE';ctx.lineWidth=1;ctx.stroke();
+
+    ctx.fillStyle='#E8C87A';ctx.font='600 9px "IBM Plex Mono",monospace';ctx.textAlign='center';
+    ctx.fillText(`${alt.toFixed(1)}°`,noonX,noonY-5);
+  }else{
+    ctx.fillStyle='#8B7642';ctx.font='9.5px "Be Vietnam Pro",sans-serif';ctx.textAlign='center';
+    ctx.fillText('Đêm vùng cực (Mặt Trời dưới chân trời)',p.l+cw/2,p.t+ch/2);
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   24. PHÂN TÍCH 4 MÙA
+   ══════════════════════════════════════════════════ */
+function updSeason(){
+  const d=S.doy,decl=solarDecl(d)*RAD,dist=eSunDist(d),spd=orbSpeed(d);
+  let best=SEASONS[0],bestD=999;
+  SEASONS.forEach(s=>{let dd=Math.abs(d-s.doy);if(dd>182)dd=365-dd;if(dd<bestD){bestD=dd;best=s;}});
+
+  const descMap={
+    79:'Mặt Trời chiếu thẳng góc tại Xích đạo. Ngày đêm xấp xỉ 12 giờ trên khắp Trái Đất. Mặt Trời mọc đúng hướng Đông, lặn đúng hướng Tây. Bắc bán cầu bắt đầu mùa Xuân.',
+    172:'Mặt Trời chiếu thẳng góc tại Chí tuyến Bắc (23,44°B). Ngày dài nhất trong năm ở Bắc bán cầu. Vòng cực Bắc xuất hiện ngày trắng 24h. Bắc bán cầu bắt đầu mùa Hạ.',
+    266:'Mặt Trời chiếu thẳng góc tại Xích đạo lần thứ 2. Ngày đêm bằng nhau trên toàn cầu. Khí hậu chuyển mát mẻ. Bắc bán cầu bắt đầu mùa Thu.',
+    356:'Mặt Trời chiếu thẳng góc tại Chí tuyến Nam (23,44°N). Đêm dài nhất trong năm ở Bắc bán cầu. Vòng cực Bắc chìm trong đêm cực. Bắc bán cầu bắt đầu mùa Đông.',
+  };
+
+  const keyLats=[
+    {n:'Xích đạo (0°)',v:0},
+    {n:'TP. HCM (10.8°B)',v:10.82},
+    {n:'Đà Nẵng (16.0°B)',v:16.05},
+    {n:'Hà Nội (21.0°B)',v:21.03},
+    {n:'Chí tuyến Bắc (23.44°B)',v:23.44},
+    {n:'Bắc Cực (90°B)',v:90}
+  ];
+
+  let html=`<div style="background:rgba(232,200,122,.06);border:1px solid var(--hairline-soft);border-radius:3px;padding:9px 11px;margin-bottom:8px">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px">
+      <b style="font-family:var(--font-display);font-size:16px;color:var(--brass)">${best.e} ${best.l}</b>
+      <span style="font-family:var(--font-mono);font-size:10px;color:var(--parchment-dim)">${best.date}</span>
+    </div>
+    <div class="row" style="padding:3px 0"><dt>Xích vĩ trực xạ δ</dt><dd>${decl>=0?'+':''}${decl.toFixed(2)}°</dd></div>
+    <div class="row" style="padding:3px 0"><dt>Khoảng cách Đất-Trời</dt><dd>${(dist*PHYS.AU_KM/1e6).toFixed(1)} tr km</dd></div>
+    <div class="row" style="padding:3px 0"><dt>Vận tốc quỹ đạo</dt><dd>${spd.toFixed(2)} km/s</dd></div>
+  </div>
+  <p style="font-size:10.5px;color:var(--parchment-dim);line-height:1.6;margin:6px 0">${descMap[best.doy]||''}</p>
+  <div style="font-size:9px;color:var(--brass-dim);font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin:8px 0 4px">Góc chiếu & Độ dài ngày hôm nay</div>
+  <table style="width:100%;font-size:10px;border-collapse:collapse">
+    <tr style="border-bottom:1px solid var(--hairline);color:var(--brass-dim);text-align:left;font-size:8.5px;text-transform:uppercase"><th style="padding:3px 0">Vị trí</th><th style="text-align:right">Góc trưa</th><th style="text-align:right">Độ dài ngày</th></tr>`;
+  keyLats.forEach(k=>{
+    const a=noonAlt(k.v,solarDecl(d));
+    const dl2=dayLen(k.v,d);
+    html+=`<tr style="border-bottom:1px solid var(--hairline-soft)"><td style="padding:4px 0;color:var(--parchment)">${k.n}</td><td style="text-align:right;font-family:var(--font-mono);color:var(--brass)">${a>0?a.toFixed(1)+'°':'0°'}</td><td style="text-align:right;font-family:var(--font-mono);color:var(--parchment)">${dl2.toFixed(1)}h</td></tr>`;
+  });
+  html+='</table>';
+  $('tc-season').innerHTML=html;
+}
+
+/* ══════════════════════════════════════════════════
+   25. CẬP NHẬT TELEMETRY
+   ══════════════════════════════════════════════════ */
+function updInfo(){
+  const d=S.doy,decl=solarDecl(d)*RAD,dist=eSunDist(d);
+  const sInfo=seasonInfo(d);
+  
+  $('t-date').textContent=doyStr(d);
+  $('t-decl').textContent=`${decl>=0?'+':''}${decl.toFixed(1)}°`;
+  $('t-dist').textContent=`${(dist*PHYS.AU_KM/1e6).toFixed(1)} tr km`;
+  $('t-spd').textContent=`${orbSpeed(d).toFixed(1)} km/s`;
+  $('t-eot').textContent=`${eot(d)>=0?'+':''}${eot(d).toFixed(1)} ph`;
+  
+  const sp=$('t-season');
+  if(sp)sp.textContent=`${sInfo.icon} ${sInfo.name}`;
+}
+
+/* ══════════════════════════════════════════════════
+   26. VẼ BIỂU ĐỒ THIÊN VĂN
+   ══════════════════════════════════════════════════ */
+function drawDLChart(lat){
+  const c=$('ch-dl'),ctx=c.getContext('2d'),W=c.width,H=c.height;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#070A16';ctx.fillRect(0,0,W,H);
+  const p={l:28,r:8,t:8,b:16},cw=W-p.l-p.r,ch=H-p.t-p.b;
+
+  const y12=p.t+ch*(1-12/24);
+  ctx.strokeStyle='rgba(232,200,122,.15)';ctx.setLineDash([2,3]);
+  ctx.beginPath();ctx.moveTo(p.l,y12);ctx.lineTo(p.l+cw,y12);ctx.stroke();ctx.setLineDash([]);
+
+  ctx.strokeStyle='#E8C87A';ctx.lineWidth=1.5;ctx.beginPath();
+  for(let i=0;i<=365;i++){const dl=dayLen(lat,i),x=p.l+i/365*cw,y=p.t+ch*(1-dl/24);i?ctx.lineTo(x,y):ctx.moveTo(x,y);}
+  ctx.stroke();
+
+  const dl=dayLen(lat,S.doy),cx=p.l+S.doy/365*cw,cy=p.t+ch*(1-dl/24);
+  ctx.beginPath();ctx.arc(cx,cy,3.5,0,Math.PI*2);ctx.fillStyle='#ff4444';ctx.fill();
+  ctx.strokeStyle='#F2ECDE';ctx.lineWidth=1;ctx.stroke();
+
+  ctx.fillStyle='#8B7642';ctx.font='8.5px "IBM Plex Mono",monospace';ctx.textAlign='right';
+  ctx.fillText('24h',p.l-2,p.t+5);ctx.fillText('12h',p.l-2,y12+3);ctx.fillText('0h',p.l-2,p.t+ch+2);
+  ctx.textAlign='center';
+  ['T1','T3','T5','T7','T9','T11'].forEach((m,i)=>{ctx.fillText(m,p.l+(i*2+1)/12*cw,H-2);});
+  ctx.fillStyle='#E8C87A';ctx.font='600 8.5px "IBM Plex Mono",monospace';ctx.textAlign='left';
+  ctx.fillText(`${dl.toFixed(1)}h`,cx+5,cy-3);
+}
+
+function drawSSChart(){
+  const c=$('ch-ss'),ctx=c.getContext('2d'),W=c.width,H=c.height;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#070A16';ctx.fillRect(0,0,W,H);
+  const p={l:32,r:8,t:8,b:16},cw=W-p.l-p.r,ch=H-p.t-p.b;
+
+  const yEq=p.t+ch/2;
+  ctx.strokeStyle='rgba(0,200,255,.2)';ctx.setLineDash([2,3]);ctx.beginPath();
+  ctx.moveTo(p.l,yEq);ctx.lineTo(p.l+cw,yEq);ctx.stroke();ctx.setLineDash([]);
+
+  ctx.strokeStyle='rgba(232,200,122,.15)';ctx.setLineDash([2,4]);
+  [23.44,-23.44].forEach(lat=>{const y=p.t+ch/2-lat/25*(ch/2);ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(p.l+cw,y);ctx.stroke();});
+  ctx.setLineDash([]);
+
+  ctx.strokeStyle='#E8C87A';ctx.lineWidth=1.5;ctx.beginPath();
+  for(let i=0;i<=365;i++){const d=solarDecl(i)*RAD,x=p.l+i/365*cw,y=p.t+ch/2-d/25*(ch/2);i?ctx.lineTo(x,y):ctx.moveTo(x,y);}
+  ctx.stroke();
+
+  const decl=solarDecl(S.doy)*RAD,cx=p.l+S.doy/365*cw,cy=p.t+ch/2-decl/25*(ch/2);
+  ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fillStyle='#ff4444';ctx.fill();
+  ctx.strokeStyle='#F2ECDE';ctx.lineWidth=1;ctx.stroke();
+
+  ctx.fillStyle='#8B7642';ctx.font='8.5px "IBM Plex Mono",monospace';ctx.textAlign='right';
+  ctx.fillText('23,4°B',p.l-2,p.t+5);ctx.fillText('0°',p.l-2,yEq+3);ctx.fillText('23,4°N',p.l-2,p.t+ch+2);
+  ctx.textAlign='center';
+  ['T1','T3','T5','T7','T9','T11'].forEach((m,i)=>{ctx.fillText(m,p.l+(i*2+1)/12*cw,H-2);});
+  ctx.fillStyle='#E8C87A';ctx.font='600 8.5px "IBM Plex Mono",monospace';ctx.textAlign='left';
+  ctx.fillText(`${decl>=0?'+':''}${decl.toFixed(1)}°`,cx+6,cy-3);
+}
+
+function drawEoTChart(){
+  const c=$('ch-eot'),ctx=c.getContext('2d'),W=c.width,H=c.height;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#070A16';ctx.fillRect(0,0,W,H);
+  const p={l:32,r:8,t:8,b:16},cw=W-p.l-p.r,ch=H-p.t-p.b;
+
+  const y0=p.t+ch/2;
+  ctx.strokeStyle='rgba(232,200,122,.15)';ctx.setLineDash([2,3]);ctx.beginPath();
+  ctx.moveTo(p.l,y0);ctx.lineTo(p.l+cw,y0);ctx.stroke();ctx.setLineDash([]);
+
+  ctx.strokeStyle='#3dd68c';ctx.lineWidth=1.5;ctx.beginPath();
+  for(let i=0;i<=365;i++){const v=eot(i),x=p.l+i/365*cw,y=p.t+ch/2-v/18*(ch/2);i?ctx.lineTo(x,y):ctx.moveTo(x,y);}
+  ctx.stroke();
+
+  const ev=eot(S.doy),cx=p.l+S.doy/365*cw,cy=p.t+ch/2-ev/18*(ch/2);
+  ctx.beginPath();ctx.arc(cx,cy,3.5,0,Math.PI*2);ctx.fillStyle='#ff4444';ctx.fill();
+  ctx.strokeStyle='#F2ECDE';ctx.lineWidth=1;ctx.stroke();
+
+  ctx.fillStyle='#8B7642';ctx.font='8.5px "IBM Plex Mono",monospace';ctx.textAlign='right';
+  ctx.fillText('+16ph',p.l-2,p.t+5);ctx.fillText('0',p.l-2,y0+3);ctx.fillText('-16ph',p.l-2,p.t+ch+2);
+  ctx.textAlign='center';
+  ['T1','T3','T5','T7','T9','T11'].forEach((m,i)=>{ctx.fillText(m,p.l+(i*2+1)/12*cw,H-2);});
+  ctx.fillStyle='#3dd68c';ctx.font='600 8.5px "IBM Plex Mono",monospace';ctx.textAlign='left';
+  ctx.fillText(`${ev>=0?'+':''}${ev.toFixed(1)}ph`,cx+5,cy-3);
+}
+
+function updCharts(){
+  drawSSChart();drawEoTChart();
+  if(S.selLat!==null){
+    drawDLChart(S.selLat);
+    drawHorizonChart(S.selLat,solarDecl(S.doy));
+  }
+}
+function updAll(){updInfo();updSeason();updCharts();}
+
+/* ══════════════════════════════════════════════════
+   27. THÍ NGHIỆM ĐỊNH LUẬT COSINE
+   ══════════════════════════════════════════════════ */
+function updateInsolationDemo(deg){
+  deg=+deg;
+  $('insolation-angle').textContent=deg+'°';
+  const sinA=Math.sin(deg*DEG);
+  const area=1/sinA;
+  const power=sinA*100;
+  const flux=Math.round(PHYS.solarConstant*sinA);
+
+  $('insolation-area').textContent=area.toFixed(2)+' m²';
+  $('insolation-power').textContent=power.toFixed(1)+'%';
+  $('insolation-flux').textContent=flux.toLocaleString()+' W/m²';
+}
+window.updateInsolationDemo=updateInsolationDemo;
+
+/* ══════════════════════════════════════════════════
+   28. RENDER LOOP
+   ══════════════════════════════════════════════════ */
+function updScene(){
+  const orbA=(S.doy-79)/365.25*2*Math.PI;
+  eG.position.set(CFG.orbitR*Math.cos(orbA),0,CFG.orbitR*Math.sin(orbA));
+  eSpin.rotation.y=S.eRot;
+
+  const sunDir=new THREE.Vector3().copy(eG.position).negate().normalize();
+  EU.sunDir.value.copy(sunDir);atU.sunDir.value.copy(sunDir);
+  termLine.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),sunDir);
+
+  if(solarRaysGroup.visible){
+    const earthPos=eG.position;
+    const toSun=new THREE.Vector3().copy(earthPos).negate().normalize();
+    const upVec=new THREE.Vector3(0,1,0);
+    const sideVec=new THREE.Vector3().crossVectors(toSun,upVec).normalize();
+    const perpUp=new THREE.Vector3().crossVectors(sideVec,toSun).normalize();
+
+    // Định vị ống chùm sáng chiếu từ phía Mặt Trời đến nửa bán cầu ngày của Trái Đất
+    beamMesh.position.copy(earthPos).addScaledVector(toSun,8);
+    beamMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,-1),toSun);
+
+    // Cập nhật 5 tia nắng song song chiếu vào Trái Đất
+    for(let i=0;i<NUM_RAYS;i++){
+      const offset=rayOffsets[i];
+      const targetPt=new THREE.Vector3().copy(earthPos).addScaledVector(perpUp,offset*0.85);
+      const startPt=new THREE.Vector3().copy(targetPt).addScaledVector(toSun,18);
+      
+      const pts=rayLines[i].geometry.attributes.position;
+      pts.setXYZ(0,startPt.x,startPt.y,startPt.z);
+      pts.setXYZ(1,targetPt.x,targetPt.y,targetPt.z);
+      pts.needsUpdate=true;
+    }
+  }
+
+  if(tmG.visible){
+    const sL=eAxis.worldToLocal(new THREE.Vector3(0,0,0));
+    tmG.rotation.y=Math.atan2(sL.x,sL.z);
+  }
+
+  const ssL=eMesh.worldToLocal(new THREE.Vector3(0,0,0)).normalize();
+  ssM.position.copy(ssL.clone().multiplyScalar(CFG.earthR*1.01));
+
+  if(cloudM)cloudM.rotation.y=S.eRot*.03;
+
+  if(camTgt){
+    cam.position.lerp(camTgt,.05);
+    ctl.target.lerp(ctrlTgt,.05);
+    if(cam.position.distanceTo(camTgt)<.15)camTgt=null;
+  }else{
+    if(ctl.target.distanceTo(eG.position)>0.1&&ctl.target.distanceTo(new THREE.Vector3(0,0,0))>10){
+      ctl.target.lerp(eG.position,.04);
+    }
+  }
+}
+
+let lastT=0,infoTimer=0;
+function animate(t){
+  requestAnimationFrame(animate);
+  const dt=Math.min((t-lastT)/1000,.1);lastT=t;
+
+  if(S.rotOn)S.eRot+=dt*S.rotSpd*(2*Math.PI/CFG.rotPeriod);
+  if(S.revOn){
+    S.doy+=dt*S.revSpd*(365.25/CFG.revPeriod);
+    S.doy=((S.doy%365.25)+365.25)%365.25;
+    $('timeline').value=S.doy;
+    $('vd').textContent=doyStr(S.doy);
+    infoTimer+=dt;
+    if(infoTimer>.3){
+      infoTimer=0;
+      updInfo();
+      if(S.selLat!==null)selectPt(S.selLat,S.selLon);
+    }
+    if(Math.floor(t/2000)!==Math.floor((t-dt*1000)/2000))updCharts();
+  }
+
+  updScene();ctl.update();
+  rdr.render(sc,cam);lRdr.render(sc,cam);
+}
+
+/* ══════════════════════════════════════════════════
+   29. RESIZE & INIT
+   ══════════════════════════════════════════════════ */
+window.addEventListener('resize',()=>{
+  cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();
+  rdr.setSize(innerWidth,innerHeight);lRdr.setSize(innerWidth,innerHeight);
+});
+
+(async()=>{
+  await loadTex();
+  updAll();
+  
+  selectPt(21.03,105.85); // Mặc định Hà Nội
+
+  const a=(S.doy-79)/365.25*2*Math.PI;
+  const ex=CFG.orbitR*Math.cos(a),ez=CFG.orbitR*Math.sin(a);
+  cam.position.set(ex+7,6,ez+12);
+  ctl.target.set(ex,0,ez);
+  ctl.update();
+
+  requestAnimationFrame(animate);
+})();
+</script>
+</body>
+</html>
