@@ -187,6 +187,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
   #timeline{width:70px}
   .controls-bar{gap:4px 6px;padding:4px 8px}
   #telemetry{font-size:9.5px;gap:5px;padding:3px 8px}
+}
+
+.q-btn{appearance:none;background:rgba(232,200,122,.08);border:1px solid var(--hairline-soft);color:var(--parchment);font-family:var(--font-ui);font-size:10px;text-align:left;padding:4px 7px;border-radius:3px;cursor:pointer;transition:.18s;width:100%}
+.q-btn:hover{background:rgba(232,200,122,.2);color:var(--brass);border-color:var(--hairline)}
+
 @media(prefers-reduced-motion: reduce){
   *, *::before, *::after{
     animation-duration: 0.01ms !important;
@@ -205,13 +210,27 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 
 <!-- ═══ DẢI ĐO LƯỜNG THIÊN VĂN (TELEMETRY STRIP) ═══ -->
 <div id="telemetry">
+  <!-- Mức cơ bản / Học sinh -->
   <div class="ti"><span class="ti-l">Thời gian</span><span class="ti-v" id="t-date">20/09</span></div><span class="ti-sep">·</span>
-  <div class="ti"><span class="ti-l">Mùa</span><span class="ti-pill" id="t-season">🍂 Thu</span></div><span class="ti-sep">·</span>
-  <div class="ti"><span class="ti-l">Xích vĩ trực xạ δ</span><span class="ti-v" id="t-decl">+0.0°</span></div><span class="ti-sep">·</span>
-  <div class="ti"><span class="ti-l">Khoảng cách</span><span class="ti-v" id="t-dist">150.0 tr km</span></div><span class="ti-sep">·</span>
-  <div class="ti"><span class="ti-l">Vận tốc quỹ đạo</span><span class="ti-v" id="t-spd">29.8 km/s</span></div><span class="ti-sep">·</span>
-  <div class="ti"><span class="ti-l">Phương trình thời gian</span><span class="ti-v" id="t-eot">+0.0 ph</span></div><span class="ti-sep">·</span>
-  <div class="ti"><span class="ti-pill" title="Độ lệch tâm quỹ đạo Trái Đất chỉ khoảng e ≈ 0.0167 nên hình dạng ở tỉ lệ toàn cảnh gần như đường tròn. Số liệu khoảng cách và vận tốc được tính riêng từ mô hình quỹ đạo elip.">Quỹ đạo: Tỉ lệ trực quan (e ≈ 0.0167)</span></div>
+  <div class="ti"><span class="ti-l">Mùa thiên văn</span><span class="ti-pill" id="t-season">☀️ Hạ</span></div><span class="ti-sep">·</span>
+  <div class="ti"><span class="ti-l">Vị trí</span><span class="ti-v" id="t-loc-name" style="color:var(--brass)">🏛️ Hà Nội</span></div><span class="ti-sep">·</span>
+  <div class="ti"><span class="ti-l">Góc trưa</span><span class="ti-v" id="t-loc-alt">—</span></div><span class="ti-sep">·</span>
+  <div class="ti"><span class="ti-l">Độ dài ngày</span><span class="ti-v" id="t-loc-daylen">—</span></div><span class="ti-sep">·</span>
+
+  <!-- Nút mở rộng số liệu chuyên sâu -->
+  <button class="ti-pill" id="btn-toggle-adv" onclick="toggleAdvTelemetry()" style="cursor:pointer;background:rgba(232,200,122,.15);border:1px solid var(--hairline);color:var(--brass)">
+    Số liệu nâng cao ▾
+  </button>
+
+  <!-- Mức nâng cao / Chuyên sâu (Ẩn mặc định) -->
+  <div id="adv-telemetry" style="display:none;align-items:center;gap:8px">
+    <span class="ti-sep">·</span>
+    <div class="ti"><span class="ti-l">Xích vĩ trực xạ δ</span><span class="ti-v" id="t-decl">+0.0°</span></div><span class="ti-sep">·</span>
+    <div class="ti"><span class="ti-l">Khoảng cách</span><span class="ti-v" id="t-dist">150.0 tr km</span></div><span class="ti-sep">·</span>
+    <div class="ti"><span class="ti-l">Vận tốc quỹ đạo</span><span class="ti-v" id="t-spd">29.8 km/s</span></div><span class="ti-sep">·</span>
+    <div class="ti"><span class="ti-l">Phương trình thời gian</span><span class="ti-v" id="t-eot">+0.0 ph</span></div><span class="ti-sep">·</span>
+    <div class="ti"><span class="ti-pill" title="Độ lệch tâm quỹ đạo Trái Đất chỉ khoảng e ≈ 0.0167 nên hình dạng ở tỉ lệ toàn cảnh gần như đường tròn. Số liệu khoảng cách và vận tốc được tính riêng từ mô hình quỹ đạo elip.">Quỹ đạo: Tỉ lệ trực quan (e ≈ 0.0167)</span></div>
+  </div>
 </div>
 
 <!-- ═══ MASTHEAD THƯƠNG HIỆU N&MSTUDIO ═══ -->
@@ -279,11 +298,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
     <div class="row"><dt>Mặt trời lặn</dt><dd id="p-set">—</dd></div>
     <div class="row"><dt>Độ dài ngày</dt><dd id="p-daylen">—</dd></div>
     <div class="row"><dt>Tỷ lệ bóng cọc</dt><dd id="p-shadow">—</dd></div>
-    <div class="row"><dt>Quang thông trưa</dt><dd id="p-flux">—</dd></div>
+    <div class="row"><dt title="Giá trị được tính từ hình học góc chiếu và hằng số Mặt Trời, chưa xét suy giảm do khí quyển, mây và aerosol.">Bức xạ lý tưởng</dt><dd id="p-flux">—</dd></div>
   </dl>
 
   <div id="p-zenith-box" class="zenith-box" style="display:none"></div>
   <div style="font-size:10px;color:var(--parchment-dim);margin:6px 0 2px" id="p-trend"></div>
+
+  <!-- Micro-card Lịch sử Thiên văn: Eratosthenes -->
+  <div class="history-card" style="margin:8px 0;padding:7px 9px;background:rgba(232,200,122,.06);border:1px solid var(--hairline-soft);border-radius:3px">
+    <div style="font-size:9.5px;font-weight:600;color:var(--brass)">🏛️ Eratosthenes · khoảng 240 TCN</div>
+    <p style="font-size:10px;color:var(--parchment-dim);line-height:1.5;margin:3px 0 5px">Hơn 2.200 năm trước, Eratosthenes đã dùng bóng Mặt Trời tại hai địa điểm (Alexandria & Syene) cùng thời điểm trưa để ước tính kích thước Trái Đất.</p>
+    <button class="ghost" onclick="highlightGnomon()" style="font-size:9px;padding:2px 6px">📍 Khám phá qua bóng cọc (Gnomon)</button>
+  </div>
 
   <div style="font-size:9px;color:var(--brass-dim);text-transform:uppercase;letter-spacing:.08em;margin-top:6px">Biến thiên độ dài ngày cả năm</div>
   <canvas id="ch-dl" width="250" height="100"></canvas>
@@ -301,10 +327,23 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
     <div class="slab-kind">Sổ Tay Tri Thức</div>
     <button class="slab-close" onclick="toggleRight()">✕</button>
   </div>
-  <h3 class="slab-name" style="font-size:20px;margin-bottom:8px">Hệ Thống Trái Đất</h3>
+  <h3 class="slab-name" style="font-size:20px;margin-bottom:6px">Hệ Thống Trái Đất</h3>
+
+  <!-- 6 Câu hỏi dẫn đường khám phá -->
+  <div style="margin-bottom:8px;padding:6px 8px;background:rgba(232,200,122,.08);border:1px solid var(--hairline-soft);border-radius:4px">
+    <div style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--brass);margin-bottom:4px">❓ Câu Hỏi Dẫn Đường:</div>
+    <div style="display:flex;flex-direction:column;gap:3px">
+      <button class="q-btn" onclick="goToQuestion(1)">1. Vì sao có ngày và đêm?</button>
+      <button class="q-btn" onclick="goToQuestion(2)">2. Vì sao Trái Đất có mùa?</button>
+      <button class="q-btn" onclick="goToQuestion(3)">3. Vì sao mùa hè nóng hơn?</button>
+      <button class="q-btn" onclick="goToQuestion(4)">4. Hà Nội và TP.HCM khác nhau thế nào?</button>
+      <button class="q-btn" onclick="goToQuestion(5)">5. Vì sao gió và bão bị lệch hướng?</button>
+      <button class="q-btn" onclick="goToQuestion(6)">6. Mặt Trời liên quan gì đến thời tiết?</button>
+    </div>
+  </div>
 
   <div class="seg-tab">
-    <button class="active" onclick="switchTab('teach',this)">Bài học</button>
+    <button class="active" id="tab-btn-teach" onclick="switchTab('teach',this)">Bài học</button>
     <button onclick="switchTab('season',this)">4 Mùa</button>
     <button onclick="switchTab('chart',this)">Biểu đồ</button>
   </div>
@@ -316,27 +355,54 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
       <p>Trái Đất tự quay từ <b>Tây sang Đông</b> với chu kỳ <b>23 giờ 56 phút 04 giây</b> (ngày sao). Do hình cầu, tại mỗi thời điểm chỉ có 1 nửa được chiếu sáng (bán cầu ngày) và 1 nửa chìm trong bóng tối (bán cầu đêm). Đường ranh giới này gọi là <b>đường phân chia ngày đêm (terminator)</b>.</p>
     </details>
     <details class="accord">
-      <summary>📐 2. Trục nghiêng 23,44° & Ý nghĩa sống còn</summary>
-      <p>Trục Trái Đất nghiêng <b>23°26' (23,44°)</b> so với pháp tuyến mặt phẳng hoàng đạo và phương nghiêng không đổi trong suốt quá trình công chuyển (hướng về phía sao Bắc Cực - Polaris). Đây là nguyên nhân duy nhất sinh ra <b>4 mùa</b> và sự dài ngắn khác nhau của ngày đêm theo vĩ độ.</p>
+      <summary>📐 2. Trục nghiêng 23,44° & Nguyên nhân chính tạo nên mùa</summary>
+      <p><b>Độ nghiêng trục Trái Đất là nguyên nhân thiên văn chính tạo nên chu kỳ mùa</b>, vì làm thay đổi góc chiếu của ánh sáng Mặt Trời và độ dài ngày theo vĩ độ trong quá trình Trái Đất công chuyển.<br>
+      <span style="font-size:10px;color:var(--parchment-dim);display:block;margin-top:4px;border-left:2px solid var(--brass-dim);padding-left:6px"><i>Lưu ý địa lý:</i> Đặc điểm mùa và thời tiết tại từng địa phương còn chịu ảnh hưởng của biển, lục địa, địa hình và hoàn lưu khí quyển.</span></p>
     </details>
     <details class="accord">
       <summary>☀️ 3. Mặt Trời lên thiên đỉnh tại Việt Nam</summary>
-      <p>Việt Nam nằm hoàn toàn trong vùng <b>Nội chí tuyến Bắc</b> (từ ~8°34'B đến 23°23'B). Do đó, mỗi năm mọi địa điểm tại Việt Nam đều có <b>2 lần Mặt Trời đi qua thiên đỉnh</b> (buổi trưa Mặt Trời chiếu vuông góc 90°, cọc cắm thẳng đứng không có bóng):<br>
-      • <b>TP. Hồ Chí Minh</b> (10.8°B): ~16/4 và ~26/8<br>
-      • <b>Đà Nẵng</b> (16.0°B): ~11/5 và ~1/8<br>
-      • <b>Hà Nội</b> (21.0°B): ~25/5 và ~18/7</p>
+      <p>Việt Nam nằm hoàn toàn trong vùng <b>Nội chí tuyến Bắc</b> (từ ~8°34'B đến 23°23'B). Do đó, mỗi năm mọi địa điểm tại Việt Nam đều có <b>2 lần Mặt Trời đi qua thiên đỉnh</b> (buổi trưa Mặt Trời chiếu vuông góc 90°, cọc cắm thẳng đứng không có bóng). Thời điểm thiên đỉnh diễn ra khác nhau tùy theo vĩ độ:<br>
+      • <b>TP. Hồ Chí Minh</b> (10.82°B): Lần 1 ~21/04 · Lần 2 ~22/08<br>
+      • <b>Đà Nẵng</b> (16.05°B): Lần 1 ~09/05 · Lần 2 ~04/08<br>
+      • <b>Hà Nội</b> (21.03°B): Lần 1 ~25/05 · Lần 2 ~18/07<br>
+      <small style="color:var(--brass-dim)"><i>(Số liệu được tính toán động theo mô hình xích vĩ cho năm đang mô phỏng).</i></small></p>
     </details>
     <details class="accord">
-      <summary>🌪️ 4. Lực Coriolis & Chuyển động lệch hướng</summary>
-      <p>Do Trái Đất tự quay, mọi vật thể chuyển động trên bề mặt đều chịu tác dụng của <b>lực quán tính Coriolis</b>:<br>
-      • <b>Bắc bán cầu</b>: Bị lệch về <b>bên phải</b> theo hướng chuyển động.<br>
-      • <b>Nam bán cầu</b>: Bị lệch về <b>bên trái</b>.<br>
-      Hệ quả: Các dòng sông ở Bắc bán cầu thường xói lở bờ phải; các xoáy bão ở Bắc bán cầu quay ngược chiều kim đồng hồ.</p>
+      <summary>🌪️ 4. Lực Coriolis & Chuyển động quy mô lớn</summary>
+      <p><b>Hiệu ứng Coriolis thể hiện rõ ở các chuyển động quy mô lớn như hoàn lưu khí quyển, dòng biển và chuyển động của các hệ áp thấp.</b><br>
+      • <b>Bắc bán cầu:</b> Chuyển động quy mô lớn có xu hướng lệch về <b>bên phải</b> theo hướng chuyển động.<br>
+      • <b>Nam bán cầu:</b> Chuyển động quy mô lớn có xu hướng lệch về <b>bên trái</b>.<br>
+      <small style="color:var(--parchment-dim)"><i>(Đây là hệ quả của việc quan sát chuyển động trong hệ quy chiếu quay của Trái Đất).</i></small></p>
     </details>
     <details class="accord">
       <summary>📏 5. Chống hiểu lầm: Khoảng cách vs Các mùa</summary>
-      <p><b>Sai lầm phổ biến</b>: Cho rằng mùa hè do Trái Đất ở gần Mặt Trời hơn.<br>
-      <b>Sự thật thiên văn</b>: Điểm cận nhật (gần nhất, 147.1 triệu km) rơi vào khoảng ngày <b>3/1</b> — tức là đang giữa mùa Đông ở Bắc bán cầu! Khoảng cách chỉ biến thiên ~3.3% và không quyết định các mùa. Các mùa hoàn toàn do <b>góc nghiêng của trục</b> tạo nên.</p>
+      <p><b>Sai lầm phổ biến:</b> Cho rằng mùa hè do Trái Đất ở gần Mặt Trời hơn.<br>
+      <b>Sự thật thiên văn:</b> Điểm cận nhật (gần nhất, ~147.1 triệu km) rơi vào khoảng ngày <b>3/1</b> — tức là đang giữa mùa Đông ở Bắc bán cầu! Khoảng cách biến thiên không đáng kể (~3.3%) và không quyết định các mùa. Mùa là hệ quả của <b>góc nghiêng của trục</b>.</p>
+    </details>
+    <details class="accord" id="acc-weather">
+      <summary>🌦️ 6. Từ Mặt Trời đến Thời tiết & Khí hậu</summary>
+      <div style="font-size:10.5px;color:var(--parchment-dim);line-height:1.6;padding:0 0 7px">
+        <div style="padding:6px 8px;background:rgba(232,200,122,.06);border-left:2px solid var(--brass);border-radius:2px;margin-bottom:8px">
+          <div style="font-weight:600;color:var(--brass);margin-bottom:4px">Chuỗi liên kết Tự nhiên:</div>
+          <div style="font-family:var(--font-mono);font-size:9.5px;color:var(--parchment);line-height:1.8">
+            ☀️ <b>MẶT TRỜI</b><br>
+            ↓ <i>Góc nhập xạ khác nhau theo vĩ độ & mùa</i><br>
+            🌍 <b>Bề mặt Trái Đất bị nung nóng không đều</b><br>
+            ↓ <i>Chênh lệch nhiệt độ giữa Xích đạo và các Cực</i><br>
+            🌡️ <b>Chênh lệch khí áp (khối khí áp cao & áp thấp)</b><br>
+            ↓ <i>Không khí chuyển động sinh ra gió</i><br>
+            🌪️ <b>Hiệu ứng Coriolis làm lệch chuyển động quy mô lớn</b><br>
+            ↓ <i>Hình thành các vành đai hoàn lưu khí quyển</i><br>
+            🌧️ <b>Gió mùa · Mưa · Bão · Thời tiết & Khí hậu</b>
+          </div>
+        </div>
+        <div style="padding:6px 8px;background:rgba(100,181,246,.08);border-left:2px solid #64B5F6;border-radius:2px">
+          <b style="color:#64B5F6">🇻🇳 Việt Nam thì sao?</b><br>
+          Việt Nam nằm trong vùng nhiệt đới và chịu ảnh hưởng mạnh của hoàn lưu gió mùa châu Á.
+          Hà Nội, Đà Nẵng và TP.HCM nhận bức xạ Mặt Trời khác nhau theo vĩ độ và mùa.
+          Tuy nhiên nhiệt độ và lượng mưa thực tế còn chịu ảnh hưởng mạnh của biển, địa hình, gió mùa và các hệ thống thời tiết.
+        </div>
+      </div>
     </details>
   </div>
 
@@ -377,7 +443,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 
     <!-- Thí nghiệm 2: Góc chiếu & Định luật Cosine -->
     <div class="lab-card">
-      <h4>☀️ 2. Góc Nhập Xạ & Mật Độ Năng Lượng (Định Luật Cosine)</h4>
+      <h4>☀️ 2. Góc Nhập Xạ & Mật Độ Năng Lượng (Định Luật Cosine) <span class="ti-pill">MODEL · IDEALIZED</span></h4>
       <p>Cùng một chùm ánh sáng Mặt Trời tiết diện $1\text{ m}^2$, khi chiếu vuông góc (90°), năng lượng tập trung trong $1\text{ m}^2$. Khi chiếu xiên (30°), chùm sáng trải dài trên diện tích $2\text{ m}^2$, làm nhiệt lượng suy giảm 50%!</p>
       <div class="lab-interactive">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
@@ -391,11 +457,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
             <div id="insolation-area" style="font-size:13px;font-family:var(--font-mono);color:var(--brass)">1.15 m²</div>
           </div>
           <div>
-            <div style="font-size:9px;color:var(--brass-dim);text-transform:uppercase">Hiệu suất nhiệt</div>
+            <div style="font-size:9px;color:var(--brass-dim);text-transform:uppercase" title="Hệ số cos góc nhập xạ = sin(góc cao)">Hệ số chiếu hình học</div>
             <div id="insolation-power" style="font-size:13px;font-family:var(--font-mono);color:#3dd68c">86.6%</div>
           </div>
           <div>
-            <div style="font-size:9px;color:var(--brass-dim);text-transform:uppercase">Quang thông mặt đất</div>
+            <div style="font-size:9px;color:var(--brass-dim);text-transform:uppercase" title="Giá trị được tính từ hình học góc chiếu và hằng số Mặt Trời, chưa xét suy giảm do khí quyển, mây và aerosol.">Bức xạ lý tưởng</div>
             <div id="insolation-flux" style="font-size:13px;font-family:var(--font-mono);color:var(--parchment)">1,178 W/m²</div>
           </div>
         </div>
@@ -1078,6 +1144,69 @@ function toggleModal(id){
 }
 window.toggleModal=toggleModal;
 
+function toggleAdvTelemetry(){
+  const adv = $('adv-telemetry');
+  const btn = $('btn-toggle-adv');
+  if(!adv) return;
+  const isHidden = adv.style.display === 'none' || adv.style.display === '';
+  adv.style.display = isHidden ? 'inline-flex' : 'none';
+  if(btn) btn.innerHTML = isHidden ? 'Thu gọn số liệu ▴' : 'Số liệu nâng cao ▾';
+}
+window.toggleAdvTelemetry = toggleAdvTelemetry;
+
+function openAccord(idx){
+  const slab = $('right-slab');
+  if(slab && slab.classList.contains('collapsed')) toggleRight();
+  const btnTeach = $('tab-btn-teach');
+  if(btnTeach) switchTab('teach', btnTeach);
+  const accords = document.querySelectorAll('#tc-teach .accord');
+  accords.forEach((acc, i)=>{
+    acc.open = (i === idx);
+    if(i === idx){
+      setTimeout(()=>acc.scrollIntoView({behavior:'smooth', block:'nearest'}), 80);
+    }
+  });
+}
+window.openAccord = openAccord;
+
+function goToQuestion(q){
+  switch(q){
+    case 1:
+      openAccord(0);
+      break;
+    case 2:
+      openAccord(1);
+      break;
+    case 3:
+      toggleModal('lab-modal');
+      break;
+    case 4:
+      openAccord(2);
+      selectPt(21.03, 105.85);
+      break;
+    case 5:
+      openAccord(3);
+      break;
+    case 6:
+      openAccord(5);
+      break;
+  }
+}
+window.goToQuestion = goToQuestion;
+
+function highlightGnomon(){
+  const shadowEl = $('p-shadow');
+  if(shadowEl && shadowEl.parentElement){
+    const row = shadowEl.parentElement;
+    row.style.transition = 'background 0.3s ease';
+    row.style.background = 'rgba(232,200,122,.35)';
+    setTimeout(()=>{
+      row.style.background = 'transparent';
+    }, 1200);
+  }
+}
+window.highlightGnomon = highlightGnomon;
+
 function switchTab(id,btn){
   document.querySelectorAll('#right-slab .tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('#right-slab .seg-tab button').forEach(b=>b.classList.remove('active'));
@@ -1176,9 +1305,13 @@ function selectPt(lat,lon){
   const fL=`${Math.abs(lat).toFixed(2)}°${lat>=0?'B':'N'}`;
   const fN=`${Math.abs(lon).toFixed(2)}°${lon>=0?'Đ':'T'}`;
 
-  // Đặt tên tiêu đề slab
+  // Đặt tên tiêu đề slab & cập nhật telemetry vị trí
   const matchedCity=CFG.cities.find(c=>Math.hypot(c.lat-lat,c.lon-lon)<1.5);
-  $('p-title').textContent=matchedCity?matchedCity.n:`${fL}, ${fN}`;
+  const locTitle=matchedCity?matchedCity.n:`${fL}, ${fN}`;
+  $('p-title').textContent=locTitle;
+  if($('t-loc-name')) $('t-loc-name').textContent=locTitle;
+  if($('t-loc-alt')) $('t-loc-alt').textContent=alt>0?`${alt.toFixed(1)}°`:'0°';
+  if($('t-loc-daylen')) $('t-loc-daylen').textContent=`${dl.toFixed(1)}h`;
 
   $('p-coord').textContent=`${fL}, ${fN}`;
   
@@ -1209,20 +1342,24 @@ function selectPt(lat,lon){
   $('p-trend').textContent=diffMin>0?`📈 Ngày đang dài ra (+${diffMin} ph trong 30 ngày tới)`:`📉 Ngày đang ngắn lại (${diffMin} ph trong 30 ngày tới)`;
 
   const zBox=$('p-zenith-box');
-  if(Math.abs(lat)<=23.44){
-    let z1=null,z2=null;
-    for(let d=1;d<=365;d++){
-      const d1=solarDecl(d)*RAD, d2=solarDecl(d+1)*RAD;
-      if((d1<=lat&&d2>=lat)||(d1>=lat&&d2<=lat)){
-        if(z1===null)z1=d;else if(z2===null)z2=d;
+  if(zBox){
+    if(Math.abs(lat)<=23.44){
+      let z1=null,z2=null;
+      for(let d=1;d<=365;d++){
+        const d1=solarDecl(d)*RAD, d2=solarDecl(d+1)*RAD;
+        if((d1<=lat&&d2>=lat)||(d1>=lat&&d2<=lat)){
+          if(z1===null)z1=d;else if(z2===null)z2=d;
+        }
       }
+      zBox.style.display='block';
+      zBox.innerHTML=`☀️ <b>Mặt Trời lên thiên đỉnh tại đây:</b><br>
+        • Lần 1: Ngày <b>${doyStr(z1||1)}</b> · Lần 2: Ngày <b>${doyStr(z2||1)}</b><br>
+        <i>(Chính trưa 2 ngày này, góc chiếu 90°, cọc thẳng đứng không có bóng).</i>`;
+    }else{
+      zBox.style.display='block';
+      zBox.innerHTML=`☀️ <b>Hiện tượng Mặt Trời lên thiên đỉnh:</b><br>
+        <i>Không xảy ra tại vĩ độ này (${Math.abs(lat).toFixed(1)}°${lat>0?'B':'N'}). Chỉ các địa phương trong vùng nội chí tuyến (từ 23,44°N đến 23,44°B) mới có Mặt Trời lên thiên đỉnh (góc trưa đạt 90°).</i>`;
     }
-    zBox.style.display='block';
-    zBox.innerHTML=`☀️ <b>Mặt Trời lên thiên đỉnh tại đây:</b><br>
-      • Lần 1: Ngày <b>${doyStr(z1||1)}</b> · Lần 2: Ngày <b>${doyStr(z2||1)}</b><br>
-      <i>(Chính trưa 2 ngày này, góc chiếu 90°, cọc thẳng đứng không có bóng).</i>`;
-  }else{
-    zBox.style.display='none';
   }
 
   $('left-slab').style.display='block';
@@ -1337,6 +1474,13 @@ function updInfo(){
   
   const sp=$('t-season');
   if(sp)sp.textContent=`${sInfo.icon} ${sInfo.name}`;
+
+  if(S.selLat!==undefined&&S.selLat!==null){
+    const alt=noonAlt(S.selLat,solarDecl(d));
+    const dl=dayLen(S.selLat,d);
+    if($('t-loc-alt')) $('t-loc-alt').textContent=alt>0?`${alt.toFixed(1)}°`:'0°';
+    if($('t-loc-daylen')) $('t-loc-daylen').textContent=`${dl.toFixed(1)}h`;
+  }
 }
 
 /* ══════════════════════════════════════════════════
