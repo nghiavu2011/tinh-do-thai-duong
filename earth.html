@@ -513,7 +513,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 
     <!-- Lớp hiển thị -->
     <div class="cg">
-      <button class="ghost on" id="b-term" onclick="tf('term')">Sáng/Tối</button>
+      <button class="ghost" id="b-term" onclick="tf('term')" title="Bật/tắt chế độ ngày đêm: Khi tắt, toàn bộ Trái Đất sáng rõ để quan sát bản đồ chi tiết; khi bật, hiển thị mảng sáng tối với đèn thành phố ban đêm rực sáng.">Sáng/Tối</button>
       <button class="ghost on" id="b-tmark" onclick="tf('tmark')">Thời khắc</button>
       <button class="ghost" id="b-grid" onclick="tf('grid')">Lưới tọa độ</button>
       <button class="ghost on" id="b-ray" onclick="tf('ray')" title="DIAGRAM · NOT TO SCALE: Các tia sáng được phóng đại để minh họa hình học chiếu sáng. Kích thước, số lượng và chiều rộng của tia không biểu diễn mật độ photon hay kích thước vật lý thực.">Tia nắng <span style="font-size:8px;opacity:.8">DIAGRAM</span></button>
@@ -658,7 +658,7 @@ function latLonXYZ(lat,lon,R){
    ══════════════════════════════════════════════════ */
 const S={
   doy:263,eRot:Math.PI,rotOn:true,rotSpd:1,revOn:false,revSpd:1,
-  term:true,tmark:true,grid:false,ray:true,
+  term:false,tmark:true,grid:false,ray:true,
   selLat:null,selLon:null
 };
 let camTgt=null,ctrlTgt=null;
@@ -763,7 +763,8 @@ const EU={
   hasNight:{value:false},
   hasSpec:{value:false},
   hasCloud:{value:false},
-  sunDir:{value:new THREE.Vector3(1,0,0)}
+  sunDir:{value:new THREE.Vector3(1,0,0)},
+  dayNightMode:{value:0.0} // 0.0 = Full Earth bright, 1.0 = Day/Night mode
 };
 
 const eMat=new THREE.ShaderMaterial({
@@ -787,6 +788,7 @@ const eMat=new THREE.ShaderMaterial({
     uniform bool hasSpec;
     uniform bool hasCloud;
     uniform vec3 sunDir;
+    uniform float dayNightMode;
     varying vec3 vWN;
     varying vec3 vWP;
     varying vec2 vUv;
@@ -798,14 +800,46 @@ const eMat=new THREE.ShaderMaterial({
 
       vec4 albTex=texture2D(uAlb, vUv);
       vec3 alb=albTex.rgb;
+
+      // ─── CHẾ ĐỘ 1: TẮT NGÀY ĐÊM (FULL SÁNG ĐỂ QUAN SÁT CHI TIẾT ĐỊA CẦU) ───
+      if(dayNightMode < 0.05){
+        // Chiếu sáng toàn phần theo hướng nhìn camera (view-aligned ambient + diffuse)
+        float diff = 0.85 + 0.15 * max(dot(N, V), 0.0);
+        vec3 lit = alb * diff * 1.35;
+
+        // Phản chiếu đại dương nhẹ nhàng để tăng chiều sâu
+        if(hasSpec){
+          float sp = texture2D(uSpec, vUv).r;
+          lit += vec3(0.9, 0.95, 1.0) * sp * 0.15;
+        }
+
+        // Lớp mây mỏng trong suốt để không che khuất các quốc gia và đường bờ biển
+        if(hasCloud){
+          float cl = smoothstep(0.10, 0.85, texture2D(uCloud, vUv).r) * 0.32;
+          lit = mix(lit, vec3(1.0), cl);
+        }
+
+        // Quầng khí quyển dịu mát quanh đường chân trời
+        float fres = pow(1.0 - max(dot(N, V), 0.0), 3.0);
+        lit += vec3(0.25, 0.55, 1.0) * fres * 0.55;
+
+        // Cân bằng màu rực rỡ, sắc nét
+        float g = dot(lit, vec3(0.299, 0.587, 0.114));
+        lit = mix(vec3(g), lit, 1.15);
+
+        gl_FragColor = vec4(lit, 1.0);
+        return;
+      }
+
+      // ─── CHẾ ĐỘ 2: BẬT NGÀY ĐÊM (MẢNG SÁNG / MẢNG TỐI VỚI ĐÈN NHÂN TẠO) ───
       float nl=dot(N, Ldir);
 
       // Độ khuếch tán ánh sáng và làm dịu ranh giới ngày đêm (Terminator Diffusion)
-      float diff=max(nl, 0.0) + pow(max(0.0, 1.0 - abs(nl)), 3.0) * 0.025;
+      float diff=max(nl, 0.0) + pow(max(0.0, 1.0 - abs(nl)), 3.0) * 0.035;
       vec3 sunCol=vec3(1.0, 0.98, 0.94);
-      vec3 lit=alb * diff * sunCol * 1.4;
+      vec3 lit=alb * diff * sunCol * 1.38;
 
-      // Phản chiếu ánh sáng mặt trời trên đại dương (từ Specular Map của Tinh Đồ Thái Dương)
+      // Phản chiếu ánh sáng mặt trời trên đại dương
       if(hasSpec){
         float sp=texture2D(uSpec, vUv).r;
         if(sp > 0.02){
@@ -815,33 +849,35 @@ const eMat=new THREE.ShaderMaterial({
         }
       }
 
-      // Lớp mây bề mặt (từ Cloud Map của Tinh Đồ Thái Dương)
+      // Lớp mây bề mặt ban ngày
       float cl=0.0;
       if(hasCloud){
-        cl=smoothstep(0.04, 0.70, texture2D(uCloud, vUv).r) * 0.82;
+        cl=smoothstep(0.04, 0.70, texture2D(uCloud, vUv).r) * 0.80;
         vec3 cloudLit=vec3(0.98, 0.98, 1.0) * (diff * 1.1 + 0.02);
         lit=mix(lit, cloudLit, cl);
       }
 
-      // Đèn đêm thành phố rực rỡ màu vàng kim ấm áp (từ Night Map của Tinh Đồ Thái Dương)
+      // ─── MẢNG TỐI: ĐÈN NHÂN TẠO RỰC RỠ & ĐỊA HÌNH KHÔNG BỊ ĐEN KỊT ───
+      float night = smoothstep(0.08, -0.16, nl);
+
+      // 1. Đèn đêm thành phố nhân tạo (màu vàng kim ấm áp, rực rỡ từ Night Map)
       if(hasNight){
-        float night=smoothstep(0.06, -0.16, nl);
-        vec3 nightColor=texture2D(uNight, vUv).rgb;
-        vec3 cityLights=vec3(1.0, 0.76, 0.38) * nightColor * 3.8 * (1.0 - cl * 0.82);
+        vec3 nightColor = texture2D(uNight, vUv).rgb;
+        vec3 cityLights = vec3(1.0, 0.82, 0.42) * nightColor * 5.2 * (1.0 - cl * 0.65);
         lit += cityLights * night;
       }
+
+      // 2. Ánh sáng bề mặt ban đêm: Lục địa và đại dương vẫn thấy rõ nét, không đen kịt lạnh lẽo
+      vec3 nightAmbient = (alb * 0.25 + vec3(0.016, 0.030, 0.060)) * night;
+      lit += nightAmbient;
 
       // Hào quang tán xạ khí quyển ở rìa Trái Đất (Atmospheric Horizon Rim)
       float fres=pow(1.0 - max(dot(N, V), 0.0), 3.2);
       float fwd=pow(max(dot(V, -Ldir), 0.0), 3.0);
-      vec3 uAtmo=vec3(0.28, 0.55, 1.0);
-      lit += uAtmo * fres * (diff * 0.9 + fwd * 1.4) * 0.75;
+      vec3 uAtmo=vec3(0.28, 0.58, 1.0);
+      lit += uAtmo * fres * (diff * 0.9 + fwd * 1.4 + 0.22 * night) * 0.75;
 
-      // Ánh sáng đêm vũ trụ giúp lục địa ban đêm không bị tối mịt
-      float nightDark=smoothstep(0.08, -0.15, nl);
-      lit += (alb * 0.10 + vec3(0.008, 0.016, 0.038)) * nightDark;
-
-      // Cân chỉnh độ bão hòa màu sống động (Vibrance boost từ Tinh Đồ Thái Dương)
+      // Cân chỉnh độ bão hòa màu sống động (Vibrance boost)
       float g=dot(lit, vec3(0.299, 0.587, 0.114));
       lit=mix(vec3(g), lit, 1.18);
 
@@ -854,7 +890,10 @@ eSpin.add(eMesh);
 /* ══════════════════════════════════════════════════
    10. BẦU KHÍ QUYỂN PHÁT QUANG (Radiant Atmosphere Glow)
    ══════════════════════════════════════════════════ */
-const atU={sunDir:{value:EU.sunDir.value}};
+const atU={
+  sunDir:{value:EU.sunDir.value},
+  dayNightMode:{value:0.0}
+};
 const atMat=new THREE.ShaderMaterial({
   uniforms:atU,
   transparent:true,
@@ -871,6 +910,7 @@ const atMat=new THREE.ShaderMaterial({
     }`,
   fragmentShader:`
     uniform vec3 sunDir;
+    uniform float dayNightMode;
     varying vec3 vWN;
     varying vec3 vWP;
     void main(){
@@ -880,12 +920,14 @@ const atMat=new THREE.ShaderMaterial({
       float mu=max(dot(N, V), 0.0);
       float limb=pow(1.0 - mu, 2.2);
       float nl=dot(N, Ldir);
-      float lightAmt=clamp((nl + 0.22) / 0.5, 0.0, 1.0);
-      float fwd=pow(max(dot(V, -Ldir), 0.0), 5.0);
-      vec3 uAtmo=vec3(0.3, 0.6, 1.0);
-      vec3 c=uAtmo * (limb * (0.6 * lightAmt + 1.8 * fwd * lightAmt)) * 1.6;
-      c += uAtmo * vec3(1.4, 0.5, 0.25) * limb * fwd * lightAmt;
-      gl_FragColor=vec4(c, limb * lightAmt);
+      
+      // Khi tắt ngày đêm (dayNightMode = 0): Quầng khí quyển đều đặn quanh toàn bộ địa cầu
+      float lightAmt = mix(1.0, clamp((nl + 0.22) / 0.5, 0.0, 1.0), dayNightMode);
+      float fwd = pow(max(dot(V, -Ldir), 0.0), 5.0) * dayNightMode;
+      vec3 uAtmo = vec3(0.3, 0.6, 1.0);
+      vec3 c = uAtmo * (limb * (0.6 * lightAmt + 1.8 * fwd)) * 1.6;
+      c += uAtmo * vec3(1.4, 0.5, 0.25) * limb * fwd;
+      gl_FragColor = vec4(c, limb * (lightAmt * 0.75 + 0.25));
     }`,
 });
 eG.add(new THREE.Mesh(new THREE.SphereGeometry(CFG.earthR*1.15,64,48),atMat));
@@ -1072,10 +1114,16 @@ async function loadTex(){
   const specSrc = (window.EARTH_TEX && window.EARTH_TEX.spec);
   const cloudSrc = (window.EARTH_TEX && window.EARTH_TEX.cloud) || CFG.texCloud;
 
+  const maxAniso = Math.min(rdr.capabilities.getMaxAnisotropy(), 16);
+
   try {
     const dt = await ld.loadAsync(daySrc);
     dt.colorSpace = THREE.SRGBColorSpace;
     dt.wrapS = dt.wrapT = THREE.RepeatWrapping;
+    dt.anisotropy = maxAniso;
+    dt.minFilter = THREE.LinearMipmapLinearFilter;
+    dt.magFilter = THREE.LinearFilter;
+    dt.generateMipmaps = true;
     EU.uAlb.value = dt;
     const lEl = document.getElementById('loading');
     if(lEl) lEl.classList.add('done');
@@ -1088,6 +1136,10 @@ async function loadTex(){
   ld.loadAsync(nightSrc).then(t=>{
     t.colorSpace = THREE.SRGBColorSpace;
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.anisotropy = maxAniso;
+    t.minFilter = THREE.LinearMipmapLinearFilter;
+    t.magFilter = THREE.LinearFilter;
+    t.generateMipmaps = true;
     EU.uNight.value = t;
     EU.hasNight.value = true;
   }).catch(e=>console.warn('Lỗi nạp night texture:', e));
@@ -1095,6 +1147,10 @@ async function loadTex(){
   if(specSrc){
     ld.loadAsync(specSrc).then(t=>{
       t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      t.anisotropy = Math.min(maxAniso, 8);
+      t.minFilter = THREE.LinearMipmapLinearFilter;
+      t.magFilter = THREE.LinearFilter;
+      t.generateMipmaps = true;
       EU.uSpec.value = t;
       EU.hasSpec.value = true;
     }).catch(e=>console.warn('Lỗi nạp spec texture:', e));
@@ -1103,6 +1159,10 @@ async function loadTex(){
   if(cloudSrc){
     ld.loadAsync(cloudSrc).then(t=>{
       t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      t.anisotropy = Math.min(maxAniso, 8);
+      t.minFilter = THREE.LinearMipmapLinearFilter;
+      t.magFilter = THREE.LinearFilter;
+      t.generateMipmaps = true;
       EU.uCloud.value = t;
       EU.hasCloud.value = true;
     }).catch(e=>console.warn('Lỗi nạp cloud texture:', e));
@@ -1118,7 +1178,11 @@ function tf(k){
   S[k]=!S[k];
   const b=$('b-'+k);if(b)b.classList.toggle('on');
   if(k==='grid')gridG.visible=S.grid;
-  if(k==='term')termLine.visible=S.term;
+  if(k==='term'){
+    termLine.visible=S.term;
+    EU.dayNightMode.value = S.term ? 1.0 : 0.0;
+    atU.dayNightMode.value = S.term ? 1.0 : 0.0;
+  }
   if(k==='tmark')tmG.visible=S.tmark;
   if(k==='ray')solarRaysGroup.visible=S.ray;
 }
@@ -1131,6 +1195,10 @@ function goS(d){
   const a=(d-79)/365.25*2*Math.PI,x=CFG.orbitR*Math.cos(a),z=CFG.orbitR*Math.sin(a);
   camTgt=new THREE.Vector3(x+10,10,z+22);
   ctrlTgt=new THREE.Vector3(x,0,z);
+  
+  // Tự động kích hoạt chế độ Ngày/Đêm khi khảo sát 4 Mùa nếu đang tắt
+  if(!S.term) tf('term');
+  
   updAll();
 }
 window.goS=goS;
