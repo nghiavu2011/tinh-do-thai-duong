@@ -545,12 +545,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 
     <div class="sep"></div>
 
-    <!-- Lớp mảng kiến tạo, vành đai lửa & lưới tọa độ -->
+    <!-- Lớp mảng kiến tạo, vành đai lửa, cọc tiêu & lưới tọa độ -->
     <div class="cg">
       <button class="ghost on" id="btn-plates" onclick="togglePlates()">🌋 Mảng PB2002</button>
       <button class="ghost on" id="btn-rof" onclick="toggleRingOfFire()">🔥 Vành đai lửa</button>
       <button class="ghost" id="btn-grid" onclick="toggleGrid()">🌐 Lưới tọa độ</button>
-      <button class="ghost on" id="btn-sun" onclick="toggleSun()">☀️ Ngày/Đêm</button>
+      <button class="ghost on" id="btn-markers" onclick="toggleMarkers()" title="Bật/Tắt cọc tiêu địa danh 3D trên địa cầu">📍 Địa danh</button>
+      <button class="ghost" id="btn-sun" onclick="toggleSun()" title="Bật/Tắt bóng tối ngày đêm theo góc chiếu Mặt Trời">🌗 Ngày/Đêm</button>
     </div>
   </div>
 
@@ -942,13 +943,20 @@ const earthGroup = new THREE.Group();
 earthGroup.rotation.z = -23.44 * DEG; // Độ nghiêng trục Trái Đất
 scene.add(earthGroup);
 
-// Ánh sáng
+// Ánh sáng: Mặc định chiếu sáng toàn cảnh 100% đồng đều mọi góc nhìn (không bóng tối)
 const sunLight = new THREE.DirectionalLight(0xfffaed, 2.2);
 sunLight.position.set(20, 5, 15);
+sunLight.visible = false; // Mặc định tắt để toàn cảnh Trái Đất sáng 100% đồng bộ mọi phía
 scene.add(sunLight);
 
-const ambientLight = new THREE.AmbientLight(0x223344, 0.45);
+// Đèn môi trường chính: Sáng trắng 100% đồng đều mọi bán cầu theo yêu cầu quan sát
+const ambientLight = new THREE.AmbientLight(0xffffff, 1.25);
 scene.add(ambientLight);
+
+// Đèn bổ trợ gắn theo camera (Headlight): Giúp các nếp nhăn địa hình 3D luôn sáng rõ và nổi khối từ mọi góc nhìn
+const cameraLight = new THREE.DirectionalLight(0xffffff, 0.4);
+camera.add(cameraLight);
+scene.add(camera);
 
 // Vầng sáng khí quyển (Atmospheric Rim Glow)
 const atmoGeo = new THREE.SphereGeometry(CFG.earthR * 1.018, 64, 64);
@@ -1221,18 +1229,47 @@ function initCoordinateGrid() {
    7. CỌC TIÊU ĐỊA DANH 3D & DANH BẠ
    ══════════════════════════════════════════════════ */
 function initLandmarksMarkers() {
-  const pinGeo = new THREE.ConeGeometry(0.025, 0.08, 16);
-  pinGeo.translate(0, 0.04, 0);
-  pinGeo.rotateX(Math.PI / 2);
+  while (markersGroup.children.length > 0) {
+    markersGroup.remove(markersGroup.children[0]);
+  }
 
+  // Cọc tiêu địa danh chuẩn GIS không gian hiện đại: Chân kim mảnh + Hạt ngọc phát sáng + Vòng định vị chân đế
   landmarksData.forEach(lm => {
-    const pinMat = new THREE.MeshBasicMaterial({ color: lm.elev_m < 0 ? 0x00ccee : 0xe8c87a });
-    const pin = new THREE.Mesh(pinGeo, pinMat);
-    const pos = latLonToVec3(lm.lat, lm.lon, CFG.earthR * 1.015);
-    pin.position.copy(pos);
-    pin.lookAt(pos.clone().multiplyScalar(2));
-    pin.userData = { id: lm.id };
-    markersGroup.add(pin);
+    const isTrench = lm.elev_m <= 0;
+    const mainColor = isTrench ? 0x00ccee : 0xe8c87a;
+    const glowColor = isTrench ? 0x66eeff : 0xffe6a3;
+
+    const marker = new THREE.Group();
+    marker.userData = { id: lm.id };
+
+    // 1. Chân ghim siêu mảnh (Pin Stem)
+    const stemGeo = new THREE.CylinderGeometry(0.0016, 0.0016, 0.038, 8);
+    stemGeo.translate(0, 0.019, 0);
+    stemGeo.rotateX(Math.PI / 2);
+    const stemMat = new THREE.MeshBasicMaterial({ color: mainColor, transparent: true, opacity: 0.85 });
+    const stem = new THREE.Mesh(stemGeo, stemMat);
+    stem.userData = { id: lm.id };
+    marker.add(stem);
+
+    // 2. Đầu ngọc phát sáng nhỏ nhắn (Glowing Pin Head)
+    const headGeo = new THREE.SphereGeometry(0.014, 16, 16);
+    headGeo.translate(0, 0, 0.038);
+    const headMat = new THREE.MeshBasicMaterial({ color: glowColor });
+    const head = new THREE.Mesh(headGeo, headMat);
+    head.userData = { id: lm.id };
+    marker.add(head);
+
+    // 3. Vòng hào quang chân đế đánh dấu tâm tọa độ (Coordinate Base Ring)
+    const ringGeo = new THREE.RingGeometry(0.006, 0.015, 24);
+    const ringMat = new THREE.MeshBasicMaterial({ color: mainColor, side: THREE.DoubleSide, transparent: true, opacity: 0.65 });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.userData = { id: lm.id };
+    marker.add(ring);
+
+    const pos = latLonToVec3(lm.lat, lm.lon, CFG.earthR * 1.003);
+    marker.position.copy(pos);
+    marker.lookAt(pos.clone().multiplyScalar(2));
+    markersGroup.add(marker);
   });
 
   renderLandmarksList();
@@ -1762,14 +1799,15 @@ canvas.addEventListener('click', (e) => {
   mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
   raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects([earthMesh, ...markersGroup.children]);
+  const intersects = raycaster.intersectObjects([earthMesh, ...markersGroup.children], true);
 
   if (intersects.length > 0) {
     const hit = intersects[0];
 
-    // Click trúng cọc tiêu
-    if (hit.object.userData && hit.object.userData.id) {
-      selectLandmark(hit.object.userData.id);
+    // Click trúng cọc tiêu địa danh (hỗ trợ cả mesh con và group)
+    const landmarkId = (hit.object.userData && hit.object.userData.id) || (hit.object.parent && hit.object.parent.userData && hit.object.parent.userData.id);
+    if (landmarkId) {
+      selectLandmark(landmarkId);
       return;
     }
 
@@ -1891,10 +1929,28 @@ window.toggleGrid = function() {
   document.getElementById('btn-grid').classList.toggle('on', gridGroup.visible);
 };
 
+window.toggleMarkers = function() {
+  markersGroup.visible = !markersGroup.visible;
+  const btn = document.getElementById('btn-markers');
+  if (btn) btn.classList.toggle('on', markersGroup.visible);
+};
+
 window.toggleSun = function() {
-  sunLight.visible = !sunLight.visible;
-  ambientLight.intensity = sunLight.visible ? 0.45 : 1.2;
-  document.getElementById('btn-sun').classList.toggle('on', sunLight.visible);
+  const isDayNight = !sunLight.visible;
+  sunLight.visible = isDayNight;
+  if (isDayNight) {
+    // Chế độ mô phỏng Ngày/Đêm thực tế: Nắng gắt một bên, phía đối diện chìm vào bóng đêm
+    ambientLight.color.setHex(0x223344);
+    ambientLight.intensity = 0.42;
+    cameraLight.intensity = 0.0;
+  } else {
+    // Chế độ Mặc định: Chiếu sáng toàn cảnh 100% đồng đều mọi phía (không bóng tối)
+    ambientLight.color.setHex(0xffffff);
+    ambientLight.intensity = 1.25;
+    cameraLight.intensity = 0.4;
+  }
+  const btn = document.getElementById('btn-sun');
+  if (btn) btn.classList.toggle('on', isDayNight);
 };
 
 window.toggleLeftSlab = function() {
