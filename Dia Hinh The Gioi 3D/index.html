@@ -39,13 +39,14 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--parchme
 #c{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
 
 /* ═══ 3. MASTHEAD THƯƠNG HIỆU & OMNIBOX TÌM KIẾM ═══ */
-.masthead{position:absolute;top:0;left:0;padding:calc(14px + env(safe-area-inset-top,0px)) 20px 0;z-index:20;pointer-events:none}
+.masthead{position:absolute;top:0;left:0;max-width:calc(100% - 380px);padding:calc(14px + env(safe-area-inset-top,0px)) 20px 0;z-index:20;pointer-events:none}
 .masthead>*{pointer-events:auto}
 .eyebrow{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--brass-dim);margin:0 0 4px;font-weight:500}
 .wordmark{font-family:var(--font-display);font-weight:600;font-size:clamp(22px,3.2vw,32px);line-height:1;margin:0;color:var(--parchment)}
 .wordmark em{font-style:normal;color:var(--brass)}
 .rule{width:52px;height:1px;background:linear-gradient(90deg,var(--brass),transparent);margin:8px 0 6px}
 .mast-actions{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap}
+.edu-ribbon{display:flex;align-items:center;gap:5px;margin-top:5px;flex-wrap:wrap;max-width:100%}
 .brand-link{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:10px;color:var(--parchment);text-decoration:none;background:rgba(232,200,122,.08);border:1px solid var(--hairline-soft);padding:3px 8px;border-radius:3px;transition:.18s;cursor:pointer}
 .brand-link:hover{background:rgba(232,200,122,.2);color:var(--brass);border-color:var(--hairline)}
 
@@ -67,23 +68,23 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--parchme
 .ti-pill.real{background:rgba(61,214,140,.12);border-color:rgba(61,214,140,.3);color:var(--accent-green)}
 
 /* ═══ 5. CÁC PANEL KÍNH MỜ (SLABS & DRAWERS) ═══ */
-.slab{position:fixed;z-index:15;background:var(--panel);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--hairline);padding:14px 16px;font-size:11.5px;transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .3s}
+.slab{position:fixed;z-index:25;background:var(--panel);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--hairline);padding:14px 16px;font-size:11.5px;transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .3s}
 .slab-top{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
 .glyph{width:8px;height:8px;border-radius:50%;flex:none;transform:translateY(-2px);box-shadow:0 0 10px 1px currentColor;background:currentColor}
-.slab-kind{font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass-dim);font-weight:500}
+.slab-kind{font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass-dim);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}
 .slab-name{font-family:var(--font-display);font-size:22px;font-weight:600;line-height:1.1;margin:0;color:var(--parchment)}
 .slab-close{margin-left:auto;background:none;border:none;color:var(--parchment-dim);font-size:16px;cursor:pointer;line-height:1;transition:.15s}
 .slab-close:hover{color:var(--brass)}
 
 /* Slab Trái: Danh bạ địa lý */
-#left-slab{top:calc(105px + env(safe-area-inset-top,0px));left:20px;width:300px;max-height:calc(100vh - 190px);overflow-y:auto;display:none}
-#left-tab{position:fixed;top:calc(105px + env(safe-area-inset-top,0px));left:0;z-index:16;writing-mode:vertical-rl;background:rgba(7,10,22,.86);border:1px solid var(--hairline);border-left:0;color:var(--brass);font-family:var(--font-mono);font-size:10px;font-weight:500;padding:10px 5px;border-radius:0 4px 4px 0;cursor:pointer;letter-spacing:.08em;transition:.18s;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#left-slab{top:calc(105px + env(safe-area-inset-top,0px));left:20px;width:300px;max-height:calc(100vh - 190px);overflow-y:auto;display:none;z-index:25}
+#left-tab{position:fixed;top:calc(105px + env(safe-area-inset-top,0px));left:0;z-index:26;writing-mode:vertical-rl;background:rgba(7,10,22,.86);border:1px solid var(--hairline);border-left:0;color:var(--brass);font-family:var(--font-mono);font-size:10px;font-weight:500;padding:10px 5px;border-radius:0 4px 4px 0;cursor:pointer;letter-spacing:.08em;transition:.18s;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 #left-tab:hover{background:rgba(232,200,122,.2);color:var(--parchment)}
 
 /* Slab Phải: Thẻ Tri Thức 5W & Trắc Diện Cắt Ngang */
-#right-slab{top:calc(45px + env(safe-area-inset-top,0px));right:20px;width:340px;max-height:calc(100vh - 130px);overflow-y:auto}
+#right-slab{top:calc(78px + env(safe-area-inset-top,0px));right:20px;width:340px;max-height:calc(100vh - 150px);overflow-y:auto;z-index:25}
 #right-slab.collapsed{transform:translateX(calc(100% + 30px));opacity:0;pointer-events:none}
-#right-tab{position:fixed;top:calc(45px + env(safe-area-inset-top,0px));right:0;z-index:16;writing-mode:vertical-rl;background:rgba(7,10,22,.86);border:1px solid var(--hairline);border-right:0;color:var(--brass);font-family:var(--font-mono);font-size:10px;font-weight:500;padding:10px 5px;border-radius:4px 0 0 4px;cursor:pointer;letter-spacing:.08em;transition:.18s;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#right-tab{position:fixed;top:calc(78px + env(safe-area-inset-top,0px));right:0;z-index:26;writing-mode:vertical-rl;background:rgba(7,10,22,.86);border:1px solid var(--hairline);border-right:0;color:var(--brass);font-family:var(--font-mono);font-size:10px;font-weight:500;padding:10px 5px;border-radius:4px 0 0 4px;cursor:pointer;letter-spacing:.08em;transition:.18s;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 #right-tab:hover{background:rgba(232,200,122,.2);color:var(--parchment)}
 
 /* Thẻ Tri thức 5W */
@@ -338,7 +339,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
       <option value="mid_atlantic">🌋 Sống núi giữa Đại Tây Dương: Nam Mỹ ➔ Khe nứt tách giãn ➔ Châu Phi</option>
     </select>
 
-    <!-- CÁC CÔNG CỤ GIÁO DỤC TƯƠNG TÁC -->
+  </div>
+
+  <!-- CÁC CÔNG CỤ GIÁO DỤC TƯƠNG TÁC (EDU RIBBON) -->
+  <div class="edu-ribbon">
     <button class="brand-link" onclick="openLessonsModal()" title="5 bài học mẫu chuẩn sư phạm 3–6 phút">
       <span>📚</span> Bài Học (5)
     </button>
@@ -461,6 +465,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 
   <!-- TAB 2: MẶT CẮT NGANG THỰC NGHIỆM (REAL DEM SAMPLING) -->
   <div id="tab-profile" class="tab-content">
+    <button class="ghost on" style="width:100%;margin-bottom:8px;padding:6px 10px;background:rgba(0,204,238,.12);border-color:var(--accent-cyan);color:var(--accent-cyan);font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer" onclick="start3DMeasureMode()" title="Click 2 điểm bất kỳ trên quả cầu 3D để tạo mặt cắt thực tế">
+      <span>🎯</span> Chỉ Định 2 Điểm Trên 3D Để Cắt Lát
+    </button>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
       <span style="font-size:10px;color:var(--brass);font-weight:600" id="prof-title">Trắc diện: Vịnh Bengal ➔ Everest ➔ Tarim</span>
     </div>
@@ -478,12 +485,15 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
       </div>
     </div>
     <div style="margin-top:8px;font-size:10px;color:var(--parchment-dim);line-height:1.5">
-      💡 <b>Thực nghiệm khoa học:</b> Đồ thị này được lấy mẫu thực tế từ dữ liệu địa hình toàn cầu <b>NOAA ETOPO & GEBCO (720×360)</b> dọc theo đường cung lớn (Great Circle) với 180 điểm lấy mẫu liên tục.
+      💡 <b>Thực nghiệm khoa học:</b> Lát cắt được hiển thị trực tiếp bằng <b>đường ruy-băng 3D trên quả cầu</b> và lấy mẫu từ <b>NOAA ETOPO & GEBCO (720×360)</b> dọc theo đường cung lớn (Great Circle).
     </div>
   </div>
 
   <!-- TAB 3: THƯỚC ĐO KHOẢNG CÁCH A–B (MEASUREMENT ENGINE) -->
   <div id="tab-measure" class="tab-content">
+    <button class="ghost on" style="width:100%;margin-bottom:8px;padding:6px 10px;background:rgba(0,204,238,.12);border-color:var(--accent-cyan);color:var(--accent-cyan);font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer" onclick="start3DMeasureMode()" title="Click 2 điểm bất kỳ trên quả cầu 3D để đo khoảng cách">
+      <span>🎯</span> Chỉ Định 2 Điểm Trên 3D Để Đo Đạc
+    </button>
     <p style="font-size:10.5px;color:var(--parchment-dim);margin-bottom:8px">Đo khoảng cách trắc địa thực tế (Great Circle Distance) và trắc diện giữa 2 điểm bất kỳ trên Trái Đất:</p>
     <div style="display:flex;flex-direction:column;gap:6px;background:rgba(232,200,122,.04);border:1px solid var(--hairline-soft);border-radius:3px;padding:8px">
       <div style="display:flex;justify-content:space-between"><span style="color:var(--parchment-dim)">Điểm A:</span><b id="m-pt-a" style="font-family:var(--font-mono);color:var(--brass)">Chưa chọn (Click trên quả cầu)</b></div>
@@ -491,7 +501,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
       <div style="display:flex;justify-content:space-between;border-top:1px solid var(--hairline-soft);padding-top:4px"><span style="color:var(--parchment-dim)">Khoảng cách:</span><b id="m-dist" style="font-family:var(--font-mono);color:var(--accent-cyan);font-size:12px">-- km</b></div>
     </div>
     <div style="display:flex;gap:6px;margin-top:8px">
-      <button class="ghost on" id="btn-start-measure" onclick="startMeasureMode()">📏 Bắt đầu đo A–B</button>
       <button class="ghost" onclick="resetMeasure()">🧹 Xóa đường đo</button>
     </div>
   </div>
@@ -1308,7 +1317,52 @@ function renderLandmarksList() {
 let flyTarget = null, flyStartTime = 0;
 const FLY_DURATION = 1200;
 
-function flyToLocation(lat, lon, dist = 4.2) {
+// Web Audio Synthesizer: Hiệu ứng âm thanh không gian tương tác (Zero dependencies)
+let audioCtx = null;
+function playChime(freq = 587.33, duration = 0.22) {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(freq * 1.35, audioCtx.currentTime + duration);
+    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  } catch (e) {}
+}
+
+// Hiệu ứng sóng radar phát sáng lan tỏa 3D (Radar Ping Beacon)
+let activePulseRing = null;
+let pulseStartTime = 0;
+function triggerRadarPulse(lat, lon, color = 0xe8c87a) {
+  if (activePulseRing) {
+    earthGroup.remove(activePulseRing);
+    if (activePulseRing.geometry) activePulseRing.geometry.dispose();
+    if (activePulseRing.material) activePulseRing.material.dispose();
+    activePulseRing = null;
+  }
+  const ringGeo = new THREE.RingGeometry(0.012, 0.024, 32);
+  const ringMat = new THREE.MeshBasicMaterial({ 
+    color, 
+    side: THREE.DoubleSide, 
+    transparent: true, 
+    opacity: 0.9 
+  });
+  activePulseRing = new THREE.Mesh(ringGeo, ringMat);
+  const pos = latLonToVec3(lat, lon, CFG.earthR * 1.012);
+  activePulseRing.position.copy(pos);
+  activePulseRing.lookAt(pos.clone().multiplyScalar(2));
+  earthGroup.add(activePulseRing);
+  pulseStartTime = performance.now();
+}
+
+function flyToLocation(lat, lon, dist = 3.5) {
   const phi = (90 - lat) * DEG;
   const theta = (lon + 180) * DEG;
   
@@ -1332,6 +1386,12 @@ window.selectLandmark = function(id) {
   const lm = landmarksData.find(l => l.id === id);
   if (!lm) return;
   activeLandmark = lm;
+
+  // Âm thanh phản hồi xúc giác nhẹ nhàng
+  playChime(587.33);
+
+  // Hiệu ứng sóng radar 3D tại tọa độ mốc
+  triggerRadarPulse(lm.lat, lm.lon, lm.elev_m < 0 ? 0x00ccee : 0xe8c87a);
 
   // Active item trong danh bạ
   document.querySelectorAll('.landmark-item').forEach(el => el.classList.remove('active'));
@@ -1364,7 +1424,8 @@ window.selectLandmark = function(id) {
     generateRealProfile(lm.transect.p1[0], lm.transect.p1[1], lm.transect.p2[0], lm.transect.p2[1], lm.transect.name);
   }
 
-  flyToLocation(lm.lat, lm.lon);
+  // Camera bay mượt mà vào cận cảnh đỉnh núi / rãnh biển
+  flyToLocation(lm.lat, lm.lon, 3.5);
   document.getElementById('right-slab').classList.remove('collapsed');
 };
 
@@ -1372,6 +1433,57 @@ window.selectLandmark = function(id) {
    9. PHÒNG THÍ NGHIỆM TRẮC DIỆN THỰC NGHIỆM (REAL DEM SAMPLING)
    ══════════════════════════════════════════════════ */
 let currentProfileData = null; // { points: [{lat, lon, distKm, elev}], totalDist, minH, maxH, name }
+
+// Vẽ dải trắc diện 3D và 2 cọc tiêu A-B trực tiếp trên quả cầu
+function renderProfile3DVisuals(lat1, lon1, lat2, lon2, pts) {
+  while (measureGroup.children.length > 0) {
+    measureGroup.remove(measureGroup.children[0]);
+  }
+
+  // Cọc tiêu A (Xanh ngọc)
+  const pA = latLonToVec3(lat1, lon1, CFG.earthR * 1.014);
+  const pinA = new THREE.Mesh(new THREE.SphereGeometry(0.024, 16, 16), new THREE.MeshBasicMaterial({ color: 0x3dd68c }));
+  pinA.position.copy(pA);
+  measureGroup.add(pinA);
+
+  const ringA = new THREE.Mesh(new THREE.RingGeometry(0.012, 0.024, 24), new THREE.MeshBasicMaterial({ color: 0x3dd68c, side: THREE.DoubleSide, transparent: true, opacity: 0.7 }));
+  ringA.position.copy(pA);
+  ringA.lookAt(pA.clone().multiplyScalar(2));
+  measureGroup.add(ringA);
+
+  // Cọc tiêu B (Đỏ cam)
+  const pB = latLonToVec3(lat2, lon2, CFG.earthR * 1.014);
+  const pinB = new THREE.Mesh(new THREE.SphereGeometry(0.024, 16, 16), new THREE.MeshBasicMaterial({ color: 0xff5252 }));
+  pinB.position.copy(pB);
+  measureGroup.add(pinB);
+
+  const ringB = new THREE.Mesh(new THREE.RingGeometry(0.012, 0.024, 24), new THREE.MeshBasicMaterial({ color: 0xff5252, side: THREE.DoubleSide, transparent: true, opacity: 0.7 }));
+  ringB.position.copy(pB);
+  ringB.lookAt(pB.clone().multiplyScalar(2));
+  measureGroup.add(ringB);
+
+  // Đường cung lớn 3D (Luminous Geodesic Arc Ribbon)
+  const arcPts = pts.map(p => latLonToVec3(p.lat, p.lon, CFG.earthR * 1.014));
+  const arcGeom = new THREE.BufferGeometry().setFromPoints(arcPts);
+  const arcLine = new THREE.Line(arcGeom, new THREE.LineBasicMaterial({ 
+    color: 0x00ccee, 
+    linewidth: 3, 
+    transparent: true, 
+    opacity: 0.9 
+  }));
+  measureGroup.add(arcLine);
+
+  // Đồng bộ thông số hiển thị
+  const dist = calcGreatCircleDistance(lat1, lon1, lat2, lon2);
+  const elevA = sampleRelief(lat1, lon1);
+  const elevB = sampleRelief(lat2, lon2);
+  const elA = document.getElementById('m-pt-a');
+  if (elA) elA.textContent = `${lat1.toFixed(1)}°B, ${lon1.toFixed(1)}°Đ (${elevA > 0 ? '+' : ''}${elevA}m)`;
+  const elB = document.getElementById('m-pt-b');
+  if (elB) elB.textContent = `${lat2.toFixed(1)}°B, ${lon2.toFixed(1)}°Đ (${elevB > 0 ? '+' : ''}${elevB}m)`;
+  const elDist = document.getElementById('m-dist');
+  if (elDist) elDist.textContent = `${dist.toLocaleString()} km`;
+}
 
 function generateRealProfile(lat1, lon1, lat2, lon2, name = "Trắc diện khảo sát") {
   const SAMPLES = 180;
@@ -1412,6 +1524,9 @@ function generateRealProfile(lat1, lon1, lat2, lon2, name = "Trắc diện khả
     minH, maxH,
     points: pts
   };
+
+  // Vẽ dải trắc diện 3D trên quả cầu
+  renderProfile3DVisuals(lat1, lon1, lat2, lon2, pts);
 
   drawRealProfileCanvas();
 }
@@ -1514,17 +1629,20 @@ pCanvas.addEventListener('mouseleave', () => {
 let isMeasuring = false;
 let measurePtA = null, measurePtB = null;
 
-window.startMeasureMode = function() {
+window.start3DMeasureMode = window.startMeasureMode = function() {
   isMeasuring = true;
   measurePtA = null; measurePtB = null;
   resetMeasureVisuals();
+  canvas.style.cursor = 'crosshair';
   document.getElementById('action-banner').style.display = 'flex';
-  document.getElementById('banner-text').textContent = "Chế độ đo: Click chọn Điểm A trên quả cầu 3D...";
+  document.getElementById('banner-text').textContent = "🎯 CHẾ ĐỘ ĐO & CẮT LÁT 3D: Click điểm A bất kỳ trên quả cầu...";
+  playChime(440);
 };
 
 window.cancelCurrentAction = function() {
   isMeasuring = false;
   activeChallenge = null;
+  canvas.style.cursor = 'default';
   document.getElementById('action-banner').style.display = 'none';
   resetMeasureVisuals();
 };
@@ -1532,6 +1650,7 @@ window.cancelCurrentAction = function() {
 window.resetMeasure = function() {
   measurePtA = null; measurePtB = null;
   resetMeasureVisuals();
+  canvas.style.cursor = 'default';
   document.getElementById('m-pt-a').textContent = "Chưa chọn";
   document.getElementById('m-pt-b').textContent = "Chưa chọn";
   document.getElementById('m-dist').textContent = "-- km";
@@ -1547,41 +1666,44 @@ function handleMeasureClick(lat, lon) {
   const elev = sampleRelief(lat, lon);
   if (!measurePtA) {
     measurePtA = { lat, lon, elev };
-    document.getElementById('m-pt-a').textContent = `${lat.toFixed(1)}°B, ${lon.toFixed(1)}°Đ (${elev}m)`;
-    document.getElementById('banner-text').textContent = "Đã chọn điểm A. Bây giờ click chọn Điểm B...";
+    playChime(523.25); // C5
+    triggerRadarPulse(lat, lon, 0x3dd68c);
+    const elA = document.getElementById('m-pt-a');
+    if (elA) elA.textContent = `${lat.toFixed(1)}°B, ${lon.toFixed(1)}°Đ (${elev > 0 ? '+' : ''}${elev}m)`;
+    document.getElementById('banner-text').textContent = `🎯 Đã chọn Điểm A (${elev > 0 ? '+' : ''}${elev}m). Bây giờ click chọn Điểm B trên quả cầu...`;
 
     // Cắm cọc tiêu A
-    const pin = new THREE.Mesh(new THREE.SphereGeometry(0.04, 16, 16), new THREE.MeshBasicMaterial({ color: 0x3dd68c }));
-    pin.position.copy(latLonToVec3(lat, lon, CFG.earthR * 1.015));
+    const pA = latLonToVec3(lat, lon, CFG.earthR * 1.015);
+    const pin = new THREE.Mesh(new THREE.SphereGeometry(0.025, 16, 16), new THREE.MeshBasicMaterial({ color: 0x3dd68c }));
+    pin.position.copy(pA);
     measureGroup.add(pin);
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.015, 0.03, 24), new THREE.MeshBasicMaterial({ color: 0x3dd68c, side: THREE.DoubleSide, transparent: true, opacity: 0.7 }));
+    ring.position.copy(pA);
+    ring.lookAt(pA.clone().multiplyScalar(2));
+    measureGroup.add(ring);
   } else if (!measurePtB) {
     measurePtB = { lat, lon, elev };
-    document.getElementById('m-pt-b').textContent = `${lat.toFixed(1)}°B, ${lon.toFixed(1)}°Đ (${elev}m)`;
-
-    // Cắm cọc tiêu B
-    const pin = new THREE.Mesh(new THREE.SphereGeometry(0.04, 16, 16), new THREE.MeshBasicMaterial({ color: 0xff5252 }));
-    pin.position.copy(latLonToVec3(lat, lon, CFG.earthR * 1.015));
-    measureGroup.add(pin);
+    playChime(659.25); // E5
+    triggerRadarPulse(lat, lon, 0xff5252);
+    const elB = document.getElementById('m-pt-b');
+    if (elB) elB.textContent = `${lat.toFixed(1)}°B, ${lon.toFixed(1)}°Đ (${elev > 0 ? '+' : ''}${elev}m)`;
 
     // Tính khoảng cách
     const dist = calcGreatCircleDistance(measurePtA.lat, measurePtA.lon, measurePtB.lat, measurePtB.lon);
-    document.getElementById('m-dist').textContent = `${dist.toLocaleString()} km`;
-    document.getElementById('banner-text').textContent = `Đo hoàn tất: ${dist.toLocaleString()} km. Click 'Bắt đầu đo' để đo tuyến khác.`;
+    const elDist = document.getElementById('m-dist');
+    if (elDist) elDist.textContent = `${dist.toLocaleString()} km`;
+    document.getElementById('banner-text').textContent = `✅ Đo hoàn tất: ${dist.toLocaleString()} km! Đang tạo lát cắt trắc diện 3D...`;
 
-    // Vẽ đường cung lớn
-    const arcPts = [];
-    const p1 = latLonToVec3(measurePtA.lat, measurePtA.lon, CFG.earthR * 1.01);
-    const p2 = latLonToVec3(measurePtB.lat, measurePtB.lon, CFG.earthR * 1.01);
-    for (let i = 0; i <= 60; i++) {
-      arcPts.push(new THREE.Vector3().lerpVectors(p1, p2, i / 60).normalize().multiplyScalar(CFG.earthR * 1.01));
-    }
-    const arcGeom = new THREE.BufferGeometry().setFromPoints(arcPts);
-    const arcLine = new THREE.Line(arcGeom, new THREE.LineBasicMaterial({ color: 0x00ccee, linewidth: 3 }));
-    measureGroup.add(arcLine);
+    // Tự động tạo trắc diện A-B và vẽ dải 3D trên quả cầu
+    generateRealProfile(measurePtA.lat, measurePtA.lon, measurePtB.lat, measurePtB.lon, `Lát cắt 3D tự chọn: A ➔ B (${dist.toLocaleString()} km)`);
 
-    // Tự động tạo trắc diện A-B
-    generateRealProfile(measurePtA.lat, measurePtA.lon, measurePtB.lat, measurePtB.lon, `Tuyến đo A ➔ B (${dist} km)`);
+    // Chuyển sang Tab Mặt cắt ngang 2D ngay lập tức
+    const tabs = document.querySelectorAll('.seg-tab button');
+    if (tabs && tabs[1]) switchRightTab('tab-profile', tabs[1]);
+    document.getElementById('right-slab').classList.remove('collapsed');
+
     isMeasuring = false;
+    canvas.style.cursor = 'default';
   }
 }
 
@@ -2557,6 +2679,23 @@ function animate(time) {
   const spdRot = document.getElementById('spd-rot');
   if (togRot && togRot.checked && !flyTarget && !isMeasuring) {
     earthGroup.rotation.y += parseFloat(spdRot.value) * 0.005;
+  }
+
+  // Hiệu ứng sóng radar phát sáng lan tỏa 3D (Radar Pulse Animation)
+  if (activePulseRing) {
+    const elapsed = (time - pulseStartTime) / 1000;
+    if (elapsed < 1.5) {
+      const scale = 1.0 + elapsed * 3.5;
+      activePulseRing.scale.set(scale, scale, 1);
+      if (activePulseRing.material) {
+        activePulseRing.material.opacity = Math.max(0, 0.9 * (1 - elapsed / 1.5));
+      }
+    } else {
+      earthGroup.remove(activePulseRing);
+      if (activePulseRing.geometry) activePulseRing.geometry.dispose();
+      if (activePulseRing.material) activePulseRing.material.dispose();
+      activePulseRing = null;
+    }
   }
 
   // Camera Fly-to Animation mượt mà
