@@ -17,12 +17,12 @@
     "transect": {
       "name": "Vịnh Bengal ➔ Everest ➔ Tây Tạng ➔ Bồn địa Tarim",
       "p1": [
-        21.0,
-        89.0
+        21,
+        89
       ],
       "p2": [
-        39.0,
-        85.0
+        39,
+        85
       ]
     }
   },
@@ -33,7 +33,7 @@
     "category": "Núi uốn nếp khối tảng băng hà",
     "lat": 35.8814,
     "lon": 76.5133,
-    "elev_m": 8611.0,
+    "elev_m": 8611,
     "status": "VERIFIED",
     "plate": "Đới va chạm Karakoram / Mảng Ấn Độ - Á-Âu",
     "where": "Biên giới Pakistan và Trung Quốc, thuộc dãy Karakoram.",
@@ -44,12 +44,12 @@
     "transect": {
       "name": "Lưu vực sông Indus ➔ Đỉnh K2 ➔ Bồn địa Tarim",
       "p1": [
-        33.0,
-        74.0
+        33,
+        74
       ],
       "p2": [
-        38.0,
-        79.0
+        38,
+        79
       ]
     }
   },
@@ -60,7 +60,7 @@
     "category": "Núi uốn nếp khối tảng (Andean Orogeny)",
     "lat": -32.6532,
     "lon": -70.0109,
-    "elev_m": 6961.0,
+    "elev_m": 6961,
     "status": "VERIFIED",
     "plate": "Mảng Nazca hút chìm dưới Mảng Nam Mỹ",
     "where": "Tỉnh Mendoza, Argentina, thuộc dãy Andes Nam Mỹ.",
@@ -72,11 +72,11 @@
       "name": "Rãnh Peru-Chile ➔ Aconcagua ➔ Đồng bằng Pampas",
       "p1": [
         -32.5,
-        -74.0
+        -74
       ],
       "p2": [
         -32.5,
-        -64.0
+        -64
       ]
     }
   },
@@ -87,7 +87,7 @@
     "category": "Khối vòm xâm nhập Granit nâng cao",
     "lat": 63.0692,
     "lon": -151.007,
-    "elev_m": 6190.0,
+    "elev_m": 6190,
     "status": "VERIFIED (USGS)",
     "plate": "Mảng Thái Bình Dương hút chìm xiên dưới Mảng Bắc Mỹ",
     "where": "Bang Alaska, Hoa Kỳ, thuộc dãy Alaska Range.",
@@ -98,12 +98,12 @@
     "transect": {
       "name": "Vịnh Alaska ➔ Đỉnh Denali ➔ Nội địa Alaska",
       "p1": [
-        59.0,
-        -151.0
+        59,
+        -151
       ],
       "p2": [
-        66.0,
-        -151.0
+        66,
+        -151
       ]
     }
   },
@@ -114,7 +114,7 @@
     "category": "Núi lửa tầng phân tầng (Stratovolcano / Rift Zone)",
     "lat": -3.0674,
     "lon": 37.3556,
-    "elev_m": 5895.0,
+    "elev_m": 5895,
     "status": "VERIFIED",
     "plate": "Thung lũng tách giãn Đông Phi (East African Rift)",
     "where": "Tanzania, gần biên giới Kenya, Đông Phi.",
@@ -125,12 +125,12 @@
     "transect": {
       "name": "Bồn địa Victoria ➔ Kilimanjaro ➔ Bờ biển Ấn Độ Dương",
       "p1": [
-        -2.0,
-        33.0
+        -2,
+        33
       ],
       "p2": [
         -4.5,
-        40.0
+        40
       ]
     }
   },
@@ -168,7 +168,7 @@
     "category": "Núi uốn nếp kiến tạo Alps (Alpine Orogeny)",
     "lat": 45.8326,
     "lon": 6.8652,
-    "elev_m": 4808.0,
+    "elev_m": 4808,
     "status": "VERIFIED",
     "plate": "Mảng châu Phi húc Mảng Á-Âu",
     "where": "Biên giới giữa Pháp và Ý, thuộc dãy Alps.",
@@ -179,11 +179,11 @@
     "transect": {
       "name": "Đồng bằng sông Rhone ➔ Mont Blanc ➔ Đồng bằng sông Po",
       "p1": [
-        46.0,
-        5.0
+        46,
+        5
       ],
       "p2": [
-        45.0,
+        45,
         8.5
       ]
     }
@@ -195,7 +195,7 @@
     "category": "Khối vòm nâng cổ kết tinh (Kontum Massif)",
     "lat": 15.0833,
     "lon": 107.9667,
-    "elev_m": 2605.0,
+    "elev_m": 2605,
     "status": "VERIFIED",
     "plate": "Địa khối cổ Kon Tum (Indochina Craton)",
     "where": "Ranh giới hai tỉnh Kon Tum và Quảng Nam, miền Trung Việt Nam.",
@@ -206,7 +206,7 @@
     "transect": {
       "name": "Trung Bộ: Lào ➔ Ngọc Linh ➔ Duyên hải Quảng Nam ➔ Biển Đông",
       "p1": [
-        15.0,
+        15,
         106.5
       ],
       "p2": [
@@ -221,8 +221,8 @@
     "name_en": "Himalayas Mountain Range",
     "category": "Vành đai uốn nếp va chạm lục địa",
     "lat": 28.5,
-    "lon": 84.0,
-    "elev_m": 8000.0,
+    "lon": 84,
+    "elev_m": 8000,
     "status": "VERIFIED",
     "plate": "Đới khâu Indus-Yarlung Tsangpo",
     "where": "Trải dài 2,400 km qua 5 quốc gia: Ấn Độ, Nepal, Bhutan, Trung Quốc, Pakistan.",
@@ -233,12 +233,12 @@
     "transect": {
       "name": "ĐB Sông Hằng ➔ Himalaya ➔ Tây Tạng",
       "p1": [
-        24.0,
-        85.0
+        24,
+        85
       ],
       "p2": [
-        32.0,
-        85.0
+        32,
+        85
       ]
     }
   },
@@ -247,9 +247,9 @@
     "name_vi": "Dãy Andes (Dãy núi dài nhất thế giới trên đất liền)",
     "name_en": "Andes Mountain Range",
     "category": "Đới cung núi uốn nếp rìa lục địa (Subduction Orogeny)",
-    "lat": -15.0,
-    "lon": -72.0,
-    "elev_m": 6000.0,
+    "lat": -15,
+    "lon": -72,
+    "elev_m": 6000,
     "status": "VERIFIED",
     "plate": "Mảng Nazca hút chìm dưới Mảng Nam Mỹ",
     "where": "Trải dài hơn 7,000 km dọc theo bờ tây Nam Mỹ qua 7 quốc gia.",
@@ -260,12 +260,12 @@
     "transect": {
       "name": "Thái Bình Dương ➔ Andes ➔ Bồn địa Amazon",
       "p1": [
-        -15.0,
-        -78.0
+        -15,
+        -78
       ],
       "p2": [
-        -15.0,
-        -60.0
+        -15,
+        -60
       ]
     }
   },
@@ -276,7 +276,7 @@
     "category": "Dãy núi uốn nếp - khối tảng cổ trẻ hóa",
     "lat": 16.5,
     "lon": 106.8,
-    "elev_m": 2000.0,
+    "elev_m": 2000,
     "status": "VERIFIED",
     "plate": "Khối Indochina / Đới biến dạng Tân sinh",
     "where": "Kéo dài hơn 1,100 km qua Việt Nam, Lào và một phần Campuchia.",
@@ -288,11 +288,11 @@
       "name": "Trung Bộ: Lào ➔ Trường Sơn ➔ Đồng bằng duyên hải ➔ Biển Đông",
       "p1": [
         16.5,
-        105.0
+        105
       ],
       "p2": [
         16.5,
-        109.0
+        109
       ]
     }
   },
@@ -301,9 +301,9 @@
     "name_vi": "Cao Nguyên Tây Tạng (Nóc nhà thế giới)",
     "name_en": "Tibetan Plateau",
     "category": "Cao nguyên cấu trúc thạch quyển dày đôi",
-    "lat": 32.0,
-    "lon": 85.0,
-    "elev_m": 4500.0,
+    "lat": 32,
+    "lon": 85,
+    "elev_m": 4500,
     "status": "VERIFIED",
     "plate": "Mảng Ấn Độ chui dưới Mảng Á-Âu",
     "where": "Tây Nam Trung Quốc, diện tích khoảng 2.5 triệu km².",
@@ -314,12 +314,12 @@
     "transect": {
       "name": "3 Bậc địa hình: Tây Tạng ➔ Tứ Xuyên ➔ Đồng bằng Hoa Đông",
       "p1": [
-        31.0,
-        85.0
+        31,
+        85
       ],
       "p2": [
-        31.0,
-        121.0
+        31,
+        121
       ]
     }
   },
@@ -328,9 +328,9 @@
     "name_vi": "Đồng Bằng Sông Hồng (Châu thổ Bắc Bộ)",
     "name_en": "Red River Delta",
     "category": "Đồng bằng châu thổ sụt võng rift bồi tụ",
-    "lat": 21.0,
+    "lat": 21,
     "lon": 105.8,
-    "elev_m": 15.0,
+    "elev_m": 15,
     "status": "VERIFIED",
     "plate": "Đới sụt lún đứt gãy Sông Hồng",
     "where": "Miền Bắc Việt Nam, diện tích khoảng 15,000 km².",
@@ -355,9 +355,9 @@
     "name_vi": "Đồng Bằng Sông Cửu Long (Châu thổ Nam Bộ)",
     "name_en": "Mekong Delta",
     "category": "Châu thổ triều hỗn hợp sông bồi tụ Holocen",
-    "lat": 10.0,
+    "lat": 10,
     "lon": 105.8,
-    "elev_m": 2.0,
+    "elev_m": 2,
     "status": "VERIFIED",
     "plate": "Bồn trũng sụt võng Nam Bộ",
     "where": "Miền Tây Nam Bộ Việt Nam, diện tích khoảng 40,000 km².",
@@ -382,9 +382,9 @@
     "name_vi": "Bồn Địa & Đồng Bằng Amazon",
     "name_en": "Amazon Basin",
     "category": "Bồn địa bình nguyên nội lục craton",
-    "lat": -3.0,
-    "lon": -60.0,
-    "elev_m": 50.0,
+    "lat": -3,
+    "lon": -60,
+    "elev_m": 50,
     "status": "VERIFIED",
     "plate": "Nền cổ Nam Mỹ (South American Craton)",
     "where": "Bắc Nam Mỹ, trải rộng hơn 7 triệu km².",
@@ -395,12 +395,12 @@
     "transect": {
       "name": "Sườn đông Andes ➔ Manaus ➔ Cửa sông Amazon (Đại Tây Dương)",
       "p1": [
-        -3.0,
-        -75.0
+        -3,
+        -75
       ],
       "p2": [
-        0.0,
-        -50.0
+        0,
+        -50
       ]
     }
   },
@@ -411,7 +411,7 @@
     "category": "Đới hút chìm đại dương (Oceanic Subduction Trench)",
     "lat": 11.3733,
     "lon": 142.5917,
-    "elev_m": -10984.0,
+    "elev_m": -10984,
     "status": "APPROXIMATE (±25m Sonar / Bathymetry)",
     "plate": "Mảng Thái Bình Dương chui dưới Mảng Mariana",
     "where": "Tây Bắc Thái Bình Dương, phía đông quần đảo Mariana.",
@@ -422,12 +422,12 @@
     "transect": {
       "name": "Quần đảo Mariana ➔ Vực Challenger ➔ Đáy Thái Bình Dương",
       "p1": [
-        13.0,
-        144.0
+        13,
+        144
       ],
       "p2": [
-        9.0,
-        141.0
+        9,
+        141
       ]
     }
   },
@@ -436,9 +436,9 @@
     "name_vi": "Sống Núi Giữa Đại Tây Dương (Mid-Atlantic Ridge)",
     "name_en": "Mid-Atlantic Ridge",
     "category": "Sống núi tách giãn đại dương (Divergent Boundary)",
-    "lat": 0.0,
-    "lon": -25.0,
-    "elev_m": -2200.0,
+    "lat": 0,
+    "lon": -25,
+    "elev_m": -2200,
     "status": "VERIFIED (GEBCO)",
     "plate": "Mảng Bắc/Nam Mỹ ↔ Mảng Á-Âu/Châu Phi",
     "where": "Chạy dọc giữa Đại Tây Dương từ Bắc Băng Dương xuống tận Nam Đại Dương, dài hơn 16,000 km.",
@@ -449,12 +449,12 @@
     "transect": {
       "name": "Nam Mỹ ➔ Sống núi Giữa Đại Tây Dương ➔ Châu Phi",
       "p1": [
-        0.0,
-        -40.0
+        0,
+        -40
       ],
       "p2": [
-        0.0,
-        -10.0
+        0,
+        -10
       ]
     }
   },
@@ -476,7 +476,7 @@
     "transect": {
       "name": "Địa Trung Hải ➔ Jerusalem ➔ Biển Chết ➔ Cao nguyên Jordan",
       "p1": [
-        32.0,
+        32,
         34.5
       ],
       "p2": [
@@ -491,8 +491,8 @@
     "name_en": "Lake Baikal",
     "category": "Hồ thung lũng tách giãn lục địa (Continental Rift Lake)",
     "lat": 53.5,
-    "lon": 108.0,
-    "elev_m": 456.0,
+    "lon": 108,
+    "elev_m": 456,
     "status": "VERIFIED (Đáy ở -1,186m)",
     "plate": "Đới tách giãn Baikal (Mảng Á-Âu nội lục)",
     "where": "Phía nam Siberia, Liên bang Nga.",
@@ -503,12 +503,12 @@
     "transect": {
       "name": "Dãy Baikal ➔ Đáy Hồ Baikal ➔ Dãy Zabaikalsky",
       "p1": [
-        54.0,
-        106.0
+        54,
+        106
       ],
       "p2": [
-        53.0,
-        110.0
+        53,
+        110
       ]
     }
   },
@@ -519,7 +519,7 @@
     "category": "Hẻm vực bào mòn sông ngòi kết hợp nâng kiến tạo",
     "lat": 36.1,
     "lon": -112.1,
-    "elev_m": 2100.0,
+    "elev_m": 2100,
     "status": "VERIFIED (Đáy sông ở ~750m)",
     "plate": "Mảng Bắc Mỹ (Colorado Plateau)",
     "where": "Bang Arizona, Hoa Kỳ.",
@@ -546,7 +546,7 @@
     "category": "Địa mạo Karst nhiệt đới ngập nước (Fengcong / Fenglin)",
     "lat": 20.9,
     "lon": 107.1,
-    "elev_m": 150.0,
+    "elev_m": 150,
     "status": "VERIFIED",
     "plate": "Khối lục địa Nam Trung Hoa - Đông Dương",
     "where": "Tỉnh Quảng Ninh, miền Bắc Việt Nam.",
@@ -558,7 +558,7 @@
       "name": "Lục địa Quảng Ninh ➔ Các đảo đá vôi Hạ Long ➔ Vịnh Bắc Bộ",
       "p1": [
         21.1,
-        107.0
+        107
       ],
       "p2": [
         20.7,
@@ -572,8 +572,8 @@
     "name_en": "Alps Mountain Range",
     "category": "Vành đai uốn nếp va chạm mảng",
     "lat": 46.5,
-    "lon": 10.0,
-    "elev_m": 4808.0,
+    "lon": 10,
+    "elev_m": 4808,
     "status": "VERIFIED",
     "plate": "Mảng châu Phi húc Mảng Á-Âu",
     "where": "Trung và Nam Âu, trải dài qua 8 quốc gia.",
@@ -584,12 +584,12 @@
     "transect": {
       "name": "Đồng bằng Bắc Âu ➔ Dãy Alps ➔ Biển Địa Trung Hải",
       "p1": [
-        48.0,
-        10.0
+        48,
+        10
       ],
       "p2": [
         43.5,
-        10.0
+        10
       ]
     }
   },
@@ -598,9 +598,9 @@
     "name_vi": "Cao Nguyên Colorado (Xứ sở Hẻm vực)",
     "name_en": "Colorado Plateau",
     "category": "Cao nguyên nâng khối tảng bóc mòn",
-    "lat": 37.0,
-    "lon": -110.0,
-    "elev_m": 1900.0,
+    "lat": 37,
+    "lon": -110,
+    "elev_m": 1900,
     "status": "VERIFIED",
     "plate": "Mảng Bắc Mỹ",
     "where": "Tây Nam Hoa Kỳ, bao trùm 4 bang (Four Corners).",
@@ -611,12 +611,12 @@
     "transect": {
       "name": "Bồn địa Lớn ➔ Cao nguyên Colorado ➔ Dãy Rocky",
       "p1": [
-        37.0,
-        -114.0
+        37,
+        -114
       ],
       "p2": [
-        37.0,
-        -106.0
+        37,
+        -106
       ]
     }
   },
@@ -625,9 +625,9 @@
     "name_vi": "Bồn Địa Congo (Trái tim châu Phi)",
     "name_en": "Congo Basin",
     "category": "Bồn địa sụt lún nội lục Craton",
-    "lat": 0.0,
-    "lon": 22.0,
-    "elev_m": 350.0,
+    "lat": 0,
+    "lon": 22,
+    "elev_m": 350,
     "status": "VERIFIED",
     "plate": "Nền cổ châu Phi (African Craton)",
     "where": "Trung Phi, diện tích khoảng 3.7 triệu km².",
@@ -638,12 +638,12 @@
     "transect": {
       "name": "Sống núi Cameroon ➔ Đáy bồn địa Congo ➔ Vết nứt Đông Phi",
       "p1": [
-        4.0,
-        10.0
+        4,
+        10
       ],
       "p2": [
-        -1.0,
-        29.0
+        -1,
+        29
       ]
     }
   },
@@ -654,7 +654,7 @@
     "category": "Đới hút chìm biến dạng xiên (Oblique Subduction)",
     "lat": 19.83,
     "lon": -66.5,
-    "elev_m": -8376.0,
+    "elev_m": -8376,
     "status": "VERIFIED (Milwaukee Deep)",
     "plate": "Mảng Bắc Mỹ chui dưới Mảng Caribe",
     "where": "Phía bắc đảo Puerto Rico, ranh giới giữa Đại Tây Dương và Biển Caribe.",
@@ -665,11 +665,11 @@
     "transect": {
       "name": "Đảo Puerto Rico ➔ Vực Milwaukee ➔ Đáy Đại Tây Dương",
       "p1": [
-        18.0,
+        18,
         -66.5
       ],
       "p2": [
-        22.0,
+        22,
         -66.5
       ]
     }
@@ -679,9 +679,9 @@
     "name_vi": "Biển Caspi (Hồ lớn nhất thế giới)",
     "name_en": "Caspian Sea",
     "category": "Vực nước nội lục khép kín (Endorheic Basin)",
-    "lat": 42.0,
-    "lon": 51.0,
-    "elev_m": -28.0,
+    "lat": 42,
+    "lon": 51,
+    "elev_m": -28,
     "status": "VERIFIED (Mặt hồ ở -28m)",
     "plate": "Mảng Á-Âu nội lục",
     "where": "Giáp ranh giữa châu Âu và châu Á, tiếp giáp 5 quốc gia.",
@@ -692,12 +692,12 @@
     "transect": {
       "name": "Dãy Caucasus ➔ Đáy Biển Caspi (-1,025m) ➔ Sa mạc Karakum",
       "p1": [
-        42.0,
-        47.0
+        42,
+        47
       ],
       "p2": [
-        42.0,
-        56.0
+        42,
+        56
       ]
     }
   },
@@ -707,8 +707,8 @@
     "name_en": "East African Rift System",
     "category": "Đới tách giãn lục địa đang hoạt động (Continental Rift)",
     "lat": 0.5,
-    "lon": 36.0,
-    "elev_m": 1800.0,
+    "lon": 36,
+    "elev_m": 1800,
     "status": "VERIFIED",
     "plate": "Tiểu mảng Nubia ↔ Tiểu mảng Somalia",
     "where": "Đông Phi, kéo dài hơn 6,000 km từ Biển Đỏ đến Mozambique.",
@@ -720,11 +720,173 @@
       "name": "Bờ Tây Rift ➔ Đáy thung lũng sụt lún ➔ Bờ Đông Rift",
       "p1": [
         0.5,
-        35.0
+        35
       ],
       "p2": [
         0.5,
         37.5
+      ]
+    }
+  },
+  {
+    "id": "yangtze",
+    "name_vi": "Sông Dương Tử (Trường Giang / Chang Jiang)",
+    "name_en": "Yangtze River (Chang Jiang)",
+    "category": "Hệ thống sông ngòi bồi tụ châu thổ & hẻm vực kiến tạo",
+    "lat": 31.23,
+    "lon": 121.5,
+    "elev_m": 15,
+    "status": "VERIFIED (Sông dài nhất châu Á - 6,300 km)",
+    "plate": "Mảng Á-Âu (Hoa Nam Craton)",
+    "where": "Khởi nguồn từ cao nguyên Tây Tạng (Thanh Hải), cắt qua hẻm núi Tam Hiệp, bồi đắp đồng bằng Hoa Trung và đổ ra biển Hoa Đông tại Thượng Hải.",
+    "what": "Dòng sông dài nhất châu Á (thứ 3 thế giới), hệ thống thủy văn huyết mạch nuôi dưỡng hơn 400 triệu dân.",
+    "why_there": "Hình thành do địa hình dốc mạnh từ tây sang đông của châu Á (cấu trúc 3 bậc thang), sông cắt qua các khối uốn nếp và bồn địa sụt lún Mesozoi-Kainozoi.",
+    "why_care": "Đóng góp hơn 40% GDP Trung Quốc, nơi đặt đập Tam Hiệp - nhà máy thủy điện lớn nhất thế giới; tâm điểm điều tiết nước và kiểm soát lũ lụt.",
+    "what_if": "Nếu không có đới sụt lún bồi tụ bồn địa Tứ Xuyên và đồng bằng hạ lưu, dòng chảy sông Dương Tử sẽ bị ngăn chặn hoặc chuyển hướng sang phía nam.",
+    "transect": {
+      "name": "Tây Tạng ➔ Hẻm Tam Hiệp ➔ Châu thổ Thượng Hải ➔ Biển Hoa Đông",
+      "p1": [
+        33,
+        92
+      ],
+      "p2": [
+        31.5,
+        122.5
+      ]
+    }
+  },
+  {
+    "id": "mississippi",
+    "name_vi": "Hệ thống Sông Mississippi - Missouri",
+    "name_en": "Mississippi River System",
+    "category": "Châu thổ sông ngòi bồi tụ dạng chân chim (Bird-foot Delta)",
+    "lat": 29.15,
+    "lon": -89.25,
+    "elev_m": 3,
+    "status": "VERIFIED (Hệ thống sông lớn nhất Bắc Mỹ - 6,275 km)",
+    "plate": "Mảng Bắc Mỹ (Nội lục bình nguyên Craton)",
+    "where": "Chảy dọc trung tâm lục địa Bắc Mỹ từ hồ Itasca (Minnesota) qua 10 bang trước khi đổ ra Vịnh Mexico.",
+    "what": "Dòng sông bồi đắp lưu vực rộng 3.2 triệu km² (chiếm 40% diện tích nước Mỹ), tạo nên châu thổ chân chim kinh điển trong địa mạo học.",
+    "why_there": "Dòng chảy xuôi theo máng sụt lún địa mạo trung tâm giữa hai hệ thống núi nâng cao: Dãy Rocky ở phía tây và Dãy Appalachian ở phía đông.",
+    "why_care": "Trục giao thông thủy nội địa và vựa nông nghiệp ngũ cốc số 1 thế giới; mô hình nghiên cứu kinh điển về xói lở bờ biển và sụt lún châu thổ do đê điều.",
+    "what_if": "Nếu sông Mississippi đổi dòng tự nhiên sang sông Atchafalaya (đang bị kiểm soát bởi công trình Old River Control), toàn bộ cảng biển New Orleans sẽ bị cô lập.",
+    "transect": {
+      "name": "Dãy Rocky ➔ Đồng bằng trung tâm ➔ Châu thổ Mississippi ➔ Vịnh Mexico",
+      "p1": [
+        38,
+        -105
+      ],
+      "p2": [
+        28.5,
+        -89
+      ]
+    }
+  },
+  {
+    "id": "nile",
+    "name_vi": "Sông Nile (Sông Nin - Dòng sông dài nhất hành tinh)",
+    "name_en": "Nile River",
+    "category": "Hệ thống sông ngòi xuyên hoang mạc & châu thổ vòng cung",
+    "lat": 30.8,
+    "lon": 31.2,
+    "elev_m": 18,
+    "status": "VERIFIED (Dòng sông dài nhất thế giới - 6,650 km)",
+    "plate": "Mảng Châu Phi (Nubian Plate)",
+    "where": "Bắt nguồn từ hồ Victoria (Đông Phi) và cao nguyên Ethiopia, chảy qua 11 quốc gia trước khi đổ ra Địa Trung Hải.",
+    "what": "Dòng sông kỳ diệu vượt qua sa mạc Sahara khô hạn bậc nhất, mang phù sa màu mỡ nuôi dưỡng nền văn minh Ai Cập cổ đại.",
+    "why_there": "Hình thành do dòng chảy cổ chảy vào đới trũng kiến tạo Địa Trung Hải, kết hợp lượng mưa dồi dào từ gió mùa cao nguyên Ethiopia và vùng xích đạo.",
+    "why_care": "Hơn 250 triệu người phụ thuộc trực tiếp vào nguồn nước sông Nile; đập Đại Phục Hưng (GERD) đang là tâm điểm tranh chấp an ninh nguồn nước tại Đông Bắc Phi.",
+    "what_if": "Nếu không có gió mùa mùa hè cung cấp nước từ cao nguyên Ethiopia cho nhánh Nile Xanh, sông Nile sẽ không đủ lưu lượng vượt qua sa mạc Sahara ra tới biển.",
+    "transect": {
+      "name": "Cao nguyên Ethiopia ➔ Sa mạc Nubia ➔ Châu thổ Nile ➔ Địa Trung Hải",
+      "p1": [
+        11.5,
+        37.5
+      ],
+      "p2": [
+        32,
+        31.5
+      ]
+    }
+  },
+  {
+    "id": "malacca",
+    "name_vi": "Eo biển Malacca (Yết hầu hàng hải toàn cầu)",
+    "name_en": "Strait of Malacca",
+    "category": "Eo biển kiến tạo thềm lục địa Sunda (Strategic Chokepoint)",
+    "lat": 2.5,
+    "lon": 101.5,
+    "elev_m": -35,
+    "status": "VERIFIED (Tuyến hàng hải bận rộn nhất hành tinh)",
+    "plate": "Đới tiếp giáp Mảng Sunda & Mảng Ấn-Úc",
+    "where": "Nằm giữa bán đảo Mã Lai và đảo Sumatra (Indonesia), kết nối Ấn Độ Dương với Biển Đông.",
+    "what": "Eo biển hẹp dài ~800 km, nơi vận chuyển 25% lượng dầu mỏ và hàng hóa giao thương toàn cầu.",
+    "why_there": "Là một phần của thềm lục địa Sunda cổ bị nhấn chìm khi băng hà tan vào cuối kỷ Canh Tân (Pleistocene), mực nước biển dâng tạo thành hành lang nước nông nối hai đại dương.",
+    "why_care": "Điểm nghẽn địa chính trị - kinh tế nhạy cảm nhất Đông Nam Á; độ sâu nông (<30m ở một số điểm) tạo thách thức lớn cho các siêu tàu chở dầu (Malaccamax).",
+    "what_if": "Nếu mực nước biển hạ thấp 50m trong một chu kỳ băng hà mới, eo biển Malacca sẽ trồi lên thành cầu đất liền nối Malaysia và Sumatra, chặn đứng hoàn toàn tuyến hàng hải này.",
+    "transect": {
+      "name": "Vịnh Bengal ➔ Eo Malacca ➔ Đảo Sumatra ➔ Biển Đông",
+      "p1": [
+        4,
+        97
+      ],
+      "p2": [
+        1,
+        104
+      ]
+    }
+  },
+  {
+    "id": "gibraltar",
+    "name_vi": "Eo biển Gibraltar (Cửa ngõ Địa Trung Hải)",
+    "name_en": "Strait of Gibraltar",
+    "category": "Eo biển đới uốn nếp va chạm mảng (Betic-Rif Orogeny)",
+    "lat": 35.95,
+    "lon": -5.6,
+    "elev_m": -300,
+    "status": "VERIFIED (Khoảng cách hẹp nhất 14.3 km)",
+    "plate": "Ranh giới hội tụ Mảng Á-Âu ↔ Mảng Châu Phi",
+    "where": "Nằm giữa mũi cực nam bán đảo Iberia (Tây Ban Nha) và mũi cực bắc Ma-rốc (Châu Phi).",
+    "what": "Eo biển hẹp chỉ rộng 14.3 km, cửa ngõ tự nhiên duy nhất kết nối Đại Tây Dương với biển kín Địa Trung Hải.",
+    "why_there": "Hình thành do quá trình va chạm kiến tạo giữa mảng châu Phi và mảng Á-Âu; đứt gãy mở ra eo biển sâu khoảng 5.33 triệu năm trước (Sự kiện lũ lụt Zanclean).",
+    "why_care": "Dòng hải lưu hai chiều độc đáo: nước mặt Đại Tây Dương ít mặn chảy vào Địa Trung Hải, nước tầng sâu Địa Trung Hải mặn hơn chảy ngược ra Đại Tây Dương.",
+    "what_if": "Khoảng 5.9 triệu năm trước khi eo biển này bị nghẽn (Khủng hoảng độ mặn Messinian), toàn bộ Địa Trung Hải đã bốc hơi gần cạn kiệt, biến thành lòng chảo muối sâu 1.5 km.",
+    "transect": {
+      "name": "Đại Tây Dương ➔ Eo Gibraltar ➔ Biển Alboran (Địa Trung Hải)",
+      "p1": [
+        36.2,
+        -7
+      ],
+      "p2": [
+        35.8,
+        -4.5
+      ]
+    }
+  },
+  {
+    "id": "bering",
+    "name_vi": "Eo biển Bering (Cầu nối Lịch sử Cựu - Tân Lục Địa)",
+    "name_en": "Bering Strait",
+    "category": "Eo biển ngập triều thềm lục địa cực bắc (Beringia Bridge)",
+    "lat": 65.8,
+    "lon": -168.9,
+    "elev_m": -45,
+    "status": "VERIFIED (Ranh giới Châu Á - Châu Mỹ & Đường đổi ngày QT)",
+    "plate": "Ranh giới Mảng Bắc Mỹ & Mảng Á-Âu (Okhotsk Plate)",
+    "where": "Nằm giữa bán đảo Chukotka (Nga) và bán đảo Seward (Alaska, Mỹ), nối Biển Bering với Biển Chukchi.",
+    "what": "Eo biển rộng 82 km, sâu trung bình 30–50 m, nơi có Đường đổi ngày quốc tế (IDL) và ranh giới múi giờ chia cắt 21 tiếng giữa hai đảo Diomede.",
+    "why_there": "Là một thềm lục địa nông trũng. Trong các thời kỳ băng hà khi mực nước biển toàn cầu hạ thấp hơn 100m, nơi đây biến thành cầu đất liền Beringia rộng lớn.",
+    "why_care": "Tuyến đường di cư lịch sử của người tiền sử từ châu Á sang châu Mỹ; hiện là tuyến hàng hải Bắc Cực chiến lược đang tan băng.",
+    "what_if": "Nếu không có cầu đất liền Beringia trong kỷ Băng hà cuối cùng (~20,000 năm trước), lịch sử định cư của loài người tại châu Mỹ sẽ hoàn toàn khác biệt.",
+    "transect": {
+      "name": "Bán đảo Chukotka ➔ Eo Bering ➔ Bán đảo Seward (Alaska)",
+      "p1": [
+        66,
+        -171
+      ],
+      "p2": [
+        65.5,
+        -166.5
       ]
     }
   }
