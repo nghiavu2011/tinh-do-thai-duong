@@ -255,12 +255,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 
     <!-- Omnibox tìm kiếm địa danh -->
     <div class="search-box">
-      <input type="text" class="search-input" id="search-input" placeholder="🔍 Tìm kiếm địa danh..." oninput="onSearchInput(this.value)">
+      <input type="text" class="search-input" id="search-input" placeholder="🔍 Tìm kiếm địa danh..." aria-label="Tìm kiếm địa danh trên quả cầu 3D" oninput="onSearchInput(this.value)">
       <div class="search-results" id="search-results"></div>
     </div>
 
     <!-- Chọn nhanh chuyên đề Việt Nam & Lát cắt -->
-    <select class="mast-select" id="sel-transect" onchange="onTransectSelect(this.value)" style="appearance:none;background:rgba(7,10,22,.85);border:1px solid var(--hairline);border-radius:3px;color:var(--parchment);font-family:var(--font-ui);font-size:10.5px;padding:3px 8px;cursor:pointer;outline:none">
+    <select class="mast-select" id="sel-transect" aria-label="Chọn chuyên đề địa lý Việt Nam hoặc lát cắt trắc diện" onchange="onTransectSelect(this.value)" style="appearance:none;background:rgba(7,10,22,.85);border:1px solid var(--hairline);border-radius:3px;color:var(--parchment);font-family:var(--font-ui);font-size:10.5px;padding:3px 8px;cursor:pointer;outline:none">
       <option value="">🇻🇳 Chuyên đề Địa lý Việt Nam & Lát cắt...</option>
       <option value="vn_north">🇻🇳 Bắc Bộ: Tây Bắc ➔ Fansipan ➔ ĐB Sông Hồng ➔ Vịnh Bắc Bộ</option>
       <option value="vn_central">🇻🇳 Trung Bộ: Lào ➔ Ngọc Linh (Trường Sơn) ➔ Duyên hải ➔ Biển Đông</option>
@@ -286,7 +286,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
   <div class="slab-top">
     <div class="glyph" style="color:var(--brass)"></div>
     <div class="slab-kind">Cơ Sở Dữ Liệu Địa Mạo</div>
-    <button class="slab-close" onclick="toggleLeftSlab()">✕</button>
+    <button class="slab-close" aria-label="Đóng danh bạ địa mạo" onclick="toggleLeftSlab()">✕</button>
   </div>
   <h3 class="slab-name">Khám Phá Địa Hình</h3>
   <p style="font-size:10px;color:var(--parchment-dim);margin:4px 0 8px">Chọn địa danh để camera bay tới mục tiêu & mở Thẻ Tri Thức 5W:</p>
@@ -304,7 +304,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
   <div class="slab-top">
     <div class="glyph" style="color:var(--accent-cyan)" id="p-glyph"></div>
     <div class="slab-kind" id="p-kind">Khảo Sát Địa Mạo</div>
-    <button class="slab-close" onclick="toggleRightSlab()">✕</button>
+    <button class="slab-close" aria-label="Đóng bảng trắc diện và tri thức" onclick="toggleRightSlab()">✕</button>
   </div>
   <h3 class="slab-name" id="p-name">Đỉnh Everest</h3>
 
@@ -462,11 +462,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 </div>
 
 <!-- ═══ MODAL THỬ THÁCH ĐỊA LÝ KHÔNG GIAN (SPATIAL CHALLENGE) ═══ -->
-<div id="modal-box">
+<div id="modal-box" role="dialog" aria-modal="true" aria-labelledby="q-title">
   <div class="m-card">
     <div class="m-head">
       <h2>🏆 Thử Thách Địa Lý Không Gian</h2>
-      <button class="slab-close" onclick="closeChallengeModal()">✕</button>
+      <button class="slab-close" aria-label="Đóng hộp thoại thử thách địa lý" onclick="closeChallengeModal()">✕</button>
     </div>
     <div class="q-type" id="q-type">DẠNG 1: LOCATE (ĐỊNH VỊ KHÔNG GIAN)</div>
     <div class="q-title" id="q-title">Tìm Vực Thẳm Sâu Nhất Hành Tinh</div>
@@ -484,7 +484,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 </div>
 
 <!-- ═══ CANVAS WEBGL CHÍNH ═══ -->
-<canvas id="c"></canvas>
+<canvas id="c" role="region" aria-label="Khung nhìn mô phỏng địa hình Trái Đất 3D" tabindex="0"></canvas>
 
 <!-- ═══ THREE.JS MODULES QUA JSDELIVR CDN (CHUẨN VERCEL CSP) ═══ -->
 <script type="importmap">
@@ -523,6 +523,7 @@ let activeLandmark = null;
    ══════════════════════════════════════════════════ */
 window.sampleRelief = function(lat, lon) {
   if (!reliefGrid) return 0;
+  if (typeof lat !== 'number' || typeof lon !== 'number' || isNaN(lat) || isNaN(lon)) return 0;
   
   // Chuẩn hóa kinh độ về [-180, 180]
   lon = ((((lon + 180) % 360) + 360) % 360) - 180;
@@ -535,23 +536,26 @@ window.sampleRelief = function(lat, lon) {
   const x0 = Math.floor(gx), x1 = Math.min(CFG.gridW - 1, x0 + 1), dx = gx - x0;
   const y0 = Math.floor(gy), y1 = Math.min(CFG.gridH - 1, y0 + 1), dy = gy - y0;
 
-  const v00 = reliefGrid[y0 * CFG.gridW + x0];
-  const v10 = reliefGrid[y0 * CFG.gridW + x1];
-  const v01 = reliefGrid[y1 * CFG.gridW + x0];
-  const v11 = reliefGrid[y1 * CFG.gridW + x1];
+  const v00 = reliefGrid[y0 * CFG.gridW + x0] || 0;
+  const v10 = reliefGrid[y0 * CFG.gridW + x1] || 0;
+  const v01 = reliefGrid[y1 * CFG.gridW + x0] || 0;
+  const v11 = reliefGrid[y1 * CFG.gridW + x1] || 0;
 
   // Nội suy song tuyến (Bilinear Interpolation)
   const val = (1 - dx) * (1 - dy) * v00 + dx * (1 - dy) * v10 + (1 - dx) * dy * v01 + dx * dy * v11;
   return Math.round(val);
 };
 
-// Tính khoảng cách Great Circle (Haversine Formula) tính bằng km
+// Tính khoảng cách Great Circle (Haversine Formula) tính bằng km (Chống NaN khi điểm đối cực)
 window.calcGreatCircleDistance = function(lat1, lon1, lat2, lon2) {
+  if (lat1 === lat2 && lon1 === lon2) return 0;
   const phi1 = lat1 * DEG, phi2 = lat2 * DEG;
   const dPhi = (lat2 - lat1) * DEG, dLambda = (lon2 - lon1) * DEG;
   const a = Math.sin(dPhi / 2) * Math.sin(dPhi / 2) +
             Math.cos(phi1) * Math.cos(phi2) * Math.sin(dLambda / 2) * Math.sin(dLambda / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  // Kẹp an toàn trong [0, 1] ngăn căn bậc hai số âm do sai số float
+  const safeA = Math.min(1, Math.max(0, a));
+  const c = 2 * Math.atan2(Math.sqrt(safeA), Math.sqrt(Math.max(0, 1 - safeA)));
   return Math.round(6371 * c);
 };
 
@@ -1078,13 +1082,15 @@ function drawRealProfileCanvas() {
 // Rê chuột trên trắc diện 2D ➔ Đồng bộ con trỏ 3D trên quả cầu
 const pCanvas = document.getElementById('profile-canvas');
 pCanvas.addEventListener('mousemove', (e) => {
-  if (!currentProfileData) return;
+  if (!currentProfileData || !currentProfileData.points || !currentProfileData.points.length) return;
   const rect = pCanvas.getBoundingClientRect();
+  if (!rect.width || rect.width <= 0) return;
   const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
 
   const pts = currentProfileData.points;
   const idx = Math.min(pts.length - 1, Math.floor(ratio * (pts.length - 1)));
   const pt = pts[idx];
+  if (!pt) return;
 
   // Cập nhật text hiển thị
   document.getElementById('prof-cursor').textContent = `Vị trí: ${pt.distKm} km ➔ Cao độ: ${pt.elev > 0 ? '+' : ''}${pt.elev.toLocaleString()} m (${pt.lat.toFixed(1)}°B, ${pt.lon.toFixed(1)}°Đ)`;
@@ -1296,27 +1302,45 @@ window.nextQuestion = function() {
    ══════════════════════════════════════════════════ */
 window.onSearchInput = function(query) {
   const resBox = document.getElementById('search-results');
-  query = query.trim().toLowerCase();
+  query = (query || '').trim().toLowerCase();
   if (!query) {
     resBox.style.display = 'none';
+    resBox.innerHTML = '';
     return;
   }
 
   const matches = landmarksData.filter(l => 
-    l.name_vi.toLowerCase().includes(query) || 
-    l.name_en.toLowerCase().includes(query) ||
-    l.category.toLowerCase().includes(query)
+    (l.name_vi && l.name_vi.toLowerCase().includes(query)) || 
+    (l.name_en && l.name_en.toLowerCase().includes(query)) ||
+    (l.category && l.category.toLowerCase().includes(query))
   );
 
+  resBox.innerHTML = '';
   if (matches.length === 0) {
-    resBox.innerHTML = '<div class="search-item">Không tìm thấy địa danh phù hợp</div>';
+    const emptyDiv = document.createElement('div');
+    emptyDiv.className = 'search-item';
+    emptyDiv.textContent = 'Không tìm thấy địa danh phù hợp';
+    resBox.appendChild(emptyDiv);
   } else {
-    resBox.innerHTML = matches.slice(0, 8).map(m => `
-      <div class="search-item" onclick="selectLandmark('${m.id}');document.getElementById('search-results').style.display='none'">
-        <span>${m.name_vi.split('(')[0]}</span>
-        <span style="font-family:var(--font-mono);font-size:9.5px;color:var(--brass)">${m.elev_m > 0 ? '+' : ''}${m.elev_m}m</span>
-      </div>
-    `).join('');
+    matches.slice(0, 8).forEach(m => {
+      const item = document.createElement('div');
+      item.className = 'search-item';
+      item.setAttribute('role', 'option');
+      item.onclick = () => {
+        selectLandmark(m.id);
+        resBox.style.display = 'none';
+      };
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = (m.name_vi || '').split('(')[0];
+      const elevSpan = document.createElement('span');
+      elevSpan.style.fontFamily = 'var(--font-mono)';
+      elevSpan.style.fontSize = '9.5px';
+      elevSpan.style.color = 'var(--brass)';
+      elevSpan.textContent = `${m.elev_m > 0 ? '+' : ''}${m.elev_m}m`;
+      item.appendChild(nameSpan);
+      item.appendChild(elevSpan);
+      resBox.appendChild(item);
+    });
   }
   resBox.style.display = 'block';
 };
@@ -1333,9 +1357,17 @@ document.addEventListener('click', (e) => {
    ══════════════════════════════════════════════════ */
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
+let pointerDownPos = { x: 0, y: 0 };
+
+canvas.addEventListener('pointerdown', (e) => {
+  pointerDownPos = { x: e.clientX, y: e.clientY };
+});
 
 canvas.addEventListener('click', (e) => {
   if (e.target !== canvas) return;
+  const dx = e.clientX - pointerDownPos.x;
+  const dy = e.clientY - pointerDownPos.y;
+  if (Math.hypot(dx, dy) > 8) return; // Bỏ qua nếu là thao tác xoay / kéo quả cầu (Drag/Pan)
 
   mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
