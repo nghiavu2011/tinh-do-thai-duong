@@ -199,6 +199,61 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 .ld-ring{width:36px;height:36px;border:2px solid var(--hairline-soft);border-top-color:var(--brass);border-radius:50%;animation:spin .9s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* ═══ 10B. CÁC THÀNH PHẦN GIÁO DỤC NÂNG CẤP (EDUCATIONAL SYSTEM) ═══ */
+.level-switcher{display:inline-flex;align-items:center;background:rgba(7,10,22,.85);border:1px solid var(--hairline);border-radius:3px;padding:2px;gap:2px}
+.lvl-btn{background:none;border:none;color:var(--parchment-dim);font-family:var(--font-ui);font-size:10px;font-weight:500;padding:3px 8px;border-radius:2px;cursor:pointer;transition:.18s}
+.lvl-btn:hover{color:var(--parchment);background:rgba(232,200,122,.1)}
+.lvl-btn.active{background:var(--brass);color:var(--ink);font-weight:600}
+
+.edu-modal{position:fixed;inset:0;z-index:100;background:rgba(4,6,14,.88);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:16px}
+.edu-modal.show{display:flex}
+.m-card.wide{max-width:680px}
+
+/* Onboarding */
+.ob-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.ob-btn{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(232,200,122,.05);border:1px solid var(--hairline-soft);border-radius:4px;color:var(--parchment);cursor:pointer;text-align:left;transition:.2s}
+.ob-btn:hover{background:rgba(232,200,122,.18);border-color:var(--brass);transform:translateY(-1px)}
+.ob-icon{font-size:22px;flex-shrink:0}
+.ob-text b{display:block;font-size:12px;color:var(--brass);margin-bottom:3px}
+.ob-text small{display:block;font-size:10px;color:var(--parchment-dim);line-height:1.4}
+
+/* Guided Lessons */
+.lesson-nav{display:flex;gap:4px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;border-bottom:1px solid var(--hairline-soft)}
+.l-tab{background:rgba(232,200,122,.06);border:1px solid var(--hairline-soft);border-radius:3px;padding:4px 8px;font-size:10px;color:var(--parchment-dim);cursor:pointer;white-space:nowrap;transition:.18s}
+.l-tab.active{background:var(--brass);color:var(--ink);font-weight:600;border-color:var(--brass)}
+.lesson-step{border-left:2px solid var(--hairline-soft);padding-left:12px;margin-bottom:12px;position:relative}
+.lesson-step.active{border-left-color:var(--brass)}
+.step-badge{font-family:var(--font-mono);font-size:9px;color:var(--brass);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px}
+.step-content{font-size:11.5px;color:var(--parchment);line-height:1.55}
+.step-action{margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
+
+/* Deep Time Timeline */
+.timeline-bar{display:flex;justify-content:space-between;position:relative;margin:24px 10px 16px}
+.timeline-bar::before{content:'';position:absolute;top:50%;left:0;right:0;height:2px;background:var(--hairline-soft);z-index:1}
+.timeline-node{position:relative;z-index:2;background:var(--ink);border:2px solid var(--hairline);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-family:var(--font-mono);color:var(--parchment-dim);cursor:pointer;transition:.2s}
+.timeline-node:hover,.timeline-node.active{border-color:var(--brass);color:var(--brass);background:rgba(232,200,122,.15);box-shadow:0 0 10px rgba(232,200,122,.3);transform:scale(1.1)}
+.t-info{background:rgba(232,200,122,.04);border:1px solid var(--hairline-soft);border-radius:4px;padding:12px;font-size:11.5px;line-height:1.6}
+
+/* Planet Scale */
+.scale-comp{background:rgba(232,200,122,.04);border:1px solid var(--hairline-soft);border-radius:4px;padding:12px;margin-top:10px}
+.scale-bar-box{position:relative;height:24px;background:rgba(232,200,122,.08);border-radius:3px;margin:14px 0 8px;display:flex;align-items:center;padding:0 8px}
+.scale-fill{height:8px;background:linear-gradient(90deg,var(--accent-cyan),var(--brass),var(--accent-red));border-radius:2px}
+
+/* Case Studies Grid (Systems & History) */
+.case-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.case-card{background:rgba(232,200,122,.04);border:1px solid var(--hairline-soft);border-radius:4px;padding:10px;display:flex;flex-direction:column;justify-content:space-between}
+.case-card h4{font-size:12px;color:var(--brass);margin-bottom:4px}
+.case-card p{font-size:10.5px;color:var(--parchment-dim);line-height:1.5;margin-bottom:8px}
+
+/* Structured Feedback */
+.fb-block{display:flex;flex-direction:column;gap:5px;margin-top:6px;font-size:11px}
+.fb-item{background:rgba(0,0,0,.25);padding:6px 8px;border-radius:3px;border-left:2px solid var(--brass)}
+
+/* Compare Table */
+.cmp-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:11px}
+.cmp-table th,.cmp-table td{border:1px solid var(--hairline-soft);padding:6px 8px;text-align:left}
+.cmp-table th{background:rgba(232,200,122,.08);color:var(--brass);font-weight:600}
+
 @media(max-width:768px){
   .masthead{padding:10px 12px 0}
   .wordmark{font-size:19px}
@@ -208,6 +263,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
   #telemetry{font-size:9px;gap:6px;padding:2px 8px}
   .search-input{width:120px}
   .search-input:focus{width:160px}
+  .ob-grid,.case-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -230,9 +286,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
   <div class="ti"><span class="ti-l">Tâm ngắm</span><span class="ti-v" id="tel-coord">27.99°B, 86.93°Đ</span></div><span class="ti-sep">·</span>
   <div class="ti"><span class="ti-l">Độ cao/Độ sâu</span><span class="ti-v" id="tel-elev">+8,849 m</span></div><span class="ti-sep">·</span>
   <div class="ti"><span class="ti-l">Phóng đại VE</span><span class="ti-pill" id="tel-ve">12× (Sư phạm)</span></div><span class="ti-sep">·</span>
-  <div class="ti"><span class="ti-l">Địa mạo</span><span class="ti-v" id="tel-type">Núi uốn nếp trẻ</span></div><span class="ti-sep">·</span>
-  <div class="ti"><span class="ti-l">Mảng kiến tạo</span><span class="ti-v" id="tel-plate">Ấn Độ ↔ Á-Âu</span></div><span class="ti-sep">·</span>
-  <div class="ti"><span class="ti-l">FPS</span><span class="ti-v" id="tel-fps">60</span></div>
+  <div class="ti"><span class="ti-l">Địa mạo</span><span class="ti-v" id="tel-type">Núi uốn nếp trẻ</span></div>
+  <span class="ti-sep lab-only" style="display:none">·</span>
+  <div class="ti lab-only" style="display:none"><span class="ti-l">Mảng</span><span class="ti-v" id="tel-plate">Ấn Độ ↔ Á-Âu</span></div>
+  <span class="ti-sep lab-only" style="display:none">·</span>
+  <div class="ti lab-only" style="display:none"><span class="ti-l">Độ phân giải</span><span class="ti-v">0.5° (720×360)</span></div>
+  <span class="ti-sep lab-only" style="display:none">·</span>
+  <div class="ti lab-only" style="display:none"><span class="ti-l">FPS</span><span class="ti-v" id="tel-fps">60</span></div>
 </div>
 
 <!-- ═══ MASTHEAD THƯƠNG HIỆU & OMNIBOX ═══ -->
@@ -242,6 +302,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
   <div class="rule"></div>
   
   <div class="mast-actions">
+    <!-- Level Switcher 3 Cấp Độ Tuổi -->
+    <div class="level-switcher" role="radiogroup" aria-label="Cấp độ học tập">
+      <button class="lvl-btn active" id="btn-lvl-explore" onclick="setLearningLevel('explore')" title="Cấp 1: Khám phá (Lớp 6–7)">🌍 Khám phá</button>
+      <button class="lvl-btn" id="btn-lvl-understand" onclick="setLearningLevel('understand')" title="Cấp 2: Giải thích (Lớp 8–9)">💡 Giải thích</button>
+      <button class="lvl-btn" id="btn-lvl-lab" onclick="setLearningLevel('lab')" title="Cấp 3: Phòng thí nghiệm (Lớp 10–12+)">🔬 Phòng thí nghiệm</button>
+    </div>
+
     <!-- Nút trở về Đài Quan Sát Tổng Thể -->
     <a href="../index.html" class="brand-link" title="Mở Đài Quan Sát Hệ Mặt Trời">
       <span>🌌</span> Tinh Đồ Thái Dương
@@ -271,9 +338,30 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
       <option value="mid_atlantic">🌋 Sống núi giữa Đại Tây Dương: Nam Mỹ ➔ Khe nứt tách giãn ➔ Châu Phi</option>
     </select>
 
-    <!-- Nút mở Thử thách Không gian -->
-    <button class="brand-link" onclick="openChallengeModal()">
-      <span>🏆</span> Thử Thách Không Gian
+    <!-- CÁC CÔNG CỤ GIÁO DỤC TƯƠNG TÁC -->
+    <button class="brand-link" onclick="openLessonsModal()" title="5 bài học mẫu chuẩn sư phạm 3–6 phút">
+      <span>📚</span> Bài Học (5)
+    </button>
+    <button class="brand-link" onclick="openCompareModal()" title="So sánh địa mạo giữa hai vùng">
+      <span>⚖️</span> So Sánh
+    </button>
+    <button class="brand-link" onclick="openDeepTimeModal()" title="Thời gian Trái Đất: Tiến trình kiến tạo Himalaya">
+      <span>⏳</span> Thời Gian
+    </button>
+    <button class="brand-link" onclick="openPlanetModal()" title="Quy mô hành tinh: So sánh độ gồ ghề với bán kính 6,371 km">
+      <span>🌐</span> Hành Tinh
+    </button>
+    <button class="brand-link" onclick="openSystemsModal()" title="Địa hình & Hệ Trái Đất: Khí hậu, sông ngòi, gió mùa">
+      <span>🌦</span> Hệ Trái Đất
+    </button>
+    <button class="brand-link" onclick="openHistoryModal()" title="Địa hình & Lịch sử Con người: Nile, Lưỡng Hà, Hoàng Hà, Mê Kông">
+      <span>🏺</span> Lịch Sử
+    </button>
+    <button class="brand-link" onclick="openChallengeModal()" title="5 cấp độ thử thách tư duy không gian (L1–L5)">
+      <span>🏆</span> Thử Thách
+    </button>
+    <button class="brand-link" onclick="openProvenanceModal()" title="Nguồn gốc dữ liệu NOAA ETOPO, PB2002, độ phân giải và giới hạn">
+      <span>ⓘ</span> Nguồn Dữ Liệu
     </button>
   </div>
 </div>
@@ -281,7 +369,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 <!-- Nút Tab mở Slab trái -->
 <div id="left-tab" onclick="toggleLeftSlab()">☰ DANH BẠ ĐỊA MẠO</div>
 
-<!-- ═══ SLAB TRÁI: DANH BẠ ĐỊA MẠO HỌC (27 ĐỊA DANH) ═══ -->
+<!-- ═══ SLAB TRÁI: DANH BẠ ĐỊA MẠO HỌC (VIỆT NAM & THẾ GIỚI) ═══ -->
 <div id="left-slab" class="slab">
   <div class="slab-top">
     <div class="glyph" style="color:var(--brass)"></div>
@@ -289,9 +377,16 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
     <button class="slab-close" aria-label="Đóng danh bạ địa mạo" onclick="toggleLeftSlab()">✕</button>
   </div>
   <h3 class="slab-name">Khám Phá Địa Hình</h3>
-  <p style="font-size:10px;color:var(--parchment-dim);margin:4px 0 8px">Chọn địa danh để camera bay tới mục tiêu & mở Thẻ Tri Thức 5W:</p>
+  
+  <div class="seg-tab" style="margin-top:6px">
+    <button class="active" id="btn-subtab-vn" onclick="switchLeftSubtab('vn')">🇻🇳 Việt Nam (9)</button>
+    <button id="btn-subtab-world" onclick="switchLeftSubtab('world')">🌍 Thế Giới (27)</button>
+  </div>
 
-  <div id="landmarks-list">
+  <div id="vietnam-list">
+    <!-- Render động 9 vùng địa mạo Việt Nam -->
+  </div>
+  <div id="landmarks-list" style="display:none">
     <!-- Render động từ data/landmarks.json -->
   </div>
 </div>
@@ -312,9 +407,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
     <button class="active" onclick="switchRightTab('tab-5w', this)">Thẻ Tri Thức 5W</button>
     <button onclick="switchRightTab('tab-profile', this)">Mặt Cắt Ngang 2D</button>
     <button onclick="switchRightTab('tab-measure', this)">Thước Đo A–B</button>
+    <button onclick="switchRightTab('tab-compare', this)">So Sánh</button>
   </div>
 
-  <!-- TAB 1: THẺ TRI THỨC 5W -->
+  <!-- TAB 1: THẺ TRI THỨC 5W (TƯƠNG TÁC SƯ PHẠM) -->
   <div id="tab-5w" class="tab-content active">
     <div class="readout">
       <div class="row"><dt>Tọa độ trắc địa</dt><dd id="rw-coord">27.9881° B, 86.9250° Đ</dd></div>
@@ -327,26 +423,40 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
       <div class="w-box">
         <div class="w-head"><span class="w-tag">WHERE?</span><span class="w-label">Vị trí địa lý</span></div>
         <div class="w-body" id="w-where">Nằm trên biên giới giữa Nepal và Tây Tạng (Trung Quốc), thuộc dãy Himalaya.</div>
+        <div class="w-action"><button class="ghost" onclick="flyToActiveLandmark()">🎯 Bay đến vị trí</button></div>
       </div>
       <div class="w-box">
         <div class="w-head"><span class="w-tag">WHAT?</span><span class="w-label">Bản chất địa hình</span></div>
         <div class="w-body" id="w-what">Đỉnh núi cao nhất trên đất liền Trái Đất, đỉnh phủ băng tuyết vĩnh cửu.</div>
+        <div class="w-action"><button class="ghost" onclick="openActiveTransect()">📈 Xem lát cắt trắc diện 2D</button></div>
       </div>
       <div class="w-box">
         <div class="w-head"><span class="w-tag">WHY THERE?</span><span class="w-label">Cơ chế kiến tạo</span></div>
-        <div class="w-body" id="w-why">Va chạm liên tục giữa mảng Ấn Độ và mảng Á-Âu đẩy lớp vỏ lục địa dày lên gấp đôi bình thường (~75 km).</div>
-        <div class="w-action"><button class="ghost" onclick="focusTectonicLayer()">🌋 Xem Mảng Kiến Tạo</button></div>
+        <div class="w-body" id="w-why">Khoảng 50–60 triệu năm trước, mảng Ấn Độ bắt đầu va chạm và xô húc vào mảng Á-Âu, làm dày lớp vỏ lục địa lên khoảng 60–80 km ở nhiều khu vực của cao nguyên Tây Tạng.</div>
+        <div class="w-action"><button class="ghost" onclick="focusTectonicLayer()">🌋 Xem Bằng Chứng Kiến Tạo</button></div>
       </div>
       <div class="w-box">
         <div class="w-head"><span class="w-tag">WHY CARE?</span><span class="w-label">Ý nghĩa sinh thái & nhân sinh</span></div>
-        <div class="w-body" id="w-care">Tháp nước của châu Á nuôi sống 1.4 tỷ người, bức tường chắn gió mùa định hình khí hậu toàn lục địa.</div>
+        <div class="w-body" id="w-care">Hệ thống núi cao Himalaya–Tây Tạng và các vùng núi cao châu Á đóng vai trò quan trọng đối với nhiều lưu vực sông lớn, nơi hơn một tỷ người sinh sống; đồng thời là bức tường chắn gió mùa định hình khí hậu toàn lục địa châu Á.</div>
       </div>
       <div class="w-box">
-        <div class="w-head"><span class="w-tag">WHAT IF?</span><span class="w-label">Tư duy phản biện</span></div>
-        <div class="w-body" id="w-whatif">Nếu không có vụ va chạm mảng này, gió mùa ẩm Ấn Độ Dương sẽ thổi thẳng vào nội địa, sa mạc Gobi có thể là rừng mưa!</div>
+        <div class="w-head"><span class="w-tag">WHAT IF?</span><span class="w-label">Tư duy phản biện & Câu hỏi mở</span></div>
+        <div class="w-body" id="w-whatif">Nếu Himalaya–Tây Tạng thấp hơn đáng kể, cấu trúc hoàn lưu khí quyển và phân bố lượng mưa tại châu Á có thể khác hiện nay. Bạn dự đoán vùng nào ở châu Á sẽ chịu tác động lớn nhất?</div>
         <div class="w-action"><button class="ghost" onclick="toggleScaleContrast()">⚖️ Đối soát 1× vs 12×</button></div>
       </div>
     </div>
+  </div>
+
+  <!-- TAB 4: SO SÁNH ĐỊA MẠO (EDUCATIONAL COMPARE) -->
+  <div id="tab-compare" class="tab-content">
+    <p style="font-size:10.5px;color:var(--parchment-dim);margin-bottom:8px">So sánh trực quan các cặp địa mạo kinh điển để hiểu rõ cơ chế và quy mô:</p>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <button class="ghost on" onclick="applyComparePreset('everest_fansipan')">🏔️ Everest (+8,849m) vs Fansipan (+3,147m)</button>
+      <button class="ghost" onclick="applyComparePreset('himalaya_andes')">🌎 Himalaya (Va chạm) vs Andes (Hút chìm)</button>
+      <button class="ghost" onclick="applyComparePreset('tibet_taynguyen')">🏞️ Tây Tạng (+4,500m) vs Tây Nguyên (+800m)</button>
+      <button class="ghost" onclick="applyComparePreset('redriver_mekong')">🌾 ĐB Sông Hồng (Có đê) vs ĐB Sông Cửu Long (Lũ tự nhiên)</button>
+    </div>
+    <div id="compare-result" style="margin-top:10px"></div>
   </div>
 
   <!-- TAB 2: MẶT CẮT NGANG THỰC NGHIỆM (REAL DEM SAMPLING) -->
@@ -479,6 +589,252 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
         <button class="ghost" id="btn-action-q" onclick="performChallengeAction()">🎯 Bắt đầu thao tác trên Globe</button>
         <button class="ghost" id="btn-next-q" onclick="nextQuestion()" style="display:none">Thử thách tiếp theo ➔</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 1. MODAL ONBOARDING ("BẠN MUỐN KHÁM PHÁ ĐIỀU GÌ?") ═══ -->
+<div id="onboarding-modal" class="edu-modal" role="dialog" aria-modal="true" aria-labelledby="ob-title">
+  <div class="m-card ob-card">
+    <div class="m-head">
+      <h2 id="ob-title">🌟 Chào Mừng Đến Với Phòng Thí Nghiệm Địa Hình 3D</h2>
+      <button class="slab-close" aria-label="Đóng onboarding" onclick="closeOnboarding()">✕</button>
+    </div>
+    <p style="font-size:12px;color:var(--parchment-dim);margin-bottom:12px">Bạn muốn bắt đầu hành trình khám phá Trái Đất từ chủ đề nào?</p>
+    <div class="ob-grid">
+      <button class="ob-btn" onclick="startGuidedLesson(0)">
+        <span class="ob-icon">🌐</span>
+        <div class="ob-text">
+          <b>Trái Đất gồ ghề đến đâu?</b>
+          <small>So sánh tỷ lệ thực 1× và phóng đại 12× so với bán kính hành tinh (6,371 km)</small>
+        </div>
+      </button>
+      <button class="ob-btn" onclick="startGuidedLesson(1)">
+        <span class="ob-icon">🏔️</span>
+        <div class="ob-text">
+          <b>Vì sao có Himalaya?</b>
+          <small>Khám phá vụ va chạm mảng Ấn Độ ↔ Á-Âu và sự dày lên của vỏ lục địa</small>
+        </div>
+      </button>
+      <button class="ob-btn" onclick="startGuidedLesson(3)">
+        <span class="ob-icon">🇻🇳</span>
+        <div class="ob-text">
+          <b>Việt Nam từ núi ra biển</b>
+          <small>Quy luật phân bậc địa hình Tây Bắc ➔ Hoàng Liên Sơn ➔ ĐB Sông Hồng ➔ Vịnh Bắc Bộ</small>
+        </div>
+      </button>
+      <button class="ob-btn" onclick="closeOnboarding()">
+        <span class="ob-icon">🧭</span>
+        <div class="ob-text">
+          <b>Tự do khám phá</b>
+          <small>Tự xoay quả cầu, chọn 27 địa mạo, đo đạc khoảng cách và khảo sát địa hình</small>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 2. MODAL 5 BÀI HỌC MẪU (GUIDED LESSONS) ═══ -->
+<div id="lessons-modal" class="edu-modal" role="dialog" aria-modal="true" aria-labelledby="l-title">
+  <div class="m-card wide">
+    <div class="m-head">
+      <h2 id="l-title">📚 Bài Học Địa Lý Không Gian</h2>
+      <button class="slab-close" aria-label="Đóng bài học" onclick="closeLessonsModal()">✕</button>
+    </div>
+    <div class="lesson-nav" id="lesson-nav">
+      <!-- 5 Tabs bài học -->
+    </div>
+    <div id="lesson-body">
+      <!-- Nội dung bài học hiện tại -->
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 3. MODAL THỜI GIAN TRÁI ĐẤT (DEEP TIME) ═══ -->
+<div id="deeptime-modal" class="edu-modal" role="dialog" aria-modal="true" aria-labelledby="dt-title">
+  <div class="m-card wide">
+    <div class="m-head">
+      <h2 id="dt-title">⏳ Thời Gian Trái Đất — Tiến Trình Himalaya (100 Ma ➔ Nay)</h2>
+      <button class="slab-close" aria-label="Đóng thời gian Trái Đất" onclick="closeDeepTimeModal()">✕</button>
+    </div>
+    <p style="font-size:11.5px;color:var(--parchment-dim);line-height:1.5">Dãy núi cao nhất hành tinh không hình thành trong một ngày, mà là kết quả của một hành trình kiến tạo kéo dài hàng chục triệu năm:</p>
+    
+    <div class="timeline-bar" id="timeline-nodes">
+      <!-- Render 4 mốc: ~100 Ma, ~60-50 Ma, Cenozoic, Hiện tại -->
+    </div>
+    <div class="t-info" id="t-info-content">
+      <!-- Nội dung chi tiết mốc thời gian -->
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 4. MODAL TRÁI ĐẤT NHƯ MỘT HÀNH TINH (EARTH AS A PLANET) ═══ -->
+<div id="planet-modal" class="edu-modal" role="dialog" aria-modal="true" aria-labelledby="pl-title">
+  <div class="m-card">
+    <div class="m-head">
+      <h2 id="pl-title">🌐 Trái Đất Như Một Hành Tinh — Tương Quan Quy Mô</h2>
+      <button class="slab-close" aria-label="Đóng quy mô hành tinh" onclick="closePlanetModal()">✕</button>
+    </div>
+    <p style="font-size:11.5px;color:var(--parchment-dim);line-height:1.5">Con người cảm thấy các ngọn núi cao ngút ngàn và đại dương sâu thăm thẳm, nhưng ở quy mô hành tinh thì sao?</p>
+    
+    <div class="scale-comp">
+      <div style="display:flex;justify-content:space-between;font-size:11px">
+        <span>Bán kính trung bình Trái Đất ($R$)</span>
+        <b style="font-family:var(--font-mono);color:var(--brass)">≈ 6,371 km</b>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-top:4px">
+        <span>Đỉnh Everest (Cao nhất đất liền)</span>
+        <b style="font-family:var(--font-mono);color:var(--accent-green)">+8.85 km (0.14% R)</b>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-top:4px">
+        <span>Vực Mariana (Sâu nhất đáy biển)</span>
+        <b style="font-family:var(--font-mono);color:var(--accent-cyan)">-10.98 km (0.17% R)</b>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-top:6px;border-top:1px solid var(--hairline-soft);padding-top:6px">
+        <span style="font-weight:600">Tổng biên độ cứu cánh (Total Relief)</span>
+        <b style="font-family:var(--font-mono);color:var(--accent-yellow)">≈ 19.83 km (0.31% R)</b>
+      </div>
+
+      <div class="scale-bar-box">
+        <div class="scale-fill" style="width:0.31%"></div>
+        <span style="font-family:var(--font-mono);font-size:9.5px;color:var(--parchment-dim);margin-left:8px">Biên độ địa hình chỉ chiếm 0.31% bán kính Trái Đất</span>
+      </div>
+      
+      <p style="font-size:10.5px;color:var(--parchment-dim);line-height:1.5;margin-top:8px">
+        💡 <b>Sự thật khoa học:</b> Nếu thu nhỏ Trái Đất bằng kích thước một quả bóng bàn hoặc quả bi-a, đầu ngón tay của bạn sẽ khó lòng cảm nhận được độ nhấp nhô của Everest hay Mariana. Vì vậy, trên quả cầu 3D này, chúng tôi cung cấp mức <b>12× Phóng đại Sư phạm</b> để người học dễ dàng nhận diện hình thái địa mạo.
+      </p>
+      
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="ghost" onclick="setVE(1);closePlanetModal()">Trở về 1× Chuẩn vật lý</button>
+        <button class="ghost on" onclick="setVE(12);closePlanetModal()">Bật 12× Phóng đại sư phạm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 5. MODAL ĐỊA HÌNH & HỆ TRÁI ĐẤT (EARTH SYSTEMS) ═══ -->
+<div id="systems-modal" class="edu-modal" role="dialog" aria-modal="true" aria-labelledby="sys-title">
+  <div class="m-card wide">
+    <div class="m-head">
+      <h2 id="sys-title">🌦 Địa Hình & Các Hệ Trái Đất (Tương Tác Tự Nhiên)</h2>
+      <button class="slab-close" aria-label="Đóng hệ Trái Đất" onclick="closeSystemsModal()">✕</button>
+    </div>
+    <p style="font-size:11.5px;color:var(--parchment-dim);line-height:1.5">Địa hình không tồn tại cô lập mà tương tác liên tục với khí quyển, thủy quyển và sinh quyển:</p>
+
+    <div class="case-grid">
+      <div class="case-card">
+        <div>
+          <h4>1. Núi ➔ Hiệu ứng khuất gió (Rain Shadow)</h4>
+          <p>Không khí ẩm gặp sườn núi bị đẩy lên cao, lạnh dần và ngưng tụ gây mưa lớn ở sườn đón gió. Khi vượt qua đỉnh sang sườn khuất gió, không khí khô đi xuống bị nén đoạn nhiệt trở nên khô nóng (Ví dụ: Gió phơn Tây Nam ở Duyên hải miền Trung Việt Nam; sa mạc Atacama phía tây dãy Andes).</p>
+        </div>
+        <button class="ghost" onclick="focusEarthSystem('rain_shadow')">🔍 Xem Vùng Điển Hình (Trường Sơn / Andes)</button>
+      </div>
+
+      <div class="case-card">
+        <div>
+          <h4>2. Núi ➔ Mạng lưới sông ngòi & Châu thổ</h4>
+          <p>Địa hình dốc cao ở thượng nguồn tạo động năng mạnh cho dòng chảy xói mòn và bào mòn đá mẹ, vận chuyển phù sa màu mỡ xuống hạ lưu bồi tụ nên các đồng bằng châu thổ trù phú (Ví dụ: Dãy Hoàng Liên Sơn nuôi dưỡng Sông Hồng; Cao nguyên Tây Tạng khởi nguồn Sông Mê Kông).</p>
+        </div>
+        <button class="ghost" onclick="focusEarthSystem('river')">🔍 Xem Lát Cắt Sông Ngòi (Sông Hồng / Mê Kông)</button>
+      </div>
+
+      <div class="case-card" style="grid-column:1/-1">
+        <div>
+          <h4>3. Cao nguyên ➔ Hoàn lưu gió mùa Châu Á</h4>
+          <p>Khối cao nguyên Tây Tạng đồ sộ (trung bình >4,500m) hấp thụ bức xạ mặt trời vào mùa hè, hoạt động như một 'nguồn nhiệt khổng lồ' đốt nóng tầng đối lưu giữa, tạo ra một vùng áp thấp nhiệt lực mạnh mẽ hút gió mùa tây nam ẩm từ Ấn Độ Dương tràn sâu vào lục địa châu Á.</p>
+        </div>
+        <button class="ghost" onclick="focusEarthSystem('plateau_monsoon')">🔍 Xem Cao Nguyên Tây Tạng</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 6. MODAL ĐỊA HÌNH & LỊCH SỬ CON NGƯỜI (HUMAN HISTORY) ═══ -->
+<div id="history-modal" class="edu-modal" role="dialog" aria-modal="true" aria-labelledby="hist-title">
+  <div class="m-card wide">
+    <div class="m-head">
+      <h2 id="hist-title">🏺 Địa Hình & Lịch Sử Con Người</h2>
+      <button class="slab-close" aria-label="Đóng lịch sử" onclick="closeHistoryModal()">✕</button>
+    </div>
+    <p style="font-size:11.5px;color:var(--parchment-dim);line-height:1.5">
+      Địa hình tạo ra môi trường tự nhiên, mở ra tiềm năng và đặt ra thách thức sinh tồn, nhưng <b>không định đoạt tuyệt đối</b> số phận con người. Các nền văn minh lớn đều ra đời từ sự thích ứng và sáng tạo không ngừng:
+    </p>
+
+    <div class="case-grid">
+      <div class="case-card">
+        <div>
+          <h4>1. Sông Nile & Nền văn minh Ai Cập</h4>
+          <p>Thung lũng sông Nile kẹp giữa sa mạc khô cằn đón nhận lũ định kỳ mang phù sa bồi đắp hàng năm. Nhu cầu đo đạc lại ruộng đất sau mỗi mùa lũ đã kích thích sự phát triển vượt bậc của hình học, lịch pháp và kiến trúc cổ đại.</p>
+        </div>
+        <button class="ghost" onclick="flyToHistoryCase('nile')">🌍 Xem Lưu Vực Sông Nile</button>
+      </div>
+
+      <div class="case-card">
+        <div>
+          <h4>2. Lưỡng Hà (Tigris & Euphrates)</h4>
+          <p>Vùng đồng bằng phù sa giữa hai con sông lớn ở Tây Á đòi hỏi công tác thủy lợi đào kênh dẫn nước quy mô lớn. Yêu cầu tổ chức cộng đồng tưới tiêu đã dẫn tới sự ra đời của các nhà nước thành bang Sumer, bộ luật Hammurabi và chữ viết hình nêm.</p>
+        </div>
+        <button class="ghost" onclick="flyToHistoryCase('mesopotamia')">🌍 Xem Đồng Bằng Lưỡng Hà</button>
+      </div>
+
+      <div class="case-card">
+        <div>
+          <h4>3. Hoàng Hà & Đất Hoàng Thổ</h4>
+          <p>Cao nguyên đất hoàng thổ bở xốp, phì nhiêu giúp nghề nông sơ khai dễ canh tác mà không cần công cụ kim loại phức tạp. Tuy nhiên, sông hay đổi dòng ngập lụt dữ dội đã thôi thúc truyền thống trị thủy và gắn kết cộng đồng sớm của văn minh Trung Hoa.</p>
+        </div>
+        <button class="ghost" onclick="flyToHistoryCase('yellow_river')">🌍 Xem Lưu Vực Hoàng Hà</button>
+      </div>
+
+      <div class="case-card">
+        <div>
+          <h4>4. Sông Mê Kông & Văn minh lúa nước</h4>
+          <p>Dòng chảy dài qua 6 quốc gia kết hợp túi nước tự nhiên Biển Hồ (Tonle Sap) tạo nên chế độ nước điều hòa, nuôi dưỡng nền văn minh lúa nước trù phú với các nét văn hóa chợ nổi và sinh kế thích ứng mùa nước nổi ở ĐB Sông Cửu Long.</p>
+        </div>
+        <button class="ghost" onclick="flyToHistoryCase('mekong')">🌍 Xem Châu Thổ Sông Mê Kông</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 7. MODAL SO SÁNH ĐỊA MẠO (COMPARE MODAL) ═══ -->
+<div id="compare-modal" class="edu-modal" role="dialog" aria-modal="true" aria-labelledby="cmp-title">
+  <div class="m-card wide">
+    <div class="m-head">
+      <h2 id="cmp-title">⚖️ So Sánh Địa Mạo Đối Chiếu</h2>
+      <button class="slab-close" aria-label="Đóng so sánh" onclick="closeCompareModal()">✕</button>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+      <button class="ghost on" id="btn-cmp-1" onclick="selectCompareModalPreset('everest_fansipan')">Everest vs Fansipan</button>
+      <button class="ghost" id="btn-cmp-2" onclick="selectCompareModalPreset('himalaya_andes')">Himalaya vs Andes</button>
+      <button class="ghost" id="btn-cmp-3" onclick="selectCompareModalPreset('tibet_taynguyen')">Tây Tạng vs Tây Nguyên</button>
+      <button class="ghost" id="btn-cmp-4" onclick="selectCompareModalPreset('redriver_mekong')">ĐB Sông Hồng vs ĐB Sông Cửu Long</button>
+    </div>
+    <div id="modal-compare-content">
+      <!-- Bảng so sánh chi tiết -->
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 8. MODAL NGUỒN GỐC DỮ LIỆU & GIỚI HẠN (DATA LITERACY) ═══ -->
+<div id="provenance-modal" class="edu-modal" role="dialog" aria-modal="true" aria-labelledby="prov-title">
+  <div class="m-card">
+    <div class="m-head">
+      <h2 id="prov-title">ⓘ Dữ Liệu Này Đến Từ Đâu? (Data Literacy)</h2>
+      <button class="slab-close" aria-label="Đóng nguồn dữ liệu" onclick="closeProvenanceModal()">✕</button>
+    </div>
+    <div style="font-size:11.5px;line-height:1.6;color:var(--parchment)">
+      <p style="margin-bottom:8px">
+        <b>1. Lưới Cao Độ & Đáy Biển (Unified Relief Grid):</b><br>
+        Web visualization raster: <b>720 × 360</b> (độ phân giải không gian $0.5^\circ \times 0.5^\circ$, tương đương ~55 km tại xích đạo), được tái lấy mẫu (resampled) và nội suy song tuyến từ mô hình địa hình toàn cầu <b>NOAA ETOPO & GEBCO 2024 Calibration</b> kết hợp <b>NASA Blue Marble Topology</b>.
+      </p>
+      <p style="margin-bottom:8px">
+        <b>2. Ranh Giới Mảng Kiến Tạo (PB2002):</b><br>
+        Dữ liệu được số hóa từ mô hình <b>PB2002</b> do nhà địa vật lý <i>Peter Bird</i> công bố năm 2003. Đây là mô hình khoa học tiêu chuẩn dùng để biểu diễn các mảng và ranh giới mảng, không phải là một đường biên tuyệt đối hoàn hảo của tự nhiên.
+      </p>
+      <p style="margin-bottom:8px">
+        <b>3. Giới Hạn Của Dữ Liệu (Limitations):</b><br>
+        Do được tối ưu cho kiến trúc WebGL tĩnh 60fps trên trình duyệt, các địa hình hẹp cục bộ dưới 50 km (như đỉnh núi đá tai mèo hoặc hẻm vực nhỏ) được làm mịn trung bình. Số liệu đỉnh núi chính xác được chuẩn hóa theo các cuộc khảo sát đo đạc thực tế (ví dụ: Everest khảo sát liên hợp Nepal - TQ 2020: 8,848.86 m; Fansipan Cục Đo đạc Bản đồ VN 2019: 3,147.3 m).
+      </p>
     </div>
   </div>
 </div>
@@ -697,6 +1053,15 @@ async function initApplication() {
 
     // Khởi tạo trắc diện đầu tiên: Everest
     selectLandmark('everest');
+    renderVietnamList();
+    setLearningLevel('explore');
+
+    // Tự động mở Onboarding chào mừng lần đầu truy cập
+    try {
+      if (!sessionStorage.getItem('nm_topography_onboarded')) {
+        setTimeout(() => { openOnboarding(); }, 600);
+      }
+    } catch(e) {}
 
     document.getElementById('loading').classList.add('done');
   } catch (err) {
@@ -1203,7 +1568,7 @@ function loadQuestion(idx) {
   const q = challengesData[idx];
   activeChallenge = q;
 
-  document.getElementById('q-type').textContent = `DẠNG ${idx + 1}: ${q.type.toUpperCase()} (${q.type === 'locate' ? 'ĐỊNH VỊ 3D' : q.type === 'measure' ? 'ĐO ĐẠC TRẮC ĐỊA' : q.type === 'compare' ? 'SO SÁNH QUY MÔ' : 'SUY LUẬN NHÂN QUẢ'})`;
+  document.getElementById('q-type').textContent = `CẤP ĐỘ ${q.level || 'L' + (idx + 1)}: ${q.type.toUpperCase()}`;
   document.getElementById('q-title').textContent = q.title;
   document.getElementById('q-desc').textContent = q.instruction;
   document.getElementById('q-step').textContent = `Thử thách ${idx + 1} / ${challengesData.length}`;
@@ -1251,9 +1616,18 @@ function handleChallengeClick(lat, lon) {
   const fb = document.getElementById('q-feedback');
 
   if (dist <= target.tolerance_deg * 111) {
-    fb.innerHTML = `✅ <b>Chính xác tuyệt vời!</b> Bạn đã click trúng mục tiêu (Sai lệch chỉ ${dist} km).<br>${activeChallenge.evidence}`;
-    fb.style.color = 'var(--accent-green)';
-    fb.style.background = 'rgba(61,214,140,.15)';
+    const fbStruct = activeChallenge.feedback_structured;
+    fb.innerHTML = `
+      <div style="font-weight:600;color:var(--accent-green);margin-bottom:6px">✅ CHÍNH XÁC TUYỆT VỜI! (Sai lệch chỉ ${dist} km)</div>
+      <div class="fb-block">
+        <div class="fb-item"><b>👁️ QUAN SÁT:</b> ${fbStruct ? fbStruct.observation : activeChallenge.evidence}</div>
+        <div class="fb-item"><b>🔍 BẰNG CHỨNG:</b> ${fbStruct ? fbStruct.evidence : ''}</div>
+        <div class="fb-item"><b>⚙️ CƠ CHẾ:</b> ${fbStruct ? fbStruct.mechanism : ''}</div>
+        <div class="fb-item"><b>📌 KẾT LUẬN:</b> ${fbStruct ? fbStruct.conclusion : ''}</div>
+      </div>
+    `;
+    fb.style.color = 'var(--parchment)';
+    fb.style.background = 'rgba(61,214,140,.12)';
     document.getElementById('btn-next-q').style.display = 'block';
   } else {
     fb.innerHTML = `❌ <b>Chưa chính xác!</b> Điểm bạn vừa click cách mục tiêu ${dist.toLocaleString()} km.<br><i>${activeChallenge.hint}</i>`;
@@ -1271,16 +1645,31 @@ window.answerQuestion = function(qIdx, optIdx, btn) {
   const fb = document.getElementById('q-feedback');
 
   document.querySelectorAll('.q-btn').forEach(b => b.disabled = true);
+  const fbStruct = q.feedback_structured;
 
   if (opt.c) {
     btn.classList.add('correct');
-    fb.innerHTML = `✅ <b>Chính xác!</b> ${opt.fb}<br><b>Dẫn chứng khoa học:</b> ${q.evidence}`;
-    fb.style.color = 'var(--accent-green)';
-    fb.style.background = 'rgba(61,214,140,.15)';
+    fb.innerHTML = `
+      <div style="font-weight:600;color:var(--accent-green);margin-bottom:6px">✅ CHÍNH XÁC! ${opt.fb || ''}</div>
+      <div class="fb-block">
+        <div class="fb-item"><b>👁️ QUAN SÁT:</b> ${fbStruct ? fbStruct.observation : q.evidence}</div>
+        <div class="fb-item"><b>🔍 BẰNG CHỨNG:</b> ${fbStruct ? fbStruct.evidence : ''}</div>
+        <div class="fb-item"><b>⚙️ CƠ CHẾ:</b> ${fbStruct ? fbStruct.mechanism : ''}</div>
+        <div class="fb-item"><b>📌 KẾT LUẬN:</b> ${fbStruct ? fbStruct.conclusion : ''}</div>
+      </div>
+    `;
+    fb.style.color = 'var(--parchment)';
+    fb.style.background = 'rgba(61,214,140,.12)';
   } else {
     btn.classList.add('wrong');
-    fb.innerHTML = `❌ <b>Chưa chính xác!</b> Hãy quan sát kỹ vị trí và bản chất kiến tạo.<br><b>Dẫn chứng:</b> ${q.evidence}`;
-    fb.style.color = 'var(--accent-red)';
+    fb.innerHTML = `
+      <div style="font-weight:600;color:var(--accent-red);margin-bottom:6px">❌ CHƯA CHÍNH XÁC! Hãy đối chiếu lại các bằng chứng địa mạo & kiến tạo.</div>
+      <div class="fb-block">
+        <div class="fb-item"><b>🔍 BẰNG CHỨNG:</b> ${fbStruct ? fbStruct.evidence : q.evidence}</div>
+        <div class="fb-item"><b>⚙️ CƠ CHẾ:</b> ${fbStruct ? fbStruct.mechanism : ''}</div>
+      </div>
+    `;
+    fb.style.color = 'var(--parchment)';
     fb.style.background = 'rgba(255,82,82,.15)';
   }
   fb.style.display = 'block';
@@ -1542,6 +1931,553 @@ window.onTransectSelect = function(val) {
   document.getElementById('right-slab').classList.remove('collapsed');
   switchRightTab('tab-profile', document.querySelectorAll('.seg-tab button')[1]);
 };
+
+/* ══════════════════════════════════════════════════
+   14B. HỆ THỐNG GIÁO DỤC NÂNG CẤP (EDUCATIONAL SYSTEM)
+   ══════════════════════════════════════════════════ */
+
+// 1. Phân tầng kiến thức 3 cấp (Learning Levels)
+window.currentLearningLevel = 'explore';
+window.setLearningLevel = function(lvl) {
+  window.currentLearningLevel = lvl;
+  document.querySelectorAll('.lvl-btn').forEach(b => {
+    b.classList.toggle('active', b.id === `btn-lvl-${lvl}`);
+  });
+
+  const labElements = document.querySelectorAll('.lab-only');
+  labElements.forEach(el => {
+    el.style.display = (lvl === 'lab') ? 'inline-flex' : 'none';
+  });
+
+  if (lvl === 'explore') {
+    setVE(12);
+  } else if (lvl === 'understand') {
+    focusTectonicLayer();
+  } else if (lvl === 'lab') {
+    focusTectonicLayer();
+    gridGroup.visible = true;
+    document.getElementById('btn-grid').classList.add('on');
+  }
+};
+
+// 2. Onboarding CTA
+window.closeOnboarding = function() {
+  document.getElementById('onboarding-modal').classList.remove('show');
+  try { sessionStorage.setItem('nm_topography_onboarded', 'true'); } catch(e) {}
+};
+
+window.openOnboarding = function() {
+  document.getElementById('onboarding-modal').classList.add('show');
+};
+
+// 3. Tương tác 5W
+window.flyToActiveLandmark = function() {
+  if (activeLandmark) flyToLocation(activeLandmark.lat, activeLandmark.lon);
+};
+
+window.openActiveTransect = function() {
+  if (activeLandmark && activeLandmark.transect) {
+    document.getElementById('right-slab').classList.remove('collapsed');
+    switchRightTab('tab-profile', document.querySelectorAll('.seg-tab button')[1]);
+  }
+};
+
+// 4. Tuyến Địa hình Việt Nam (First-class content)
+const vietnamRegions = [
+  {
+    id: "vn_fansipan",
+    name: "Hoàng Liên Sơn & Đỉnh Fansipan",
+    category: "Núi uốn nếp Kainozoi trẻ",
+    lat: 22.3033, lon: 103.7753, elev: 3147,
+    transect: { name: "Lào Cai ➔ Fansipan ➔ Than Uyên", p1: [22.5, 104.0], p2: [21.8, 103.5] },
+    desc: "Nóc nhà Đông Dương (3,147.3m), đỉnh cao nhất dãy Hoàng Liên Sơn, khối nếp uốn granit nâng cao mãnh liệt thời Tân kiến tạo."
+  },
+  {
+    id: "vn_taybac",
+    name: "Vùng núi Tây Bắc",
+    category: "Địa hình núi cao & thung lũng sâu",
+    lat: 21.5, lon: 103.5, elev: 1850,
+    transect: { name: "Điện Biên ➔ Sơn La ➔ Hòa Bình", p1: [21.8, 103.0], p2: [20.8, 105.3] },
+    desc: "Các dãy núi cao chạy theo hướng Tây Bắc - Đông Nam xen kẽ các bồn địa thung lũng sông Đà và sông Mã sâu hiểm trở."
+  },
+  {
+    id: "vn_dongbac",
+    name: "Vùng núi Đông Bắc & Vịnh Hạ Long",
+    category: "Địa hình cánh cung & Karst đá vôi",
+    lat: 21.8, lon: 106.2, elev: 650,
+    transect: { name: "Cánh cung Ngân Sơn ➔ Bắc Sơn ➔ Vịnh Hạ Long", p1: [22.5, 105.8], p2: [20.9, 107.1] },
+    desc: "Các cánh cung núi chụm đầu ở Tam Đảo mở rộng về phía bắc, cùng cảnh quan karst đá vôi ngập nước Vịnh Hạ Long kỳ vĩ."
+  },
+  {
+    id: "vn_dongbang_sh",
+    name: "Đồng bằng sông Hồng",
+    category: "Đồng bằng châu thổ bồi tụ phù sa cổ",
+    lat: 20.8, lon: 106.0, elev: 15,
+    transect: { name: "Việt Trì ➔ Hà Nội ➔ Cửa Ba Lạt", p1: [21.3, 105.4], p2: [20.3, 106.6] },
+    desc: "Tam giác châu thổ phù sa màu mỡ với hệ thống đê điều nhân tạo dài hàng nghìn km ngăn lũ, chia cắt mặt đồng bằng thành các ô trũng."
+  },
+  {
+    id: "vn_truongson_bac",
+    name: "Dãy Trường Sơn Bắc",
+    category: "Núi uốn nếp cổ trẻ hóa",
+    lat: 18.0, lon: 105.8, elev: 1200,
+    transect: { name: "Khối núi Kẻ Bàng ➔ Duyên hải Quảng Bình", p1: [17.5, 105.9], p2: [17.5, 106.6] },
+    desc: "Sườn đông dốc đứng đổ về Biển Đông, sườn tây thoải dần sang lưu vực sông Mê Kông; tạo bức tường chắn gió gây hiệu ứng phơn khô nóng."
+  },
+  {
+    id: "vn_truongson_nam",
+    name: "Khối núi Kon Tum & Đỉnh Ngọc Linh",
+    category: "Khối tảng kết tinh nâng cao",
+    lat: 15.08, lon: 107.98, elev: 2598,
+    transect: { name: "Ngọc Linh ➔ Duyên hải Quảng Nam", p1: [15.1, 107.7], p2: [15.5, 108.6] },
+    desc: "Đỉnh núi cao nhất miền Trung (2,598m), khối nền cổ tiền Cambri nâng bổng, ranh giới sinh thái và khí hậu trọng yếu."
+  },
+  {
+    id: "vn_taynguyen",
+    name: "Cao nguyên xếp tầng Tây Nguyên",
+    category: "Cao nguyên dung nham Bazan",
+    lat: 13.0, lon: 108.0, elev: 850,
+    transect: { name: "Cao nguyên Pleiku ➔ Đắk Lắk ➔ Di Linh", p1: [14.0, 108.0], p2: [11.5, 108.3] },
+    desc: "Các bề mặt san bằng xếp tầng bazan màu mỡ (Lâm Viên, Pleiku, Đắk Lắk, Di Linh) độ cao 500–1500m hình thành do phun trào núi lửa Kainozoi."
+  },
+  {
+    id: "vn_dongnambo",
+    name: "Bán bình nguyên Đông Nam Bộ",
+    category: "Địa hình chuyển tiếp phù sa cổ",
+    lat: 11.2, lon: 106.8, elev: 80,
+    transect: { name: "Bình Phước ➔ TP.HCM ➔ Cần Giờ", p1: [11.8, 106.9], p2: [10.4, 106.9] },
+    desc: "Vùng đất lượn sóng chuyển tiếp từ cao nguyên Tây Nguyên xuống đồng bằng Nam Bộ, địa hình đồi thấp và đất xám phù sa cổ trù phú."
+  },
+  {
+    id: "vn_dongbang_scl",
+    name: "Đồng bằng sông Cửu Long",
+    category: "Đồng bằng châu thổ trẻ ngập nước",
+    lat: 10.0, lon: 105.5, elev: 2,
+    transect: { name: "Đồng Tháp Mười ➔ Cần Thơ ➔ Mũi Cà Mau", p1: [10.8, 105.8], p2: [8.6, 104.8] },
+    desc: "Đồng bằng châu thổ trẻ bồi đắp bởi hệ thống sông Mê Kông, cao độ trung bình dưới 2m, mạng lưới kênh rạch chằng chịt thích ứng 'sống chung với lũ'."
+  }
+];
+
+window.switchLeftSubtab = function(subtab) {
+  document.getElementById('btn-subtab-vn').classList.toggle('active', subtab === 'vn');
+  document.getElementById('btn-subtab-world').classList.toggle('active', subtab === 'world');
+  document.getElementById('vietnam-list').style.display = (subtab === 'vn') ? 'block' : 'none';
+  document.getElementById('landmarks-list').style.display = (subtab === 'world') ? 'block' : 'none';
+};
+
+window.renderVietnamList = function() {
+  const container = document.getElementById('vietnam-list');
+  container.innerHTML = `
+    <div style="font-size:10px;color:var(--parchment-dim);margin:4px 0 8px;line-height:1.4">
+      🇻🇳 <b>Quy luật phân bậc:</b> Núi cao hiểm trở ➔ Cao nguyên xếp tầng ➔ Đồng bằng phù sa ➔ Thềm lục địa Biển Đông:
+    </div>
+    ${vietnamRegions.map(r => `
+      <div class="landmark-item" onclick="selectVietnamRegion('${r.id}')" style="margin-bottom:4px">
+        <div>
+          <b style="color:var(--parchment);display:block">${r.name}</b>
+          <small style="font-size:9.5px;color:var(--parchment-dim)">${r.category}</small>
+        </div>
+        <span class="lm-elev">${r.elev > 0 ? '+' : ''}${r.elev}m</span>
+      </div>
+    `).join('')}
+  `;
+};
+
+window.selectVietnamRegion = function(id) {
+  const r = vietnamRegions.find(x => x.id === id);
+  if (!r) return;
+  flyToLocation(r.lat, r.lon, 3.6);
+  if (r.transect) {
+    generateRealProfile(r.transect.p1[0], r.transect.p1[1], r.transect.p2[0], r.transect.p2[1], r.transect.name);
+    document.getElementById('right-slab').classList.remove('collapsed');
+    switchRightTab('tab-profile', document.querySelectorAll('.seg-tab button')[1]);
+  }
+};
+
+// 5. 5 Bài Học Mẫu (Guided Lessons Engine)
+const guidedLessons = [
+  {
+    id: "l1_roughness",
+    title: "Bài 1: Trái Đất thực sự gồ ghề đến mức nào?",
+    duration: "3 phút",
+    question: "Nhìn quả cầu ở tỉ lệ 12×, bề mặt có vẻ hiểm trở. Nhưng nếu nhìn ở kích thước thật 1× thì sao?",
+    observe: "Quan sát biên độ núi Everest (+8.85 km) và rãnh Mariana (-11 km) so với bán kính Trái Đất (6,371 km).",
+    interactAction: "ve_scale_contrast",
+    interactText: "⚖️ Chuyển Đổi Đối Soát 12× vs 1×",
+    evidence: "Tổng biên độ địa hình toàn cầu chỉ 19.83 km, chiếm chưa đầy 0.31% bán kính Trái Đất.",
+    explanation: "Ở quy mô hành tinh, Trái Đất gần như nhẵn mịn. Độ gồ ghề 12× là thủ pháp sư phạm để mắt người nhìn rõ hình thái địa mạo.",
+    checkQ: {
+      q: "Nếu Trái Đất thu nhỏ bằng quả bóng bàn (đường kính 40 mm), ngọn núi Everest sẽ cao tương đương bao nhiêu?",
+      opts: [
+        { t: "Khoảng 0.028 mm (nhẵn hơn mắt thường có thể nhìn thấy)", c: true },
+        { t: "Khoảng 2 mm (như một hạt cát nhỏ)", c: false },
+        { t: "Khoảng 5 mm (nhô hẳn lên)", c: false }
+      ]
+    }
+  },
+  {
+    id: "l2_himalaya",
+    title: "Bài 2: Tại sao Himalaya ở đúng vị trí này?",
+    duration: "4 phút",
+    question: "Vì sao dãy núi cao nhất thế giới lại nằm giữa bán đảo Ấn Độ và lục địa châu Á?",
+    observe: "Quan sát đới va chạm giữa mảng Ấn Độ và mảng Á-Âu dọc theo đường ranh giới kiến tạo PB2002.",
+    interactAction: "focus_himalaya",
+    interactText: "🌋 Bay Đến Himalaya & Bật Mảng Kiến Tạo",
+    evidence: "Mảng Ấn Độ xô húc vào mảng Á-Âu với tốc độ ~5 cm/năm, làm dày vỏ lục địa lên khoảng 60–80 km ở Tây Tạng.",
+    explanation: "Do cả hai mảng đều là vỏ lục địa nhẹ (chủ yếu là granit), chúng không thể hút chìm sâu vào manti mà bị dồn nén, rút ngắn và đội lên tạo chuỗi núi cao.",
+    checkQ: {
+      q: "Tại sao mảng Ấn Độ không hút chìm sâu xuống manti như mảng Nazca ở Nam Mỹ?",
+      opts: [
+        { t: "Vì vỏ lục địa có tỷ trọng nhẹ không thể chìm sâu vào lớp manti đặc hơn", c: true },
+        { t: "Vì mảng Ấn Độ đứng yên không chuyển động", c: false },
+        { t: "Vì giữa hai mảng có đới tách giãn tạo vỏ mới", c: false }
+      ]
+    }
+  },
+  {
+    id: "l3_everest_mariana",
+    title: "Bài 3: Từ Everest xuống Mariana — Cứu cánh địa hình",
+    duration: "4 phút",
+    question: "Từ nóc nhà đất liền xuống vực sâu đại dương, địa hình Trái Đất phân bố ra sao so với mực nước biển?",
+    observe: "Quan sát dải phân tầng màu độ cao & đáy biển (Hypsometric / Bathymetric) trên quả cầu 3D.",
+    interactAction: "focus_mariana",
+    interactText: "🌊 Bật Chế Độ Phân Tầng Màu & Bay Đến Mariana",
+    evidence: "Thềm lục địa nông (-200m) ➔ Sườn lục địa dốc ➔ Đồng bằng vực thẳm (-4,000m) ➔ Rãnh Mariana (-10,984m).",
+    explanation: "Hai bậc địa hình lớn phản ánh bản chất của hai loại vỏ: Vỏ lục địa dày nhẹ nổi cao (đất liền) và vỏ đại dương mỏng nặng chìm sâu (đại dương).",
+    checkQ: {
+      q: "Mực nước biển (0 m) đóng vai trò gì trong đo đạc trắc địa địa hình?",
+      opts: [
+        { t: "Là mặt chuẩn trắc địa (Geoid/Datum) để tính cao độ dương và độ sâu âm", c: true },
+        { t: "Là điểm sâu nhất của thềm lục địa", c: false },
+        { t: "Là ranh giới giữa tầng đối lưu và tầng bình lưu", c: false }
+      ]
+    }
+  },
+  {
+    id: "l4_vietnam_transect",
+    title: "Bài 4: Việt Nam từ núi ra biển — Quy luật phân bậc",
+    duration: "4 phút",
+    question: "Địa hình Việt Nam biến đổi như thế nào từ biên giới phía Tây Bắc ra đến Biển Đông?",
+    observe: "Khảo sát lát cắt trắc diện 2D từ Fansipan qua Đồng bằng Sông Hồng ra Vịnh Bắc Bộ.",
+    interactAction: "focus_vietnam_transect",
+    interactText: "🇻🇳 Mở Lát Cắt Trắc Diện Bắc Bộ",
+    evidence: "Địa hình hạ thấp dần theo hướng Tây Bắc ➔ Đông Nam: Núi cao hiểm trở (3,147m) ➔ Đồi trung du ➔ Đồng bằng (15m) ➔ Vịnh Bắc Bộ (-45m).",
+    explanation: "Tân kiến tạo Kainozoi nâng mạnh ở phía tây và sụt lún bồi tụ ở phía đông, quy định hướng chảy chính của hệ thống sông Hồng và sông Đà.",
+    checkQ: {
+      q: "Hướng nghiêng chung của địa hình Việt Nam là hướng nào?",
+      opts: [
+        { t: "Tây Bắc — Đông Nam", c: true },
+        { t: "Bắc — Nam", c: false },
+        { t: "Tây — Đông", c: false }
+      ]
+    }
+  },
+  {
+    id: "l5_andes_subduction",
+    title: "Bài 5: Dãy Andes và Kiến tạo mảng — Hút chìm vs Xô húc",
+    duration: "5 phút",
+    question: "Cùng là núi cao đồ sộ, tại sao dãy Andes ở Nam Mỹ lại khác biệt căn bản so với Himalaya?",
+    observe: "Quan sát Rãnh Peru-Chile sâu -8,000m chạy song song sát ngay chân dãy núi tuyết Andes.",
+    interactAction: "focus_andes",
+    interactText: "🌎 Bay Đến Dãy Andes & Xem Rãnh Biển",
+    evidence: "Mảng đại dương Nazca hút chìm dưới mảng lục địa Nam Mỹ sinh động đất mạnh, rãnh biển sâu và chuỗi núi lửa hoạt động.",
+    explanation: "Andes là đới hút chìm (Subduction) lục địa - đại dương, trong khi Himalaya là đới va chạm (Collision) giữa hai mảng lục địa thuần túy.",
+    checkQ: {
+      q: "Đặc điểm nào ở Andes chứng minh đây là đới hút chìm mà Himalaya không có?",
+      opts: [
+        { t: "Có rãnh đại dương sâu sát bờ biển và chuỗi núi lửa hoạt động liên tục", c: true },
+        { t: "Có đỉnh núi cao trên 8,000 m", c: false },
+        { t: "Có cao nguyên băng tuyết vĩnh cửu", c: false }
+      ]
+    }
+  }
+];
+
+let curLessonIdx = 0;
+window.openLessonsModal = function() {
+  document.getElementById('lessons-modal').classList.add('show');
+  renderLessonsNav();
+  renderLesson(curLessonIdx);
+};
+
+window.closeLessonsModal = function() {
+  document.getElementById('lessons-modal').classList.remove('show');
+};
+
+window.startGuidedLesson = function(idx) {
+  closeOnboarding();
+  curLessonIdx = idx;
+  openLessonsModal();
+};
+
+function renderLessonsNav() {
+  const nav = document.getElementById('lesson-nav');
+  nav.innerHTML = guidedLessons.map((l, i) => `
+    <button class="l-tab ${i === curLessonIdx ? 'active' : ''}" onclick="selectLesson(${i})">
+      ${l.title.split(':')[0]} (${l.duration})
+    </button>
+  `).join('');
+}
+
+window.selectLesson = function(idx) {
+  curLessonIdx = idx;
+  renderLessonsNav();
+  renderLesson(idx);
+};
+
+function renderLesson(idx) {
+  const l = guidedLessons[idx];
+  const body = document.getElementById('lesson-body');
+  body.innerHTML = `
+    <h3 style="font-family:var(--font-display);font-size:18px;color:var(--brass);margin-bottom:8px">${l.title}</h3>
+    
+    <div class="lesson-step active">
+      <div class="step-badge">1. CÂU HỎI KHOA HỌC (QUESTION)</div>
+      <div class="step-content"><b>${l.question}</b></div>
+    </div>
+
+    <div class="lesson-step">
+      <div class="step-badge">2. QUAN SÁT THỰC ĐỊA (OBSERVE)</div>
+      <div class="step-content">${l.observe}</div>
+    </div>
+
+    <div class="lesson-step">
+      <div class="step-badge">3. TƯƠNG TÁC QUẢ CẦU (INTERACT)</div>
+      <div class="step-action">
+        <button class="ghost on" onclick="executeLessonAction('${l.interactAction}')">${l.interactText}</button>
+      </div>
+    </div>
+
+    <div class="lesson-step">
+      <div class="step-badge">4. BẰNG CHỨNG THỰC NGHIỆM (EVIDENCE)</div>
+      <div class="step-content">${l.evidence}</div>
+    </div>
+
+    <div class="lesson-step">
+      <div class="step-badge">5. GIẢI THÍCH CƠ CHẾ (EXPLANATION)</div>
+      <div class="step-content">${l.explanation}</div>
+    </div>
+
+    <div class="lesson-step" style="background:rgba(232,200,122,.04);padding:8px 12px;border-radius:4px">
+      <div class="step-badge" style="color:var(--accent-green)">6. KIỂM TRA HIỂU BIẾT (CHECK)</div>
+      <div class="step-content" style="margin-bottom:6px"><b>${l.checkQ.q}</b></div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        ${l.checkQ.opts.map(o => `
+          <button class="q-btn" onclick="checkLessonAnswer(this, ${o.c})">${o.t}</button>
+        `).join('')}
+      </div>
+      <div class="lesson-check-fb" style="margin-top:6px;font-size:11px;display:none"></div>
+    </div>
+  `;
+}
+
+window.checkLessonAnswer = function(btn, isCorrect) {
+  const fb = btn.parentElement.nextElementSibling;
+  btn.parentElement.querySelectorAll('.q-btn').forEach(b => b.disabled = true);
+  if (isCorrect) {
+    btn.classList.add('correct');
+    fb.innerHTML = `<span style="color:var(--accent-green)">✅ <b>Chính xác tuyệt vời!</b> Bạn đã nắm vững cơ chế khoa học của bài học này.</span>`;
+  } else {
+    btn.classList.add('wrong');
+    fb.innerHTML = `<span style="color:var(--accent-red)">❌ <b>Chưa chính xác!</b> Hãy đọc lại phần giải thích cơ chế ở bước 5.</span>`;
+  }
+  fb.style.display = 'block';
+};
+
+window.executeLessonAction = function(act) {
+  closeLessonsModal();
+  if (act === 've_scale_contrast') {
+    toggleScaleContrast();
+  } else if (act === 'focus_himalaya') {
+    flyToLocation(27.99, 86.93, 3.8);
+    focusTectonicLayer();
+  } else if (act === 'focus_mariana') {
+    flyToLocation(11.37, 142.59, 4.0);
+    setMapMode('hyp');
+  } else if (act === 'focus_vietnam_transect') {
+    onTransectSelect('vn_north');
+  } else if (act === 'focus_andes') {
+    flyToLocation(-32.65, -70.01, 4.0);
+    focusTectonicLayer();
+  }
+};
+
+// 6. Thời Gian Trái Đất (Deep Time Engine)
+const deepTimeMilestones = [
+  {
+    time: "~100 Ma",
+    title: "Kỷ Phấn Trắng: Mảng Ấn Độ ở Nam Bán Cầu",
+    desc: "Cách đây khoảng 100 triệu năm, tiểu lục địa Ấn Độ là một hòn đảo biệt lập tách ra từ siêu lục địa Gondwana ở bán cầu nam. Biển Tethys cổ đại mênh mông ngăn cách Ấn Độ với châu Á."
+  },
+  {
+    time: "~60–50 Ma",
+    title: "Đầu Cenozoic: Tiếp Xúc & Bắt Đầu Va Chạm",
+    desc: "Mảng Ấn Độ di chuyển về phía bắc với tốc độ kỷ lục (~15–20 cm/năm). Khoảng 50–60 triệu năm trước, phần rìa lục địa Ấn Độ bắt đầu tiếp xúc và xô húc vào rìa mảng Á-Âu, khép lại biển Tethys."
+  },
+  {
+    time: "30–10 Ma",
+    title: "Cenozoic: Rút Ngắn, Làm Dày Vỏ & Nâng Cao Mãnh Liệt",
+    desc: "Do không thể hút chìm sâu vào manti, lực nén ép khổng lồ làm lớp vỏ lục địa ở Tây Tạng bị rút ngắn và dày lên gấp đôi (khoảng 60–80 km), đẩy toàn bộ cao nguyên Tây Tạng và các nếp uốn Himalaya nhô cao."
+  },
+  {
+    time: "Hiện tại",
+    title: "Hiện Đại: Kiến Tạo Tiếp Diễn & Động Đất",
+    desc: "Mảng Ấn Độ vẫn tiếp tục tiến về phía bắc khoảng ~5 cm/năm. Đỉnh Everest vẫn được đo nâng cao khoảng 4 mm/năm, đồng thời giải phóng các trận động đất mạnh dọc theo đới đứt gãy đè trườn chính (Main Himalayan Thrust)."
+  }
+];
+
+let curDtIdx = 0;
+window.openDeepTimeModal = function() {
+  document.getElementById('deeptime-modal').classList.add('show');
+  renderDeepTime();
+};
+
+window.closeDeepTimeModal = function() {
+  document.getElementById('deeptime-modal').classList.remove('show');
+};
+
+function renderDeepTime() {
+  const bar = document.getElementById('timeline-nodes');
+  bar.innerHTML = deepTimeMilestones.map((m, i) => `
+    <div class="timeline-node ${i === curDtIdx ? 'active' : ''}" onclick="selectDeepTime(${i})">
+      ${i + 1}
+    </div>
+  `).join('');
+
+  const m = deepTimeMilestones[curDtIdx];
+  document.getElementById('t-info-content').innerHTML = `
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--brass);margin-bottom:4px">MỐC THỜI GIAN: ${m.time}</div>
+    <h4 style="font-size:14px;color:var(--parchment);margin-bottom:6px">${m.title}</h4>
+    <p style="color:var(--parchment-dim);line-height:1.6">${m.desc}</p>
+    <div style="margin-top:10px;display:flex;gap:6px">
+      <button class="ghost on" onclick="flyToLocation(27.99, 86.93, 3.8);closeDeepTimeModal()">🔭 Quan Sát Vị Trí Hiện Tại Trên Quả Cầu</button>
+    </div>
+  `;
+}
+
+window.selectDeepTime = function(idx) {
+  curDtIdx = idx;
+  renderDeepTime();
+};
+
+// 7. Các Modals Khác (Planet Scale, Earth Systems, History, Compare, Data Literacy)
+window.openPlanetModal = function() { document.getElementById('planet-modal').classList.add('show'); };
+window.closePlanetModal = function() { document.getElementById('planet-modal').classList.remove('show'); };
+
+window.openSystemsModal = function() { document.getElementById('systems-modal').classList.add('show'); };
+window.closeSystemsModal = function() { document.getElementById('systems-modal').classList.remove('show'); };
+
+window.focusEarthSystem = function(type) {
+  closeSystemsModal();
+  if (type === 'rain_shadow') {
+    onTransectSelect('vn_central');
+  } else if (type === 'river') {
+    onTransectSelect('vn_north');
+  } else if (type === 'plateau_monsoon') {
+    flyToLocation(32.0, 88.0, 4.5);
+  }
+};
+
+window.openHistoryModal = function() { document.getElementById('history-modal').classList.add('show'); };
+window.closeHistoryModal = function() { document.getElementById('history-modal').classList.remove('show'); };
+
+window.flyToHistoryCase = function(caseId) {
+  closeHistoryModal();
+  if (caseId === 'nile') flyToLocation(26.8, 30.8, 4.0);
+  else if (caseId === 'mesopotamia') flyToLocation(33.2, 44.3, 4.0);
+  else if (caseId === 'yellow_river') flyToLocation(35.0, 110.0, 4.0);
+  else if (caseId === 'mekong') flyToLocation(10.5, 106.0, 4.0);
+};
+
+// Compare Mode Data & Functions
+const comparePresets = {
+  everest_fansipan: {
+    title: "Everest (Nóc nhà thế giới) vs Fansipan (Nóc nhà Đông Dương)",
+    itemA: { name: "Đỉnh Everest", elev: "+8,848.86 m", type: "Núi uốn nếp Kainozoi", plate: "Ấn Độ ↔ Á-Âu", relief: "Rất lớn (>8,000m)" },
+    itemB: { name: "Đỉnh Fansipan", elev: "+3,147.3 m", type: "Khối nếp uốn Granit", plate: "Nội mảng Á-Âu", relief: "Lớn (~2,500m)" },
+    insight: "Cả hai đều chịu tác động nâng bổng mạnh mẽ từ vận động Tân kiến tạo Kainozoi, nhưng Everest nằm ngay ranh giới va chạm mảng còn Fansipan chịu ảnh hưởng gián tiếp qua đới trượt cắt Sông Hồng."
+  },
+  himalaya_andes: {
+    title: "Dãy Himalaya (Va chạm lục địa) vs Dãy Andes (Hút chìm đại dương)",
+    itemA: { name: "Himalaya & Tây Tạng", elev: "Đỉnh 8,849m (TB >4,500m)", type: "Va chạm lục địa - lục địa", plate: "Ấn Độ ↔ Á-Âu", relief: "Rộng lớn, không rãnh biển" },
+    itemB: { name: "Dãy Andes", elev: "Đỉnh 6,961m (TB ~4,000m)", type: "Hút chìm đại dương - lục địa", plate: "Nazca ➔ Nam Mỹ", relief: "Dải hẹp kẹp rãnh sâu -8,000m" },
+    insight: "Sự khác biệt căn bản về cơ chế kiến tạo: Đới hút chìm Andes có rãnh biển sâu sát bờ và hoạt động núi lửa mãnh liệt, trong khi đới va chạm lục địa Himalaya không có rãnh đại dương và ít hoạt động núi lửa phun trào."
+  },
+  tibet_taynguyen: {
+    title: "Cao nguyên Tây Tạng (Châu Á) vs Cao nguyên Tây Nguyên (Việt Nam)",
+    itemA: { name: "Cao nguyên Tây Tạng", elev: "Trung bình >4,500 m", type: "Cao nguyên nâng bổng do xô húc", plate: "Vỏ lục địa dày 60–80 km", relief: "Đồ sộ nhất hành tinh" },
+    itemB: { name: "Cao nguyên Tây Nguyên", elev: "500 – 1,500 m", type: "Cao nguyên xếp tầng Bazan", plate: "Phun trào magma Kainozoi", relief: "Bề mặt san bằng lượn sóng" },
+    insight: "Tây Tạng nâng cao do nén ép cơ học rút ngắn vỏ lục địa; Tây Nguyên hình thành do các đợt phun trào dung nham bazan phủ lên nền đá cổ, tạo đất đỏ trù phú."
+  },
+  redriver_mekong: {
+    title: "Đồng bằng Sông Hồng (Miền Bắc) vs Đồng bằng Sông Cửu Long (Miền Nam)",
+    itemA: { name: "ĐB Sông Hồng", elev: "Trung bình 5–15 m", type: "Châu thổ phù sa cổ có đê", plate: "Bồn trũng sụt lún Kainozoi", relief: "Chia cắt thành nhiều ô trũng" },
+    itemB: { name: "ĐB Sông Cửu Long", elev: "Trung bình 1–2 m", type: "Châu thổ trẻ ngập nước", plate: "Bồi tụ hạ lưu Mê Kông", relief: "Bằng phẳng, ngập lũ tự nhiên" },
+    insight: "ĐB Sông Hồng có hệ thống đê ngăn lũ biển và sông từ hàng nghìn năm; ĐB Sông Cửu Long cao độ cực thấp, địa hình bằng phẳng tạo tập quán 'sống chung với lũ'."
+  }
+};
+
+window.openCompareModal = function() {
+  document.getElementById('compare-modal').classList.add('show');
+  selectCompareModalPreset('everest_fansipan');
+};
+
+window.closeCompareModal = function() {
+  document.getElementById('compare-modal').classList.remove('show');
+};
+
+window.selectCompareModalPreset = function(key) {
+  ['btn-cmp-1', 'btn-cmp-2', 'btn-cmp-3', 'btn-cmp-4'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.classList.remove('on');
+  });
+  if (key === 'everest_fansipan') document.getElementById('btn-cmp-1')?.classList.add('on');
+  else if (key === 'himalaya_andes') document.getElementById('btn-cmp-2')?.classList.add('on');
+  else if (key === 'tibet_taynguyen') document.getElementById('btn-cmp-3')?.classList.add('on');
+  else if (key === 'redriver_mekong') document.getElementById('btn-cmp-4')?.classList.add('on');
+
+  const p = comparePresets[key];
+  const container = document.getElementById('modal-compare-content');
+  container.innerHTML = `
+    <h4 style="color:var(--brass);font-size:13px;margin-bottom:6px">${p.title}</h4>
+    <table class="cmp-table">
+      <thead>
+        <tr><th>Đặc điểm</th><th>${p.itemA.name}</th><th>${p.itemB.name}</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><b>Cao độ / Quy mô</b></td><td>${p.itemA.elev}</td><td>${p.itemB.elev}</td></tr>
+        <tr><td><b>Loại địa mạo</b></td><td>${p.itemA.type}</td><td>${p.itemB.type}</td></tr>
+        <tr><td><b>Bối cảnh kiến tạo</b></td><td>${p.itemA.plate}</td><td>${p.itemB.plate}</td></tr>
+        <tr><td><b>Đặc trưng relief</b></td><td>${p.itemA.relief}</td><td>${p.itemB.relief}</td></tr>
+      </tbody>
+    </table>
+    <div style="background:rgba(232,200,122,.04);border:1px solid var(--hairline-soft);border-radius:4px;padding:8px 10px;margin-top:8px;font-size:11px;line-height:1.5">
+      💡 <b>Nhận thức sư phạm:</b> ${p.insight}
+    </div>
+  `;
+};
+
+window.applyComparePreset = function(key) {
+  const p = comparePresets[key];
+  const container = document.getElementById('compare-result');
+  container.innerHTML = `
+    <h5 style="color:var(--brass);margin-bottom:4px">${p.title}</h5>
+    <div style="font-size:10.5px;color:var(--parchment-dim);line-height:1.5">${p.insight}</div>
+  `;
+};
+
+window.openProvenanceModal = function() { document.getElementById('provenance-modal').classList.add('show'); };
+window.closeProvenanceModal = function() { document.getElementById('provenance-modal').classList.remove('show'); };
+
+// Đóng tất cả modal khi nhấn ESC
+window.closeAllModals = function() {
+  document.querySelectorAll('.edu-modal').forEach(m => m.classList.remove('show'));
+  document.getElementById('modal-box')?.classList.remove('show');
+};
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeAllModals();
+});
 
 /* ══════════════════════════════════════════════════
    15. VÒNG LẶP RENDER & FPS MONITOR
