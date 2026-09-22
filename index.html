@@ -116,13 +116,14 @@
 
   /* touch hud controls */
   .touch-hud{position:absolute;right:18px;bottom:calc(132px + env(safe-area-inset-bottom, 0px));
-    display:flex;flex-direction:column;gap:7px;z-index:4;pointer-events:auto}
+    display:flex;flex-direction:column;gap:6px;z-index:4;pointer-events:auto}
   .th-btn{appearance:none;width:38px;height:38px;border-radius:6px;background:rgba(7,10,22,.86);
     border:1px solid var(--hairline);color:var(--parchment);font-family:var(--font-mono);
-    font-size:16px;font-weight:600;display:grid;place-items:center;cursor:pointer;
+    font-size:15px;font-weight:600;display:grid;place-items:center;cursor:pointer;
     -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:.16s;touch-action:manipulation;
     user-select:none;-webkit-user-select:none}
   .th-btn:active,.th-btn:hover{background:rgba(232,200,122,.22);color:var(--brass);border-color:var(--brass)}
+  .th-sep{width:22px;height:1px;background:var(--hairline-soft);margin:2px auto;opacity:.7}
 
   /* nút */
   .ghost,.solid{appearance:none;font-family:var(--font-ui);font-size:10.5px;font-weight:500;
@@ -356,8 +357,9 @@
     .row dd{text-align:left;font-size:10.5px}
 
     /* Cụm phím nổi Touch HUD nằm bên cạnh phải vùng trời, tránh che bảng điều khiển */
-    .touch-hud{right:10px;top:calc(82px + env(safe-area-inset-top, 0px));bottom:auto;gap:6px}
-    .th-btn{width:36px;height:36px;font-size:15px;border-radius:5px}
+    .touch-hud{right:10px;top:calc(76px + env(safe-area-inset-top, 0px));bottom:auto;gap:5px}
+    .th-btn{width:34px;height:34px;font-size:13.5px;border-radius:5px}
+    .th-sep{width:18px;margin:1px auto}
 
     /* Thanh điều khiển đáy */
     .console{padding:0 6px calc(8px + env(safe-area-inset-bottom, 0px));gap:5px}
@@ -494,10 +496,16 @@
 
   <div id="evt"></div>
 
-  <div class="touch-hud" id="touch-hud" aria-label="Điều khiển cảm ứng">
-    <button class="th-btn" id="th-in" title="Phóng to" aria-label="Phóng to">+</button>
-    <button class="th-btn" id="th-out" title="Thu nhỏ" aria-label="Thu nhỏ">−</button>
-    <button class="th-btn" id="th-reset" title="Trở về tâm thiên thể" aria-label="Trở về tâm">🎯</button>
+  <div class="touch-hud" id="touch-hud" aria-label="Điều khiển góc nhìn">
+    <button class="th-btn" id="th-in" title="Phóng to (+)" aria-label="Phóng to">+</button>
+    <button class="th-btn" id="th-out" title="Thu nhỏ (-)" aria-label="Thu nhỏ">−</button>
+    <button class="th-btn" id="th-reset" title="Trở về tâm thiên thể (🎯)" aria-label="Trở về tâm">🎯</button>
+    <div class="th-sep"></div>
+    <button class="th-btn" id="th-sun" title="Hướng thẳng về Mặt Trời & Căn phẳng (S)" aria-label="Hướng Mặt Trời">☀️</button>
+    <button class="th-btn" id="th-level" title="Căn phẳng mặt phẳng quỹ đạo ngang (L)" aria-label="Căn phẳng ngang">⬌</button>
+    <button class="th-btn" id="th-rot-l" title="Xoay góc trái ([)" aria-label="Xoay trái">⟲</button>
+    <button class="th-btn" id="th-rot-r" title="Xoay góc phải (])" aria-label="Xoay phải">⟳</button>
+    <button class="th-btn" id="th-top" title="Nhìn từ trên xuống cực Bắc (T)" aria-label="Nhìn từ trên xuống">⯅</button>
   </div>
 
   <div class="console">
@@ -506,6 +514,8 @@
       <div class="seg" role="group" aria-label="Tốc độ thời gian" id="speed"></div>
       <button class="ghost more-wrap" id="btn-rev" aria-pressed="false" title="Chạy ngược thời gian">Ngược</button>
       <button class="ghost" id="btn-now">Bây giờ</button>
+      <button class="ghost" id="btn-sun-align" title="Góc nhìn từ thiên thể hướng thẳng về Mặt Trời">Hướng Mặt Trời</button>
+      <button class="ghost" id="btn-level" title="Căn phẳng ngang mặt phẳng quỹ đạo">Căn phẳng</button>
       <button class="ghost" id="btn-lesson">Bài học</button>
       <button class="ghost" id="btn-phenom">Hiện tượng</button>
       <button class="ghost" id="btn-tonight">Tối nay</button>
@@ -727,6 +737,8 @@ var I18N = {
     orbit_view: "Về quỹ đạo",
     land_on: "Thả người xuống",
     now: "Bây giờ",
+    align_sun: "Hướng Mặt Trời",
+    level_ecliptic: "Căn phẳng",
     lessons: "Bài học",
     phenom: "Hiện tượng",
     tonight: "Tối nay",
@@ -794,6 +806,8 @@ var I18N = {
     orbit_view: "Orbit View",
     land_on: "Land on Surface",
     now: "Now",
+    align_sun: "Align Sun",
+    level_ecliptic: "Level Orbit",
     lessons: "Lessons",
     phenom: "Phenomena",
     tonight: "Tonight",
@@ -2644,7 +2658,9 @@ var camEye=[0,0,0], camFwd=[0,0,1], camUp=[0,1,0], camRight=[1,0,0];
 function setCamBasis(fwd, upHint){
   camFwd=norm3(fwd);
   var z=mul3(camFwd,-1);
-  camRight=norm3(cross3(upHint,z));
+  var r=cross3(upHint||[0,1,0], z);
+  if(len3(r) < 1e-4) r=cross3([0,0,1], z);
+  camRight=norm3(r);
   camUp=cross3(z,camRight);
 }
 function buildVP(fovDeg, near, far){
@@ -4558,6 +4574,8 @@ if(!GLOK){
     // Controls
     $("btn-rev").textContent = I18N[lang].reverse;
     $("btn-now").textContent = I18N[lang].now;
+    var bSun = $("btn-sun-align"); if(bSun) bSun.textContent = I18N[lang].align_sun;
+    var bLvl = $("btn-level"); if(bLvl) bLvl.textContent = I18N[lang].level_ecliptic;
     $("btn-lesson").textContent = I18N[lang].lessons;
     $("btn-phenom").textContent = I18N[lang].phenom;
     $("btn-tonight").textContent = I18N[lang].tonight;
@@ -4926,11 +4944,68 @@ if(!GLOK){
     zoom(1+Math.sign(ev.deltaY)*Math.min(0.2,Math.abs(ev.deltaY)/500));
   },{passive:false});
 
+  function alignToSun(){
+    if(V.mode==="surface"){
+      aimAtSun();
+      return;
+    }
+    resetPan();
+    var S=stateAt(V.jd);
+    var curFocus=V.focus||"earth";
+    var targetYaw=0;
+    if(curFocus==="sun"){
+      var pE=dispPos(BY["earth"], S);
+      targetYaw=Math.atan2(-pE[0], -pE[2]);
+    } else if(BY[curFocus]){
+      var p=dispPos(BY[curFocus], S);
+      targetYaw=Math.atan2(p[0], p[2]);
+    }
+    var diff=(targetYaw - V.wantYaw) % TAU;
+    if(diff > Math.PI) diff -= TAU;
+    if(diff < -Math.PI) diff += TAU;
+    V.wantYaw += diff;
+    V.wantPitch = 0.0;
+  }
+  function levelEcliptic(){
+    resetPan();
+    if(V.mode==="surface"){
+      V.wantLook.pitch=0;
+    } else {
+      V.wantPitch=0;
+    }
+  }
+  function topDownView(){
+    resetPan();
+    if(V.mode==="surface"){
+      V.wantLook.pitch=1.45;
+    } else {
+      V.wantPitch=1.45;
+    }
+  }
+  function rotateOrbit(angleRad){
+    if(V.mode==="surface"){
+      V.wantLook.yaw += angleRad;
+    } else {
+      V.wantYaw += angleRad;
+    }
+  }
+
   // Sự kiện cụm phím nổi Touch HUD
   var thIn=$("th-in"), thOut=$("th-out"), thReset=$("th-reset");
   if(thIn) thIn.addEventListener("click",function(e){ e.stopPropagation(); zoom(0.80); });
   if(thOut) thOut.addEventListener("click",function(e){ e.stopPropagation(); zoom(1.25); });
   if(thReset) thReset.addEventListener("click",function(e){ e.stopPropagation(); resetPan(); });
+
+  var thSun=$("th-sun"), thLvl=$("th-level"), thRotL=$("th-rot-l"), thRotR=$("th-rot-r"), thTop=$("th-top");
+  if(thSun) thSun.addEventListener("click",function(e){ e.stopPropagation(); alignToSun(); });
+  if(thLvl) thLvl.addEventListener("click",function(e){ e.stopPropagation(); levelEcliptic(); });
+  if(thRotL) thRotL.addEventListener("click",function(e){ e.stopPropagation(); rotateOrbit(Math.PI/12); });
+  if(thRotR) thRotR.addEventListener("click",function(e){ e.stopPropagation(); rotateOrbit(-Math.PI/12); });
+  if(thTop) thTop.addEventListener("click",function(e){ e.stopPropagation(); topDownView(); });
+
+  var btnSunAlign=$("btn-sun-align"), btnLevelBar=$("btn-level");
+  if(btnSunAlign) btnSunAlign.addEventListener("click",function(e){ e.stopPropagation(); alignToSun(); });
+  if(btnLevelBar) btnLevelBar.addEventListener("click",function(e){ e.stopPropagation(); levelEcliptic(); });
 
   // Nút thu gọn / mở rộng bảng thông tin thiên thể
   var slabToggle=$("btn-slab-toggle");
@@ -4963,6 +5038,7 @@ if(!GLOK){
 
   /* bàn phím */
   window.addEventListener("keydown",function(ev){
+    if(ev.target.tagName==="INPUT" || ev.target.tagName==="TEXTAREA" || ev.target.isContentEditable) return;
     if(ev.target.tagName==="BUTTON" && (ev.key===" "||ev.key==="Enter")) return;
     if(ev.key==="Escape"){
       if(document.body.classList.contains("lesson")) closeLesson();
@@ -4973,6 +5049,11 @@ if(!GLOK){
     if(ev.key===" "){ ev.preventDefault(); V.speed = V.speed===0?3:0;
       $("speed").querySelectorAll("button").forEach(function(x,j){
         x.setAttribute("aria-pressed", j===V.speed?"true":"false"); }); }
+    if(ev.key==="s"||ev.key==="S"){ ev.preventDefault(); alignToSun(); }
+    if(ev.key==="l"||ev.key==="L"||ev.key==="0"){ ev.preventDefault(); levelEcliptic(); }
+    if(ev.key==="t"||ev.key==="T"){ ev.preventDefault(); topDownView(); }
+    if(ev.key==="["){ ev.preventDefault(); rotateOrbit(Math.PI/12); }
+    if(ev.key==="]"){ ev.preventDefault(); rotateOrbit(-Math.PI/12); }
   });
 
   window.addEventListener("resize",function(){ resizeGL(); });
@@ -5015,7 +5096,7 @@ if(!GLOK){
   window.TinhDo = Object.freeze({ V:V, BY:BY, ALL:ALL, dispRadius:dispRadius, stateAt:stateAt, observerFrame:observerFrame,
     project:projectPoint, enterSurface:enterSurface, exitSurface:exitSurface,
     focusBody:focusBody, phenom:PHENOM, sunVisAtPoint:sunVisAtPoint,
-    aimAt:aimAt, aimAtSun:aimAtSun, fillSlab:fillSlab,
+    aimAt:aimAt, aimAtSun:aimAtSun, alignToSun:alignToSun, levelEcliptic:levelEcliptic, topDownView:topDownView, rotateOrbit:rotateOrbit, fillSlab:fillSlab,
     buildTonight:buildTonight, openLesson:openLesson, dayLengthAt:dayLengthAt, jdOfDate:jdOfDate, LESSONS:LESSONS, setSpeed:setSpeed, altitudeOf:altitudeOf, moonPhase:moonPhase,
     magnitudeOf:magnitudeOf, heliocentric:heliocentric, moonGeocentric:moonGeocentric,
     vnEventsAsync:vnEventsAsync, PLACES:PLACES, SKY:SKY,
