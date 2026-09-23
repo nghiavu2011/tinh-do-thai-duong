@@ -5,7 +5,8 @@
   <h3>Đài Quan Sát Hệ Mặt Trời 3D Tương Tác Thuần WebGL</h3>
   <p>
     <b>Website Trực Tuyến:</b> <a href="https://tinh-do-thai-duong.vercel.app">https://tinh-do-thai-duong.vercel.app</a><br>
-    <b>Hotline / Zalo Liên Hệ:</b> <a href="tel:+84985578385">+84 985578385</a>
+    <b>Hotline / Zalo Liên Hệ:</b> <a href="tel:+84985578385">+84 985578385</a><br>
+    <b>Nhóm Zalo Giao Lưu Thiên Văn:</b> <a href="https://zalo.me/g/61xf81lcwdwfasjc1tle">https://zalo.me/g/61xf81lcwdwfasjc1tle</a>
   </p>
 </div>
 
@@ -53,3 +54,4 @@ Sau đó truy cập: `http://localhost:8000`
 - **Đơn vị phát triển**: **N&Mstudio**
 - **Dự án**: **N&Mstudio_SolarSystem**
 - **Hotline / Zalo**: [+84 985578385](tel:+84985578385)
+- **Nhóm Zalo Cộng Đồng**: [https://zalo.me/g/61xf81lcwdwfasjc1tle](https://zalo.me/g/61xf81lcwdwfasjc1tle)

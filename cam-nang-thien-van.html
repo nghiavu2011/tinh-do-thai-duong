@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cẩm Nang Ngắm Sao & Khám Phá Hệ Mặt Trời — N&Mstudio</title>
+<meta name="description" content="Tài liệu cẩm nang thiên văn học thực hành dành cho cộng đồng: Lịch mưa sao băng, cách nhận diện chòm sao, hiện tượng nhật thực và bộ câu hỏi STEM trực quan.">
+<meta name="theme-color" content="#070A16">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='38' fill='%23E8C87A'/><circle cx='50' cy='50' r='46' fill='none' stroke='%23E8C87A' stroke-width='4' stroke-dasharray='6 6'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+  :root{
+    --void:#070A16; --panel:rgba(12,17,35,0.95);
+    --brass:#E8C87A; --brass-dim:#8B7642;
+    --parchment:#F2ECDE; --parchment-dim:#A39C89;
+    --hairline:rgba(232,200,122,.25); --hairline-soft:rgba(232,200,122,.12);
+    --font-display:"Cormorant Garamond","Times New Roman",serif;
+    --font-ui:"Be Vietnam Pro","Segoe UI",system-ui,sans-serif;
+    --font-mono:"IBM Plex Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--void);color:var(--parchment);
+    font-family:var(--font-ui);line-height:1.7;font-size:14.5px;
+    padding:20px;min-height:100vh;-webkit-font-smoothing:antialiased;
+  }
+  .doc-container{max-width:860px;margin:0 auto;background:var(--panel);border:1px solid var(--hairline);border-radius:10px;padding:36px 40px;box-shadow:0 12px 48px rgba(0,0,0,.8)}
+  
+  /* Action bar */
+  .action-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-bottom:24px;border-bottom:1px solid var(--hairline-soft);margin-bottom:30px}
+  .act-left{display:flex;align-items:center;gap:12px}
+  .act-left img{width:42px;height:42px;object-fit:contain}
+  .btn-act{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:5px;font-size:12.5px;font-weight:600;text-decoration:none;transition:.18s;cursor:pointer}
+  .btn-print{background:var(--brass);color:#070A16;border:none}
+  .btn-print:hover{filter:brightness(1.1)}
+  .btn-back{background:none;border:1px solid var(--hairline);color:var(--parchment)}
+  .btn-back:hover{background:rgba(232,200,122,.12);color:var(--brass)}
+  .btn-zalo{background:rgba(0,136,255,.2);border:1px solid rgba(100,181,246,.4);color:#64B5F6}
+  .btn-zalo:hover{background:rgba(0,136,255,.35);color:#fff}
+
+  /* Typography */
+  h1{font-family:var(--font-display);font-size:clamp(28px,4.5vw,42px);color:var(--brass);line-height:1.15;margin-bottom:8px}
+  .doc-meta{font-size:12px;color:var(--parchment-dim);font-family:var(--font-mono);margin-bottom:24px}
+  .doc-badge{display:inline-block;padding:2px 8px;background:rgba(232,200,122,.12);border:1px solid var(--hairline);border-radius:3px;color:var(--brass);font-size:11px;font-weight:600;margin-bottom:14px}
+  h2{font-family:var(--font-display);font-size:24px;color:var(--brass);margin:36px 0 16px;padding-bottom:6px;border-bottom:1px solid var(--hairline-soft);display:flex;align-items:center;gap:8px}
+  h3{font-size:16px;color:#F5E6C4;margin:20px 0 8px}
+  p{margin-bottom:14px;color:#DDD7C7}
+  b,strong{color:#FFF;font-weight:600}
+
+  /* Tables */
+  .table-wrap{overflow-x:auto;margin:18px 0 24px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{padding:10px 14px;text-align:left;border:1px solid var(--hairline-soft)}
+  th{background:rgba(232,200,122,.08);color:var(--brass);font-weight:600}
+  tr:nth-child(even){background:rgba(255,255,255,.02)}
+
+  /* Cards & Callouts */
+  .callout{background:rgba(232,200,122,.06);border-left:3px solid var(--brass);padding:14px 18px;border-radius:0 6px 6px 0;margin:18px 0}
+  .qa-card{background:rgba(255,255,255,.025);border:1px solid var(--hairline-soft);border-radius:6px;padding:14px 18px;margin-bottom:14px}
+  .qa-q{font-weight:600;color:var(--brass);margin-bottom:6px;font-size:14px}
+  .qa-a{color:#CCC6B5;font-size:13.5px;line-height:1.6}
+
+  /* Footer */
+  .doc-footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--hairline-soft);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:11.5px;color:var(--parchment-dim)}
+  .doc-footer a{color:var(--brass);text-decoration:none}
+
+  /* PRINT STYLE (A4 Chuẩn) */
+  @media print{
+    body{background:#fff!important;color:#111!important;padding:0!important;font-size:12pt;line-height:1.5}
+    .doc-container{max-width:100%!important;border:none!important;box-shadow:none!important;padding:0!important;background:none!important}
+    .action-bar,.btn-print,.btn-back,.btn-zalo{display:none!important}
+    h1,h2,h3{color:#111!important;border-color:#ccc!important}
+    .doc-badge{border-color:#666!important;color:#222!important}
+    table,th,td{border-color:#bbb!important;color:#111!important}
+    th{background:#eee!important}
+    p,span,div,li{color:#222!important}
+    .callout,.qa-card{background:#f8f8f8!important;border-color:#ddd!important}
+    .qa-q{color:#8B7642!important}
+    .doc-footer{border-color:#ccc!important;color:#555!important}
+  }
+  @media (max-width:640px){
+    .doc-container{padding:22px 18px}
+    h1{font-size:26px}
+  }
+</style>
+</head>
+<body>
+
+<div class="doc-container">
+  
+  <!-- Thanh công cụ đầu trang -->
+  <div class="action-bar">
+    <div class="act-left">
+      <img src="logo/logo.png" alt="N&Mstudio Logo">
+      <div>
+        <div style="font-weight:700;font-size:13.5px;letter-spacing:.04em;color:var(--brass)">N&Mstudio_SolarSystem</div>
+        <div style="font-size:11px;color:var(--parchment-dim)">Cộng Đồng Thiên Văn & STEM 3D</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="btn-act btn-print" onclick="window.print()">🖨️ Tải / In PDF</button>
+      <a href="https://zalo.me/g/61xf81lcwdwfasjc1tle" target="_blank" rel="noopener noreferrer" class="btn-act btn-zalo">💬 Vào Nhóm Zalo</a>
+      <a href="index.html" class="btn-act btn-back">🌌 Mở Mô Hình 3D</a>
+    </div>
+  </div>
+
+  <span class="doc-badge">TÀI LIỆU QUÀ TẶNG CỘNG ĐỒNG · LƯU HÀNH NỘI BỘ</span>
+  <h1>Cẩm Nang Ngắm Sao & Bí Ẩn Hệ Mặt Trời</h1>
+  <div class="doc-meta">Biên soạn: Ban Công Nghệ & Sư Phạm N&Mstudio · Cập nhật: 2024 – 2026</div>
+
+  <p>
+    Chào bạn yêu thiên văn! Tài liệu này được biên soạn dành tặng riêng cho các bạn học sinh, thầy cô giáo và người yêu bầu trời trong cộng đồng <b>N&Mstudio_SolarSystem</b>. Cẩm nang bao gồm lịch ngắm hiện tượng thiên văn nổi bật, cẩm nang nhận diện chòm sao tại Việt Nam và bộ câu hỏi trắc nghiệm khoa học trực quan.
+  </p>
+
+  <!-- PHẦN 1 -->
+  <h2>⭐ Phần 1: Lịch Ngắm Các Hiện Tượng Thiên Văn Nổi Bật Tại Việt Nam</h2>
+  <p>Để ngắm sao đạt hiệu quả cao nhất: Hãy chọn đêm trời quang mây, tránh xa ánh đèn đô thị (ô nhiễm ánh sáng), ngắm sau 22h đêm và cho mắt thích nghi bóng tối khoảng 15 phút.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Sự kiện thiên văn</th>
+          <th>Thời gian cực điểm</th>
+          <th>Tần suất / Giờ</th>
+          <th>Đặc điểm quan sát tại Việt Nam</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Mưa sao băng Anh Tiên (Perseids)</b></td>
+          <td>Đêm 12 – Rạng sáng 13 tháng 8</td>
+          <td>60 – 100 vệt / giờ</td>
+          <td>Đẹp và rực rỡ nhất mùa hè, nhiều vệt sao sáng chói (fireball) kèm vệt khói dài.</td>
+        </tr>
+        <tr>
+          <td><b>Mưa sao băng Song Tử (Geminids)</b></td>
+          <td>Đêm 13 – Rạng sáng 14 tháng 12</td>
+          <td>100 – 120 vệt / giờ</td>
+          <td>Vua của các trận mưa sao băng, sao bay chậm, đa sắc màu (trắng, vàng, xanh).</td>
+        </tr>
+        <tr>
+          <td><b>Mưa sao băng Bảo Bình (Eta Aquariids)</b></td>
+          <td>Đêm 05 – Rạng sáng 06 tháng 5</td>
+          <td>30 – 50 vệt / giờ</td>
+          <td>Bắt nguồn từ bụi sao chổi Halley lừng danh, quan sát tốt từ 3h sáng đến bình minh.</td>
+        </tr>
+        <tr>
+          <td><b>Mưa sao băng Lạp Hộ (Orionids)</b></td>
+          <td>Đêm 21 – Rạng sáng 22 tháng 10</td>
+          <td>20 – 30 vệt / giờ</td>
+          <td>Vệt sao bay cực nhanh, hướng nhìn về chòm sao Thợ Săn (Orion) phía Đông.</td>
+        </tr>
+        <tr>
+          <td><b>Hiện tượng Siêu Trăng (Supermoon)</b></td>
+          <td>Các đợt Trăng tròn cận điểm</td>
+          <td>1 – 2 lần / năm</td>
+          <td>Mặt Trăng ở điểm gần Trái Đất nhất (~357.000 km), to hơn 14% và sáng hơn 30%.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <b>💡 Mẹo ngắm các hành tinh bằng mắt thường:</b>
+    <ul style="margin:6px 0 0 20px;font-size:13.5px">
+      <li><b>Sao Kim (Venus):</b> Ngôi sao sáng nhất bầu trời chập tối (Sao Hôm) hoặc rạng sáng (Sao Mai). Rất sáng và không nhấp nháy.</li>
+      <li><b>Sao Mộc (Jupiter):</b> Viên ngọc màu vàng kem sáng chói, dùng ống nhòm có thể thấy 4 vệ tinh Galileo (Io, Europa, Ganymede, Callisto).</li>
+      <li><b>Sao Hỏa (Mars):</b> Đốm sáng đỏ cam bí ẩn, nhìn rõ nhất khi tiến vào kỳ xung đối (cùng phía với Mặt Trời).</li>
+      <li><b>Sao Thổ (Saturn):</b> Sáng màu vàng nhạt, cần kính thiên văn nhỏ phóng đại 30× để chiêm ngưỡng vành đai trứ danh.</li>
+    </ul>
+  </div>
+
+  <!-- PHẦN 2 -->
+  <h2>🧭 Phần 2: Hướng Dẫn Nhận Diện 4 Chòm Sao Cơ Bản Nhất</h2>
+
+  <div class="qa-card">
+    <div class="qa-q">1. Chòm sao Thợ Săn (Orion) — Dễ tìm nhất mùa Đông & Xuân</div>
+    <div class="qa-a">
+      Nhìn về hướng Đông hoặc đỉnh đầu vào các buổi tối mùa đông. Bạn sẽ thấy ngay <b>hàng 3 ngôi sao thẳng hàng nằm ngang</b> tạo thành chiếc "Thắt lưng Thợ Săn". Góc trên bên trái là sao khổng lồ đỏ <b>Betelgeuse</b>, góc dưới bên phải là sao siêu khổng lồ xanh <b>Rigel</b> rực sáng.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q">2. Nhóm sao Bắc Đẩu (Gáo Sòng / Ursa Major) — La bàn tìm phương Bắc</div>
+    <div class="qa-a">
+      Gồm 7 ngôi sao sáng xếp thành hình chiếc gáo múc nước ở bầu trời phía Bắc. Nối hai ngôi sao ở miệng gáo (Merak và Dubhe) rồi kéo dài ra phía trước một đoạn gấp 5 lần khoảng cách giữa chúng, bạn sẽ tìm thấy chính xác <b>Sao Bắc Cực (Polaris)</b> chỉ đúng hướng Bắc địa lý.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q">3. Chòm sao Bò Cạp (Scorpius) — Linh hồn mùa Hè</div>
+    <div class="qa-a">
+      Nổi bật trên bầu trời phương Nam mùa hè với hình dáng chữ "S" uốn lượn như chiếc đuôi bọ cạp. Trái tim bọ cạp là ngôi sao siêu khổng lồ đỏ <b>Antares</b> (nghĩa là "Kẻ địch của Sao Hỏa" vì màu đỏ rực của nó).
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q">4. Tam Giác Mùa Hè (Summer Triangle)</div>
+    <div class="qa-a">
+      Tạo bởi 3 ngôi sao sáng nhất của 3 chòm sao: <b>Vega</b> (sao Chức Nữ - chòm Thiên Cầm), <b>Altair</b> (sao Ngưu Lang - chòm Thiên Ưng) và <b>Deneb</b> (chòm Thiên Nga). Nằm vắt ngang qua Dải Ngân Hà lãng mạn.
+    </div>
+  </div>
+
+  <!-- PHẦN 3 -->
+  <h2>🧪 Phần 3: 10 Câu Hỏi Trắc Nghiệm & Lời Giải Thích Thú Vị Về Hệ Mặt Trời</h2>
+
+  <div class="qa-card">
+    <div class="qa-q">Câu 1: Vì sao trên Trái Đất có 4 Mùa (Xuân, Hạ, Thu, Đông)?</div>
+    <div class="qa-a">
+      <b>Đáp án đúng:</b> Do <b>trục tự quay của Trái Đất nghiêng 23,44°</b> so với mặt phẳng quỹ đạo và giữ nguyên phương nghiêng khi quay quanh Mặt Trời. Điều này khiến mỗi bán cầu lần lượt nghiêng về phía Mặt Trời (mùa nóng, ngày dài) hoặc nghiêng ra xa (mùa lạnh, ngày ngắn). Khoảng cách gần hay xa Mặt Trời không phải nguyên nhân tạo mùa!
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q">Câu 2: Hành tinh nào nóng nhất trong Hệ Mặt Trời?</div>
+    <div class="qa-a">
+      <b>Đáp án đúng:</b> <b>Sao Kim (Venus)</b>, không phải Sao Thủy gần Mặt Trời nhất. Sao Kim có bầu khí quyển carbonic ($CO_2$) siêu đặc gây hiệu ứng nhà kính cực độ, giữ nhiệt độ bề mặt luôn ở mức khủng khiếp ~465°C, đủ làm chảy chì!
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q">Câu 3: Mặt Trời lên thiên đỉnh tại Việt Nam bao nhiêu lần mỗi năm?</div>
+    <div class="qa-a">
+      <b>Đáp án đúng:</b> Đúng <b>2 lần mỗi năm</b> tại mọi địa điểm trên đất liền Việt Nam. Lý do: Việt Nam nằm trọn vẹn trong vùng Nội chí tuyến Bắc (vĩ độ ~8°34'B đến 23°23'B). Vào ngày thiên đỉnh, giữa trưa Mặt Trời chiếu thẳng góc 90° trên đỉnh đầu và chiếc cọc cắm thẳng đứng sẽ không có bóng.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q">Câu 4: Ngọn núi cao nhất trong Hệ Mặt Trời nằm ở đâu?</div>
+    <div class="qa-a">
+      <b>Đáp án đúng:</b> <b>Olympus Mons trên Sao Hỏa</b>. Đây là ngọn núi lửa khổng lồ cao tới 22 km (gấp gần 3 lần đỉnh Everest của Trái Đất) và có đường kính chân núi rộng hơn 600 km.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q">Câu 5: Một ngày trên Sao Kim dài hơn một năm của chính nó, đúng hay sai?</div>
+    <div class="qa-a">
+      <b>Đáp án đúng:</b> <b>Đúng!</b> Sao Kim tự quay quanh trục cực kỳ chậm (243 ngày Trái Đất mới hết 1 vòng), trong khi nó chỉ mất 225 ngày Trái Đất để quay trọn 1 vòng quanh Mặt Trời. Hơn thế nữa, nó quay ngược chiều so với hầu hết các hành tinh khác.
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-q">Câu 6: Tại sao chúng ta chỉ bao giờ nhìn thấy một mặt của Mặt Trăng?</div>
+    <div class="qa-a">
+      <b>Đáp án đúng:</b> Do hiện tượng <b>Khóa Thủy Triều (Tidal Locking)</b>. Thời gian Mặt Trăng tự quay quanh trục bằng đúng thời gian nó quay quanh Trái Đất (~27.3 ngày), do đó nó luôn hướng một nửa duy nhất về phía chúng ta.
+    </div>
+  </div>
+
+  <!-- LỜI KẾT & KÊNH KẾT NỐI -->
+  <h2>🤝 Tham Gia Cộng Đồng & Trải Nghiệm Công Nghệ 3D</h2>
+  <p>
+    Tài liệu này được phát triển song song với hệ thống <b>Đài Quan Sát Vũ Trụ Tương Tác 3D</b> của <b>N&Mstudio</b>. Nếu bạn muốn tận mắt bay vào không gian, đứng trên bề mặt Sao Hỏa hay Trái Đất để ngắm các vì sao theo thời gian thực:
+  </p>
+
+  <div class="callout" style="background:rgba(0,136,255,.08);border-color:#29B6F6">
+    <b style="color:#81D4FA">🪐 Kênh học tập & giao lưu chính thức:</b>
+    <ul style="margin:8px 0 0 20px;font-size:13.5px;line-height:1.8">
+      <li><b>Website trải nghiệm 3D miễn phí:</b> <a href="https://tinh-do-thai-duong.vercel.app" target="_blank" style="color:var(--brass);font-weight:600">https://tinh-do-thai-duong.vercel.app</a></li>
+      <li><b>Nhóm Zalo Giao Lưu Thiên Văn & STEM:</b> <a href="https://zalo.me/g/61xf81lcwdwfasjc1tle" target="_blank" style="color:#64B5F6;font-weight:600">https://zalo.me/g/61xf81lcwdwfasjc1tle</a></li>
+      <li><b>Hotline / Zalo liên hệ:</b> <a href="tel:+84985578385" style="color:var(--brass);font-family:var(--font-mono)">+84 985578385</a> (Mr. Nghĩa · N&Mstudio)</li>
+    </ul>
+  </div>
+
+  <div class="doc-footer">
+    <div>© 2024 – 2026 N&Mstudio · Công Nghệ Đồ Họa 3D & Giáo Dục STEM</div>
+    <div>Chia sẻ tự do vì mục đích học tập phi thương mại</div>
+  </div>
+
+</div>
+
+</body>
+</html>

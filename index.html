@@ -12,12 +12,16 @@
 
 <!-- Open Graph & Twitter Cards cho Zalo, Facebook, Telegram -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="N&Mstudio_SolarSystem — Tinh Đồ Thái Dương 3D">
-<meta property="og:description" content="Khám phá hệ Mặt Trời 3D tương tác: quỹ đạo thiên văn thật, đứng trên bề mặt hành tinh, xem nhật thực đúng ngày. Hotline: +84 985578385.">
-<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Planets2013.svg/1200px-Planets2013.svg.png">
+<meta property="og:site_name" content="N&Mstudio SolarSystem">
+<meta property="og:url" content="https://tinh-do-thai-duong.vercel.app">
+<meta property="og:title" content="🌌 Tinh Đồ Thái Dương 3D — Khám Phá Vũ Trụ & Đứng Trên Mặt Trăng">
+<meta property="og:description" content="Đài quan sát Hệ Mặt Trời 3D tương tác thuần Việt: Quỹ đạo thiên văn thật, thả góc nhìn bề mặt các hành tinh, xem nhật thực và bầu trời đêm. Mượt mà trên điện thoại & máy tính!">
+<meta property="og:image" content="https://tinh-do-thai-duong.vercel.app/logo/logo.png">
+<meta property="og:image:alt" content="N&Mstudio Tinh Đồ Thái Dương 3D">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="N&Mstudio_SolarSystem — Tinh Đồ Thái Dương 3D">
-<meta name="twitter:description" content="Khám phá hệ Mặt Trời 3D tương tác: quỹ đạo thiên văn thật, đứng trên bề mặt hành tinh, xem nhật thực đúng ngày. Hotline: +84 985578385.">
+<meta name="twitter:title" content="🌌 Tinh Đồ Thái Dương 3D — Đài Quan Sát Vũ Trụ Tương Tác">
+<meta name="twitter:description" content="Khám phá Hệ Mặt Trời 3D tương tác thuần Việt: Quỹ đạo thiên văn thật, mô phỏng nhật thực, đứng trên bề mặt hành tinh. Hotline / Zalo: +84 985578385.">
+<meta name="twitter:image" content="https://tinh-do-thai-duong.vercel.app/logo/logo.png">
 
 <!-- Tối ưu kết nối & nạp font -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -257,6 +261,28 @@
     .wel-skip{margin:10px 0 0;font-size:10px}
   }
 
+  /* modal cộng đồng & chia sẻ */
+  #community-modal{position:fixed;inset:0;z-index:9;display:grid;place-items:center;
+    background:rgba(4,6,14,.88);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+    padding:calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .comm-box{max-width:540px}
+  .comm-actions{display:flex;flex-direction:column;gap:10px;margin:16px 0 6px}
+  .comm-action-btn{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:6px;
+    text-decoration:none;text-align:left;border:1px solid var(--hairline-soft);background:rgba(232,200,122,.05);
+    color:var(--parchment);cursor:pointer;font-family:var(--font-ui);transition:.18s;width:100%}
+  .comm-action-btn:hover{background:rgba(232,200,122,.14);border-color:var(--hairline)}
+  .comm-action-btn b{display:block;font-size:13.5px;font-weight:600;margin-bottom:2px}
+  .comm-action-btn small{display:block;font-size:10.5px;color:var(--parchment-dim);line-height:1.4}
+  .comm-btn-primary{background:rgba(0,136,255,.16);border-color:rgba(100,181,246,.45);color:#E1F5FE}
+  .comm-btn-primary b{color:#81D4FA}
+  .comm-btn-primary:hover{background:rgba(0,136,255,.28);border-color:#29B6F6}
+  .comm-btn-fb{background:rgba(24,119,242,.12);border-color:rgba(24,119,242,.35)}
+  .comm-btn-fb:hover{background:rgba(24,119,242,.24);border-color:#4267B2}
+  .brand-watermark{position:fixed;bottom:calc(42px + env(safe-area-inset-bottom, 0px));left:16px;z-index:2;
+    pointer-events:none;font-family:var(--font-mono);font-size:9.5px;color:rgba(232,200,122,.32);
+    letter-spacing:.06em;text-shadow:0 1px 4px rgba(0,0,0,.9);display:flex;align-items:center;gap:6px}
+
   /* loading spinner */
   #loading{position:fixed;inset:0;z-index:9;display:grid;place-items:center;
     background:var(--void);color:var(--parchment);font-family:var(--font-ui);
@@ -372,6 +398,7 @@
     .footer-logo{width:13px;height:13px}
     .footer-right{display:none}
     .colophon,.hint{display:none}
+    .brand-watermark{bottom:calc(76px + env(safe-area-inset-bottom, 0px));left:8px;font-size:8px;opacity:.65}
 
     /* Bài học & Hiện tượng */
     .lesson-card{left:10px;right:10px;width:auto;bottom:calc(112px + env(safe-area-inset-bottom, 0px));padding:12px 14px 11px}
@@ -420,8 +447,71 @@
         <span>Đứng đúng chỗ bóng Mặt Trăng quét qua Trái Đất</span></button>
       <button class="wel-card" id="wel-free"><b>Tự do khám phá</b>
         <span>Kéo để quay, cuộn để phóng to, nhấn vào hành tinh để tới gần</span></button>
+      <button class="wel-card" id="wel-community" style="grid-column:1/-1;border-color:rgba(100,181,246,.4);background:rgba(0,136,255,.07)">
+        <b style="color:#64B5F6">💬 Gia nhập Cộng đồng Thiên Văn & Tải Cẩm nang PDF</b>
+        <span>Tham gia Nhóm Zalo giao lưu, giải đáp thắc mắc và nhận tài liệu ngắm sao 2024–2025</span>
+      </button>
     </div>
     <label class="wel-skip"><input type="checkbox" id="wel-never"> Lần sau không hiện bảng này</label>
+  </div>
+</div>
+
+<div id="community-modal" hidden>
+  <div class="wel-box comm-box">
+    <button class="wel-close" id="comm-close" aria-label="Đóng" title="Đóng">✕</button>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <img src="logo/logo.png" alt="N&Mstudio Logo" style="width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(232,200,122,.35))">
+      <div>
+        <p class="eyebrow" style="margin:0">Cộng Đồng Giao Lưu & Học Tập</p>
+        <h3 style="font-family:var(--font-display);font-size:22px;color:var(--brass);margin:3px 0 0">CLB Thiên Văn 3D — N&Mstudio</h3>
+      </div>
+    </div>
+    <p class="wel-sub" style="margin-bottom:14px">
+      Không gian thảo luận phi lợi nhuận dành cho người yêu vũ trụ, thầy cô giáo và các bạn học sinh. Giao lưu, đặt câu hỏi, nhận tài liệu Cẩm nang Ngắm sao PDF và đồng hành cùng các dự án STEM trực quan.
+    </p>
+
+    <div class="comm-actions">
+      <a href="https://zalo.me/g/61xf81lcwdwfasjc1tle" id="comm-btn-zalo" target="_blank" rel="noopener noreferrer" class="comm-action-btn comm-btn-primary">
+        <span style="font-size:20px">💬</span>
+        <div>
+          <b>Tham gia Nhóm Zalo Thiên Văn (Miễn phí)</b>
+          <small>Giao lưu thành viên, hỏi đáp hiện tượng thiên văn & nhận cẩm nang PDF</small>
+        </div>
+      </a>
+
+      <a href="cam-nang-thien-van.html" target="_blank" class="comm-action-btn" style="background:rgba(232,200,122,.08);border-color:rgba(232,200,122,.35)">
+        <span style="font-size:20px">📖</span>
+        <div>
+          <b style="color:var(--brass)">Đọc & Tải Cẩm Nang Ngắm Sao (PDF Miễn Phí)</b>
+          <small>Lịch mưa sao băng, cách tìm chòm sao & 10 câu hỏi STEM trực quan</small>
+        </div>
+      </a>
+
+      <button type="button" id="comm-btn-share-fb" class="comm-action-btn comm-btn-fb">
+        <span style="font-size:20px">🚀</span>
+        <div>
+          <b>Chia sẻ lên Facebook</b>
+          <small>Lan tỏa ứng dụng khoa học thuần Việt tới bạn bè & cộng đồng</small>
+        </div>
+      </button>
+
+      <button type="button" id="comm-btn-copy" class="comm-action-btn">
+        <span style="font-size:20px">📋</span>
+        <div>
+          <b>Sao chép liên kết trang web</b>
+          <small>Gửi nhanh cho người thân, bạn bè hoặc học sinh</small>
+        </div>
+      </button>
+    </div>
+
+    <div id="comm-copy-alert" style="display:none;font-size:11.5px;color:#7FD0B8;margin-top:10px;text-align:center">
+      ✓ Đã sao chép liên kết website vào bộ nhớ tạm!
+    </div>
+
+    <div style="font-size:11px;color:var(--parchment-dim);border-top:1px solid var(--hairline-soft);padding-top:12px;margin-top:16px;line-height:1.6">
+      📞 Hotline / Zalo người sáng lập: <a href="tel:+84985578385" style="color:var(--brass);text-decoration:none;font-family:var(--font-mono)">+84 985578385</a><br>
+      <span style="font-size:10px;color:#8A8476">★ Nhóm Zalo mở tự do, bảo mật thành viên và hoàn toàn không spam quảng cáo.</span>
+    </div>
   </div>
 </div>
 <div id="nogl">
@@ -442,6 +532,7 @@
 </div>
 
 <div class="shell">
+  <div class="brand-watermark">🌌 N&Mstudio_SolarSystem · tinh-do-thai-duong.vercel.app</div>
   <header class="masthead">
     <p class="eyebrow">Đài quan sát tương tác</p>
     <h1 class="wordmark">Tinh Đồ <em>Thái Dương</em></h1>
@@ -449,6 +540,8 @@
     <div class="clock" id="clock">—</div>
     <a href="tel:+84985578385" class="brand-contact" title="Hotline / Zalo">📞 +84 985578385</a>
     <a href="earth.html" class="brand-contact" style="margin-left:6px;border-color:var(--brass)" title="Chuyên đề Trái Đất 3D: Tự Quay & 4 Mùa">🌍 Trái Đất 3D</a>
+    <button type="button" id="btn-mast-zalo" class="brand-contact" style="margin-left:6px;border-color:rgba(100,181,246,.5);color:#81D4FA;cursor:pointer" title="Cộng đồng Zalo & Tải Cẩm Nang Thiên Văn">💬 Nhóm Zalo</button>
+    <button type="button" id="btn-mast-share" class="brand-contact" style="margin-left:6px;border-color:rgba(232,200,122,.4);color:var(--brass);cursor:pointer" title="Chia sẻ website">🚀 Chia sẻ</button>
     <div class="lang-switch" role="group" aria-label="Ngôn ngữ / Language">
       <button class="lang-btn active" id="btn-lang-vi" type="button" title="Tiếng Việt">VN</button>
       <button class="lang-btn" id="btn-lang-en" type="button" title="English (IAU Standard)">EN</button>
@@ -520,6 +613,8 @@
       <button class="ghost" id="btn-phenom">Hiện tượng</button>
       <button class="ghost" id="btn-tonight">Tối nay</button>
       <button class="ghost" id="btn-peg">Thả người xuống</button>
+      <button class="ghost" id="btn-community" style="color:#81D4FA;border-color:rgba(100,181,246,.45)" title="Cộng đồng Zalo & Tải Cẩm Nang Thiên Văn">💬 Nhóm Zalo</button>
+      <button class="ghost" id="btn-share" title="Chia sẻ lên Facebook">🚀 Chia sẻ</button>
       <button class="ghost" id="btn-more" aria-pressed="false">Nâng cao</button>
       <span class="more-wrap" id="more-wrap">
         <button class="ghost" id="btn-scale" aria-pressed="false">Tỉ lệ thật</button>
@@ -540,7 +635,8 @@
       <div class="footer-center">
         <span>Liên hệ:</span>
         <a href="tel:+84985578385" class="footer-phone">📞 +84 985578385</a>
-        <a href="https://zalo.me/0985578385" target="_blank" rel="noopener noreferrer" class="footer-zalo">Zalo</a>
+        <a href="https://zalo.me/g/61xf81lcwdwfasjc1tle" id="footer-btn-zalo" target="_blank" rel="noopener noreferrer" class="footer-zalo" title="Tham gia Nhóm Zalo Thiên văn">💬 Nhóm Zalo</a>
+        <a href="#share" id="footer-btn-share" class="footer-zalo" style="background:rgba(24,119,242,.2);border-color:rgba(24,119,242,.35);color:#90CAF9" title="Chia sẻ Facebook">🚀 Chia sẻ</a>
       </div>
       <span class="footer-sep">·</span>
       <div class="footer-right">© 2026 N&Mstudio · Thiên văn học 3D</div>
@@ -4755,6 +4851,65 @@ if(!GLOK){
     $("pnote").textContent="Đang dò thời điểm…";
     setTimeout(function(){ if(p) $("pnote").textContent=p.run()||""; },16);
   });
+
+  /* Modal cộng đồng Zalo & Chia sẻ Facebook */
+  var commModal = $("community-modal");
+  function openCommunity(){
+    if(commModal) commModal.hidden = false;
+  }
+  function closeCommunity(){
+    if(commModal) commModal.hidden = true;
+  }
+  var commClose = $("comm-close");
+  if(commClose) commClose.addEventListener("click", closeCommunity);
+  if(commModal){
+    commModal.addEventListener("click", function(ev){
+      if(ev.target === commModal) closeCommunity();
+    });
+  }
+  var welComm = $("wel-community");
+  if(welComm) welComm.addEventListener("click", function(){ closeWelcome(); openCommunity(); });
+  var btnMastZalo = $("btn-mast-zalo");
+  if(btnMastZalo) btnMastZalo.addEventListener("click", openCommunity);
+  var btnMastShare = $("btn-mast-share");
+  if(btnMastShare) btnMastShare.addEventListener("click", openCommunity);
+  var btnComm = $("btn-community");
+  if(btnComm) btnComm.addEventListener("click", openCommunity);
+  var btnShare = $("btn-share");
+  if(btnShare) btnShare.addEventListener("click", openCommunity);
+  var footerBtnShare = $("footer-btn-share");
+  if(footerBtnShare) footerBtnShare.addEventListener("click", function(ev){ ev.preventDefault(); openCommunity(); });
+
+  // Nút share FB trong modal
+  var commBtnShareFB = $("comm-btn-share-fb");
+  if(commBtnShareFB){
+    commBtnShareFB.addEventListener("click", function(){
+      var u = encodeURIComponent("https://tinh-do-thai-duong.vercel.app");
+      window.open("https://www.facebook.com/sharer/sharer.php?u=" + u, "_blank", "width=640,height=560,menubar=no,toolbar=no,status=no");
+    });
+  }
+
+  // Nút copy link trong modal
+  var commBtnCopy = $("comm-btn-copy");
+  if(commBtnCopy){
+    commBtnCopy.addEventListener("click", function(){
+      var url = "https://tinh-do-thai-duong.vercel.app";
+      var alertEl = $("comm-copy-alert");
+      function showSuccess(){
+        if(alertEl){
+          alertEl.style.display = "block";
+          setTimeout(function(){ alertEl.style.display = "none"; }, 3500);
+        }
+      }
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(url).then(showSuccess, function(){
+          prompt("Sao chép liên kết:", url);
+        });
+      } else {
+        prompt("Sao chép liên kết:", url);
+      }
+    });
+  }
 
   /* nút sao chép link khi không có WebGL */
   var btnCopy = $("btn-copy-link");
