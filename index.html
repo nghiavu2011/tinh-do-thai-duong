@@ -23,6 +23,13 @@
 <meta name="twitter:description" content="Khám phá Hệ Mặt Trời 3D tương tác thuần Việt: Quỹ đạo thiên văn thật, mô phỏng nhật thực, đứng trên bề mặt hành tinh. Hotline / Zalo: +84 985578385.">
 <meta name="twitter:image" content="https://tinh-do-thai-duong.vercel.app/logo/logo.png">
 
+<!-- Vercel Web Analytics & Insights -->
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script defer src="telemetry.js"></script>
+
 <!-- Tối ưu kết nối & nạp font -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -637,6 +644,7 @@
         <a href="tel:+84985578385" class="footer-phone">📞 +84 985578385</a>
         <a href="https://zalo.me/g/61xf81lcwdwfasjc1tle" id="footer-btn-zalo" target="_blank" rel="noopener noreferrer" class="footer-zalo" title="Tham gia Nhóm Zalo Thiên văn">💬 Nhóm Zalo</a>
         <a href="#share" id="footer-btn-share" class="footer-zalo" style="background:rgba(24,119,242,.2);border-color:rgba(24,119,242,.35);color:#90CAF9" title="Chia sẻ Facebook">🚀 Chia sẻ</a>
+        <a href="/dashboard" class="footer-zalo" style="background:rgba(232,200,122,.15);border-color:rgba(232,200,122,.35);color:var(--brass)" title="Bảng điều khiển & Thống kê">📊 Thống kê</a>
       </div>
       <span class="footer-sep">·</span>
       <div class="footer-right">© 2026 N&Mstudio · Thiên văn học 3D</div>
@@ -3786,6 +3794,7 @@ function enterSurface(id, lat, lon, lookYaw, lookPitch){
   $("coords").textContent = fmtLatLon(V.obsLat, V.obsLon);
   fillSlab(id);
   aimAtSun();
+  if(window.trackAppEvent) trackAppEvent("enter_surface", { body: id, name: b ? b.name : id });
 }
 function exitSurface(){
   V.mode="orbit"; document.body.classList.remove("on-surface");
@@ -4558,6 +4567,7 @@ function openLesson(i){
   document.body.classList.add("lesson");
   closePanels();
   renderLesson();
+  if(window.trackAppEvent) trackAppEvent("open_lesson", { index: i, title: LESSONS[i] ? LESSONS[i].ten : '' });
 }
 function closeLesson(){
   LES.cur=null; document.body.classList.remove("lesson");
@@ -4856,6 +4866,7 @@ if(!GLOK){
   var commModal = $("community-modal");
   function openCommunity(){
     if(commModal) commModal.hidden = false;
+    if(window.trackAppEvent) trackAppEvent("open_community_modal", {});
   }
   function closeCommunity(){
     if(commModal) commModal.hidden = true;

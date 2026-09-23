@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Trung Tâm Quản Trị & Thăm Dò Dữ Liệu Người Dùng — N&Mstudio</title>
+<meta name="description" content="Dashboard kiểm soát lưu lượng, phân tích thói quen người dùng, phễu chuyển đổi Zalo và tạo liên kết UTM thông minh.">
+<meta name="theme-color" content="#070A16">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='38' fill='%23E8C87A'/><circle cx='50' cy='50' r='46' fill='none' stroke='%23E8C87A' stroke-width='4' stroke-dasharray='6 6'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<!-- Vercel Web Analytics & Insights -->
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script defer src="telemetry.js"></script>
+
+<style>
+  :root{
+    --void:#070A16; --panel:rgba(12,17,35,0.95);
+    --brass:#E8C87A; --brass-dim:#8B7642;
+    --parchment:#F2ECDE; --parchment-dim:#A39C89;
+    --hairline:rgba(232,200,122,.25); --hairline-soft:rgba(232,200,122,.12);
+    --accent-blue:#64B5F6; --accent-green:#81C784; --accent-red:#E57373; --accent-purple:#BA68C8;
+    --font-display:"Cormorant Garamond","Times New Roman",serif;
+    --font-ui:"Be Vietnam Pro","Segoe UI",system-ui,sans-serif;
+    --font-mono:"IBM Plex Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--void);color:var(--parchment);
+    font-family:var(--font-ui);line-height:1.6;font-size:14px;
+    padding:20px;min-height:100vh;-webkit-font-smoothing:antialiased;
+  }
+  .app-wrap{max-width:1160px;margin:0 auto}
+
+  /* Top Navigation */
+  header{
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+    gap:16px;padding-bottom:20px;border-bottom:1px solid var(--hairline-soft);margin-bottom:28px;
+  }
+  .brand{display:flex;align-items:center;gap:14px}
+  .brand img{width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(232,200,122,.35))}
+  .brand h1{font-family:var(--font-display);font-size:26px;color:var(--brass);line-height:1.2}
+  .brand p{font-size:12px;color:var(--parchment-dim)}
+  .nav-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+  .btn{
+    display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:6px;
+    font-size:12.5px;font-weight:600;text-decoration:none;cursor:pointer;transition:.18s;border:none;
+  }
+  .btn-outline{background:transparent;border:1px solid var(--hairline);color:var(--parchment)}
+  .btn-outline:hover{background:rgba(232,200,122,.12);color:var(--brass)}
+  .btn-gold{background:var(--brass);color:#070A16}
+  .btn-gold:hover{filter:brightness(1.1)}
+  .btn-blue{background:rgba(0,136,255,.2);border:1px solid rgba(100,181,246,.4);color:#64B5F6}
+  .btn-blue:hover{background:rgba(0,136,255,.35);color:#fff}
+  .btn-danger{background:rgba(229,115,115,.15);border:1px solid rgba(229,115,115,.4);color:var(--accent-red)}
+  .btn-danger:hover{background:rgba(229,115,115,.3)}
+
+  /* KPI Grid */
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:28px}
+  .kpi-card{
+    background:var(--panel);border:1px solid var(--hairline);border-radius:10px;padding:20px;
+    box-shadow:0 8px 32px rgba(0,0,0,.4);position:relative;overflow:hidden;
+  }
+  .kpi-card::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:3px;
+    background:var(--kpi-color, var(--brass));
+  }
+  .kpi-title{font-size:12px;color:var(--parchment-dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+  .kpi-val{font-family:var(--font-mono);font-size:32px;font-weight:700;color:#FFF;line-height:1.1}
+  .kpi-desc{font-size:11.5px;color:var(--parchment-dim);margin-top:6px}
+
+  /* Two Column Layout */
+  .grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:24px;margin-bottom:28px}
+  .panel{
+    background:var(--panel);border:1px solid var(--hairline-soft);border-radius:10px;padding:24px;
+    box-shadow:0 8px 32px rgba(0,0,0,.35);
+  }
+  .panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;border-bottom:1px solid var(--hairline-soft);padding-bottom:10px}
+  .panel-title{font-family:var(--font-display);font-size:20px;color:var(--brass);display:flex;align-items:center;gap:8px}
+
+  /* Bar Charts */
+  .chart-bar-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:13px}
+  .bar-label{width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar-track{flex:1;height:8px;background:rgba(255,255,255,.06);border-radius:4px;margin:0 12px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:4px;background:var(--brass);transition:width .4s ease}
+  .bar-val{font-family:var(--font-mono);font-size:12px;width:55px;text-align:right;color:var(--brass)}
+
+  /* Form & Inputs */
+  .form-group{margin-bottom:16px}
+  label{display:block;font-size:12px;color:var(--parchment-dim);margin-bottom:6px;font-weight:500}
+  input,select,textarea{
+    width:100%;background:rgba(0,0,0,.45);border:1px solid var(--hairline);
+    border-radius:6px;padding:10px 14px;color:var(--parchment);font-family:var(--font-ui);font-size:13.5px;outline:none;
+  }
+  input:focus,select:focus,textarea:focus{border-color:var(--brass);box-shadow:0 0 0 2px rgba(232,200,122,.2)}
+  .input-copy-group{display:flex;gap:8px}
+  .input-copy-group input{flex:1;font-family:var(--font-mono);font-size:12.5px;color:var(--brass)}
+
+  /* Table */
+  .table-wrap{overflow-x:auto;max-height:360px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--hairline-soft)}
+  th{color:var(--brass);font-weight:600;position:sticky;top:0;background:#0d1225}
+  tr:hover{background:rgba(232,200,122,.04)}
+
+  /* Badges */
+  .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-family:var(--font-mono);font-weight:600}
+  .badge-zalo{background:rgba(0,136,255,.2);color:#81D4FA}
+  .badge-fb{background:rgba(24,119,242,.2);color:#90CAF9}
+  .badge-view{background:rgba(129,199,132,.2);color:#A5D6A7}
+  .badge-pdf{background:rgba(232,200,122,.2);color:var(--brass)}
+
+  /* Status Pill */
+  .status-pill{
+    display:inline-flex;align-items:center;gap:6px;font-size:11.5px;padding:4px 10px;
+    border-radius:20px;background:rgba(129,199,132,.12);border:1px solid rgba(129,199,132,.3);color:#A5D6A7;
+  }
+  .status-dot{width:7px;height:7px;border-radius:50%;background:#81C784;box-shadow:0 0 6px #81C784}
+
+  /* Modal & QR */
+  #qr-preview{display:flex;justify-content:center;margin:16px 0;padding:12px;background:#fff;border-radius:8px;width:fit-content;margin-left:auto;margin-right:auto}
+</style>
+</head>
+<body>
+
+<div class="app-wrap">
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <img src="logo/logo.png" alt="N&Mstudio Logo">
+      <div>
+        <p class="eyebrow" style="margin:0;font-size:11px;letter-spacing:1px;color:var(--brass)">TRUNG TÂM KIỂM SOÁT THỐNG KÊ & PHÁT TRIỂN</p>
+        <h1>Bảng Điều Khiển Dữ Liệu Người Dùng</h1>
+        <p>Hệ thống tự động theo dõi thói quen, đo lường nguồn truy cập và phễu chuyển đổi cộng đồng</p>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <div class="status-pill">
+        <span class="status-dot"></span> Telemetry Active
+      </div>
+      <a href="/" class="btn btn-outline" target="_blank">🪐 Vào 3D SolarSystem</a>
+      <a href="cam-nang-thien-van.html" class="btn btn-outline" target="_blank">📖 Cẩm Nang Thiên Văn</a>
+      <button class="btn btn-gold" id="btn-refresh" onclick="refreshDashboard()">🔄 Làm mới số liệu</button>
+    </div>
+  </header>
+
+  <!-- KPI Grid: Chỉ số trọng yếu -->
+  <section class="kpi-grid">
+    <div class="kpi-card" style="--kpi-color:var(--brass)">
+      <div class="kpi-title">Tổng Lượt Truy Cập</div>
+      <div class="kpi-val" id="kpi-views">0</div>
+      <div class="kpi-desc">Tổng số lần tải trang trên các thiết bị</div>
+    </div>
+
+    <div class="kpi-card" style="--kpi-color:var(--accent-blue)">
+      <div class="kpi-title">Quan Tâm Nhóm Zalo</div>
+      <div class="kpi-val" id="kpi-zalo" style="color:#81D4FA">0</div>
+      <div class="kpi-desc">Số lượt bấm tham gia nhóm cộng đồng</div>
+    </div>
+
+    <div class="kpi-card" style="--kpi-color:var(--accent-green)">
+      <div class="kpi-title">Đọc / Tải Cẩm Nang PDF</div>
+      <div class="kpi-val" id="kpi-camnang" style="color:#A5D6A7">0</div>
+      <div class="kpi-desc">Lượt click tài liệu quà tặng giáo dục</div>
+    </div>
+
+    <div class="kpi-card" style="--kpi-color:var(--accent-purple)">
+      <div class="kpi-title">Tỷ Lệ Chuyển Đổi Zalo</div>
+      <div class="kpi-val" id="kpi-conv" style="color:#CE93D8">0%</div>
+      <div class="kpi-desc">Tỉ lệ người xem quyết định tham gia nhóm</div>
+    </div>
+  </section>
+
+  <!-- Grid 2: Nguồn truy cập & Thói quen sử dụng -->
+  <section class="grid-2">
+    <!-- Cột trái: Phân bổ Nguồn truy cập -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">📍 Nguồn Truy Cập (Họ đến từ đâu?)</div>
+        <span style="font-size:12px;color:var(--parchment-dim)">Theo UTM & Referrer</span>
+      </div>
+      <p style="font-size:12.5px;color:var(--parchment-dim);margin-bottom:16px">
+        Biết chính xác độc giả đến từ bài đăng Facebook, tin nhắn Zalo, video TikTok hay tìm kiếm tự nhiên.
+      </p>
+      <div id="sources-chart">
+        <!-- Render động -->
+      </div>
+    </div>
+
+    <!-- Cột phải: Thói quen dùng tính năng -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">🪐 Thói Quen & Mức Độ Tương Tác</div>
+        <span style="font-size:12px;color:var(--parchment-dim)">Feature Engagement</span>
+      </div>
+      <p style="font-size:12.5px;color:var(--parchment-dim);margin-bottom:16px">
+        Dữ liệu hành vi thực tế giúp định hướng phát triển các tính năng được yêu thích nhất ở các bản cập nhật sau.
+      </p>
+      <div id="events-chart">
+        <!-- Render động -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Grid 2: Bộ Tạo UTM Thông Minh & Tích Hợp Nền Tảng -->
+  <section class="grid-2">
+    <!-- Bộ tạo Link UTM thông minh -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">🔗 Bộ Tạo Link Tiếp Thị & Theo Dõi (Smart UTM Generator)</div>
+      </div>
+      <p style="font-size:12.5px;color:var(--parchment-dim);margin-bottom:16px">
+        Tạo liên kết có gắn sẵn mã nhận diện kênh trong 3 giây. Đăng lên Facebook, Zalo hoặc TikTok để đo lường chính xác lượng người vào từ từng bài viết.
+      </p>
+
+      <div class="form-group">
+        <label>1. Chọn Trang Đích (Destination)</label>
+        <select id="utm-target" onchange="generateUtmLink()">
+          <option value="https://tinh-do-thai-duong.vercel.app">🪐 Trang chủ 3D Đài Quan Sát Vũ Trụ</option>
+          <option value="https://tinh-do-thai-duong.vercel.app/cam-nang-thien-van">📖 Trang Cẩm Nang Ngắm Sao (Quà Tặng PDF)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>2. Kênh / Nơi Bạn Chuẩn Bị Đăng (Source & Platform)</label>
+        <select id="utm-source" onchange="generateUtmLink()">
+          <option value="facebook_group">🔵 Nhóm Facebook (Hội Thiên văn / Học sinh / Giáo viên)</option>
+          <option value="facebook_post">🔵 Trang cá nhân Facebook / Fanpage</option>
+          <option value="zalo_message">💬 Tin nhắn / Nhóm Zalo bạn bè</option>
+          <option value="tiktok_bio">⚫ Link Bio / Bình luận TikTok</option>
+          <option value="youtube_desc">🔴 Mô tả Video YouTube</option>
+          <option value="forum_seeding">🌐 Diễn đàn công nghệ / Tinhte / Reddit</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>3. Tên Chiến Dịch (Campaign Name - Không dấu, viết liền hoặc gạch ngang)</label>
+        <input type="text" id="utm-campaign" value="qua-tang-cam-nang-t9" placeholder="vi-du: ra-mat-3d, qua-tang-thien-van" oninput="generateUtmLink()">
+      </div>
+
+      <div class="form-group">
+        <label>Liên Kết Đã Được Tạo (Sẵn sàng đăng):</label>
+        <div class="input-copy-group">
+          <input type="text" id="utm-output" readonly value="">
+          <button class="btn btn-gold" onclick="copyUtmLink()">📋 Chép Link</button>
+        </div>
+        <div id="utm-copied-msg" style="display:none;color:#81C784;font-size:12px;margin-top:6px">
+          ✓ Đã sao chép link có mã theo dõi vào bộ nhớ tạm!
+        </div>
+      </div>
+    </div>
+
+    <!-- Cổng kết nối GA4 & Vercel Dashboard -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">⚙️ Cổng Kết Nối Vercel & Google Analytics 4</div>
+      </div>
+      <p style="font-size:12.5px;color:var(--parchment-dim);margin-bottom:14px">
+        Website đã tích hợp sẵn <b>Vercel Web Analytics</b> trực tiếp trên hạ tầng Edge Network, hoạt động tức thì mà không cần cài đặt.
+      </p>
+
+      <div style="background:rgba(232,200,122,.08);border:1px solid var(--hairline);border-radius:8px;padding:14px;margin-bottom:18px">
+        <b style="color:var(--brass)">🚀 Xem Phân Tích Toàn Cầu Trên Vercel:</b>
+        <p style="font-size:12px;color:var(--parchment-dim);margin:6px 0 10px">
+          Vercel tự động tổng hợp số lượt truy cập từ mọi quốc gia, tốc độ tải trang (Core Web Vitals) và hệ điều hành của người dùng toàn thế giới.
+        </p>
+        <a href="https://vercel.com/dashboard" target="_blank" class="btn btn-blue">
+          📊 Mở Vercel Web Analytics Console ↗
+        </a>
+      </div>
+
+      <div class="form-group">
+        <label>Tích Hợp Google Analytics 4 (Tùy chọn):</label>
+        <p style="font-size:11.5px;color:var(--parchment-dim);margin-bottom:8px">
+          Nếu bạn muốn đồng bộ thêm với Google Analytics, nhập mã đo lường (dạng <code>G-XXXXXXXXXX</code>) tại đây:
+        </p>
+        <div class="input-copy-group">
+          <input type="text" id="ga4-input" placeholder="G-XXXXXXXXXX">
+          <button class="btn btn-outline" onclick="saveGA4Id()">💾 Lưu ID</button>
+        </div>
+        <div id="ga4-saved-msg" style="display:none;color:#81C784;font-size:12px;margin-top:6px">
+          ✓ Đã lưu mã GA4! Toàn bộ trang web sẽ tự động gửi telemetry về tài khoản GA4 của bạn.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Feed: Lịch sử tương tác gần nhất -->
+  <section class="panel" style="margin-bottom:32px">
+    <div class="panel-header">
+      <div class="panel-title">⚡ Nhật Ký Tương Tác Gần Nhất (Live Activity Feed)</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-outline" style="font-size:11.5px;padding:4px 10px" onclick="loadDemoData()">✨ Dữ liệu mẫu minh họa</button>
+        <button class="btn btn-outline" style="font-size:11.5px;padding:4px 10px" onclick="exportData('json')">📥 Xuất JSON</button>
+        <button class="btn btn-outline" style="font-size:11.5px;padding:4px 10px" onclick="exportData('csv')">📥 Xuất CSV (Excel)</button>
+        <button class="btn btn-danger" style="font-size:11.5px;padding:4px 10px" onclick="confirmReset()">🗑️ Đặt lại</button>
+      </div>
+    </div>
+    
+    <div class="table-wrap">
+      <table id="activity-table">
+        <thead>
+          <tr>
+            <th>Thời gian</th>
+            <th>Hành động (Sự kiện)</th>
+            <th>Nguồn (Traffic Source)</th>
+            <th>Chiến dịch (Campaign)</th>
+            <th>Thiết bị & Môi trường</th>
+            <th>Chi tiết</th>
+          </tr>
+        </thead>
+        <tbody id="activity-tbody">
+          <!-- Render động -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer style="text-align:center;font-size:12px;color:var(--parchment-dim);padding-top:16px;border-top:1px solid var(--hairline-soft)">
+    © 2024 – 2026 N&Mstudio Telemetry & Growth Engine · Thiết kế theo chuẩn Ponytail (Zero-bloat & Native Web)
+  </footer>
+
+</div>
+
+<script>
+  // 1. Đọc và render dữ liệu thống kê
+  function refreshDashboard() {
+    var store = (typeof window.getTelemetryData === 'function') ? window.getTelemetryData() : null;
+    if (!store) {
+      try {
+        store = JSON.parse(localStorage.getItem('tinhdo_telemetry_v1') || '{}');
+      } catch (e) {
+        store = {};
+      }
+    }
+
+    var views = store.total_views || 0;
+    var events = store.events || {};
+    var zaloClicks = events.click_zalo || 0;
+    var camnangClicks = events.click_camnang || 0;
+    var convRate = views > 0 ? ((zaloClicks / views) * 100).toFixed(1) + '%' : '0%';
+
+    document.getElementById('kpi-views').textContent = Number(views).toLocaleString('vi-VN');
+    document.getElementById('kpi-zalo').textContent = Number(zaloClicks).toLocaleString('vi-VN');
+    document.getElementById('kpi-camnang').textContent = Number(camnangClicks).toLocaleString('vi-VN');
+    document.getElementById('kpi-conv').textContent = convRate;
+
+    // Render biểu đồ Nguồn
+    renderSourcesChart(store.sources || {}, views);
+
+    // Render biểu đồ Tính năng
+    renderEventsChart(events);
+
+    // Render bảng tương tác gần nhất
+    renderRecentEvents(store.recent_events || []);
+
+    // Nạp GA4 ID hiện tại
+    var gaId = (typeof window.getGA4MeasurementId === 'function') ? window.getGA4MeasurementId() : localStorage.getItem('tinhdo_ga4_id');
+    if (gaId) {
+      document.getElementById('ga4-input').value = gaId;
+    }
+  }
+
+  function renderSourcesChart(sources, total) {
+    var container = document.getElementById('sources-chart');
+    container.innerHTML = '';
+    var keys = Object.keys(sources);
+
+    if (keys.length === 0) {
+      container.innerHTML = '<div style="color:var(--parchment-dim);font-size:13px;padding:12px 0">Chưa có lượt truy cập ghi nhận. Hãy mở thử trang chủ hoặc dùng link UTM bên dưới!</div>';
+      return;
+    }
+
+    // Sắp xếp giảm dần
+    keys.sort(function(a, b) { return sources[b] - sources[a]; });
+    var maxVal = sources[keys[0]] || 1;
+
+    keys.forEach(function(src) {
+      var count = sources[src];
+      var pct = total > 0 ? Math.round((count / total) * 100) : 0;
+      var label = src;
+      if (src === 'direct') label = '🔗 Trực tiếp (Direct)';
+      else if (src === 'facebook' || src.indexOf('fb') !== -1) label = '🔵 Facebook';
+      else if (src === 'zalo') label = '💬 Zalo';
+      else if (src === 'tiktok') label = '⚫ TikTok';
+      else if (src === 'google') label = '🔍 Google';
+      else if (src === 'youtube') label = '🔴 YouTube';
+
+      var row = document.createElement('div');
+      row.className = 'chart-bar-row';
+      row.innerHTML = 
+        '<div class="bar-label" title="' + src + '">' + label + '</div>' +
+        '<div class="bar-track"><div class="bar-fill" style="width:' + Math.max(5, (count / maxVal) * 100) + '%;background:#64B5F6"></div></div>' +
+        '<div class="bar-val">' + count + ' (' + pct + '%)</div>';
+      container.appendChild(row);
+    });
+  }
+
+  function renderEventsChart(events) {
+    var container = document.getElementById('events-chart');
+    container.innerHTML = '';
+
+    var labels = {
+      click_zalo: '💬 Tham gia Zalo',
+      click_camnang: '📖 Đọc Cẩm Nang',
+      enter_surface: '🪐 Đứng trên hành tinh',
+      open_lesson: '🎓 Xem bài học 3D',
+      share_fb: '🚀 Chia sẻ Facebook',
+      copy_link: '📋 Sao chép link',
+      print_handbook: '🖨️ In / Lưu PDF',
+      page_view: '👁️ Lượt xem trang'
+    };
+
+    var items = [];
+    for (var k in events) {
+      if (events[k] > 0) {
+        items.push({ key: k, count: events[k], label: labels[k] || k });
+      }
+    }
+
+    if (items.length === 0) {
+      container.innerHTML = '<div style="color:var(--parchment-dim);font-size:13px;padding:12px 0">Chưa có tương tác tính năng nào được ghi nhận.</div>';
+      return;
+    }
+
+    items.sort(function(a, b) { return b.count - a.count; });
+    var maxVal = items[0].count;
+
+    items.forEach(function(item) {
+      var row = document.createElement('div');
+      row.className = 'chart-bar-row';
+      row.innerHTML = 
+        '<div class="bar-label" title="' + item.label + '">' + item.label + '</div>' +
+        '<div class="bar-track"><div class="bar-fill" style="width:' + Math.max(5, (item.count / maxVal) * 100) + '%;background:#81C784"></div></div>' +
+        '<div class="bar-val">' + item.count + ' lần</div>';
+      container.appendChild(row);
+    });
+  }
+
+  function renderRecentEvents(list) {
+    var tbody = document.getElementById('activity-tbody');
+    tbody.innerHTML = '';
+
+    if (!list || list.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--parchment-dim);padding:20px">Chưa có sự kiện nào. Hãy click trải nghiệm trên website!</td></tr>';
+      return;
+    }
+
+    list.slice(0, 40).forEach(function(rec) {
+      var tr = document.createElement('tr');
+      var dateStr = '';
+      try {
+        var d = new Date(rec.time);
+        dateStr = d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' ' + (d.getDate() + '/' + (d.getMonth() + 1));
+      } catch (e) {
+        dateStr = rec.time;
+      }
+
+      var badgeClass = 'badge-view';
+      if (rec.event === 'click_zalo') badgeClass = 'badge-zalo';
+      else if (rec.event === 'share_fb') badgeClass = 'badge-fb';
+      else if (rec.event === 'click_camnang' || rec.event === 'print_handbook') badgeClass = 'badge-pdf';
+
+      var appText = (rec.app === 'zalo_app') ? 'Zalo In-App' : ((rec.app === 'facebook_app') ? 'FB In-App' : 'Browser');
+
+      var dataDetail = '';
+      if (rec.data && Object.keys(rec.data).length > 0) {
+        dataDetail = JSON.stringify(rec.data).replace(/[{}\"]/g, ' ');
+      }
+
+      tr.innerHTML = 
+        '<td style="font-family:var(--font-mono);font-size:11.5px">' + dateStr + '</td>' +
+        '<td><span class="badge ' + badgeClass + '">' + rec.event + '</span></td>' +
+        '<td style="font-weight:500">' + (rec.source || 'direct') + '</td>' +
+        '<td style="color:var(--brass);font-family:var(--font-mono)">' + (rec.campaign !== '(none)' ? rec.campaign : '—') + '</td>' +
+        '<td>' + (rec.device || 'desktop') + ' · <small style="color:var(--parchment-dim)">' + appText + '</small></td>' +
+        '<td style="font-size:11px;color:var(--parchment-dim);max-width:200px;overflow:hidden;text-overflow:ellipsis">' + dataDetail + '</td>';
+      tbody.appendChild(tr);
+    });
+  }
+
+  // 2. Bộ tạo Link UTM
+  function generateUtmLink() {
+    var base = document.getElementById('utm-target').value;
+    var src = document.getElementById('utm-source').value;
+    var cmp = (document.getElementById('utm-campaign').value || 'chien-dich').trim().toLowerCase().replace(/\s+/g, '-');
+    var med = 'social';
+    if (src.indexOf('group') !== -1) med = 'community_group';
+    else if (src.indexOf('message') !== -1) med = 'direct_chat';
+    else if (src.indexOf('bio') !== -1) med = 'profile_bio';
+
+    var finalUrl = base + '?utm_source=' + encodeURIComponent(src) + '&utm_medium=' + encodeURIComponent(med) + '&utm_campaign=' + encodeURIComponent(cmp);
+    document.getElementById('utm-output').value = finalUrl;
+  }
+
+  function copyUtmLink() {
+    var inp = document.getElementById('utm-output');
+    var msg = document.getElementById('utm-copied-msg');
+    inp.select();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(inp.value).then(function() {
+        msg.style.display = 'block';
+        setTimeout(function() { msg.style.display = 'none'; }, 3000);
+      });
+    } else {
+      document.execCommand('copy');
+      msg.style.display = 'block';
+      setTimeout(function() { msg.style.display = 'none'; }, 3000);
+    }
+  }
+
+  // 3. Quản lý GA4
+  function saveGA4Id() {
+    var val = document.getElementById('ga4-input').value.trim();
+    if (typeof window.setGA4MeasurementId === 'function') {
+      window.setGA4MeasurementId(val);
+    } else {
+      localStorage.setItem('tinhdo_ga4_id', val);
+    }
+    var msg = document.getElementById('ga4-saved-msg');
+    msg.style.display = 'block';
+    setTimeout(function() { msg.style.display = 'none'; }, 4000);
+  }
+
+  // 4. Xuất dữ liệu
+  function exportData(format) {
+    var store = (typeof window.getTelemetryData === 'function') ? window.getTelemetryData() : JSON.parse(localStorage.getItem('tinhdo_telemetry_v1') || '{}');
+    var filename = 'tinhdo_telemetry_' + new Date().toISOString().slice(0, 10);
+    var blob;
+
+    if (format === 'json') {
+      blob = new Blob([JSON.stringify(store, null, 2)], { type: 'application/json' });
+      downloadBlob(blob, filename + '.json');
+    } else {
+      var events = store.recent_events || [];
+      var csv = 'time,event,source,campaign,device,app\n';
+      events.forEach(function(e) {
+        csv += '"' + e.time + '","' + e.event + '","' + (e.source || '') + '","' + (e.campaign || '') + '","' + (e.device || '') + '","' + (e.app || '') + '"\n';
+      });
+      blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      downloadBlob(blob, filename + '.csv');
+    }
+  }
+
+  function downloadBlob(blob, filename) {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  function loadDemoData() {
+    var demoStore = {
+      version: 1,
+      first_seen: new Date(Date.now() - 86400000 * 3).toISOString(),
+      last_seen: new Date().toISOString(),
+      total_views: 428,
+      sessions_count: 312,
+      sources: {
+        'facebook': 194,
+        'zalo': 118,
+        'direct': 62,
+        'tiktok': 38,
+        'google': 16
+      },
+      campaigns: {
+        'qua-tang-cam-nang-t9': 185,
+        'ra-mat-3d-stem': 96
+      },
+      devices: {
+        'mobile': 298,
+        'desktop': 115,
+        'tablet': 15
+      },
+      events: {
+        page_view: 428,
+        click_zalo: 89,
+        click_camnang: 142,
+        enter_surface: 215,
+        open_lesson: 134,
+        share_fb: 46,
+        copy_link: 38,
+        print_handbook: 52
+      },
+      recent_events: [
+        { time: new Date().toISOString(), event: 'click_zalo', source: 'facebook', campaign: 'qua-tang-cam-nang-t9', device: 'mobile', app: 'facebook_app', data: { location: 'comm_modal' } },
+        { time: new Date(Date.now() - 120000).toISOString(), event: 'print_handbook', source: 'zalo', campaign: 'qua-tang-cam-nang-t9', device: 'desktop', app: 'browser', data: { page: 'cam_nang' } },
+        { time: new Date(Date.now() - 340000).toISOString(), event: 'enter_surface', source: 'facebook', campaign: 'qua-tang-cam-nang-t9', device: 'mobile', app: 'browser', data: { body: 'moon', name: 'Mặt Trăng' } },
+        { time: new Date(Date.now() - 610000).toISOString(), event: 'open_lesson', source: 'zalo', campaign: 'qua-tang-cam-nang-t9', device: 'desktop', app: 'browser', data: { index: 1, title: 'Hệ Mặt Trời' } },
+        { time: new Date(Date.now() - 950000).toISOString(), event: 'click_camnang', source: 'facebook', campaign: 'qua-tang-cam-nang-t9', device: 'mobile', app: 'facebook_app', data: { location: 'comm_modal' } },
+        { time: new Date(Date.now() - 1400000).toISOString(), event: 'share_fb', source: 'direct', campaign: '(none)', device: 'desktop', app: 'browser', data: {} }
+      ]
+    };
+    localStorage.setItem('tinhdo_telemetry_v1', JSON.stringify(demoStore));
+    refreshDashboard();
+    alert('✓ Đã nạp dữ liệu mẫu minh họa thành công!');
+  }
+
+  function confirmReset() {
+    if (confirm('Bạn có chắc chắn muốn xóa toàn bộ bộ đếm thống kê thử nghiệm trên thiết bị này?')) {
+      if (typeof window.resetTelemetryData === 'function') {
+        window.resetTelemetryData();
+      } else {
+        localStorage.removeItem('tinhdo_telemetry_v1');
+      }
+      refreshDashboard();
+    }
+  }
+
+  // Khởi chạy khi nạp trang
+  window.addEventListener('DOMContentLoaded', function() {
+    generateUtmLink();
+    refreshDashboard();
+  });
+
+  // Tự động làm mới khi có sự kiện telemetry mới phát sinh
+  window.addEventListener('tinhdo:telemetry', function() {
+    refreshDashboard();
+  });
+</script>
+
+</body>
+</html>

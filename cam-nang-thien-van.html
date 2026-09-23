@@ -11,6 +11,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 
+<!-- Vercel Web Analytics & Insights -->
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script defer src="/telemetry.js"></script>
+
 <style>
   :root{
     --void:#070A16; --panel:rgba(12,17,35,0.95);
@@ -101,7 +108,7 @@
       </div>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button type="button" class="btn-act btn-print" onclick="window.print()">🖨️ Tải / In PDF</button>
+      <button type="button" class="btn-act btn-print" onclick="if(window.trackAppEvent)trackAppEvent('print_handbook',{page:'cam_nang'});window.print()">🖨️ Tải / In PDF</button>
       <a href="https://zalo.me/g/61xf81lcwdwfasjc1tle" target="_blank" rel="noopener noreferrer" class="btn-act btn-zalo">💬 Vào Nhóm Zalo</a>
       <a href="/" class="btn-act btn-back">🌌 Mở Mô Hình 3D</a>
     </div>
@@ -266,7 +273,7 @@
   </div>
 
   <div class="doc-footer">
-    <div>© 2024 – 2026 N&Mstudio · Công Nghệ Đồ Họa 3D & Giáo Dục STEM</div>
+    <div>© 2024 – 2026 N&Mstudio · Công Nghệ Đồ Họa 3D & Giáo Dục STEM · <a href="/dashboard" style="color:var(--parchment-dim);text-decoration:none">📊 Thống kê</a></div>
     <div>Chia sẻ tự do vì mục đích học tập phi thương mại</div>
   </div>
 
