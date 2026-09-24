@@ -30,6 +30,8 @@
 <script defer src="/_vercel/insights/script.js"></script>
 <script defer src="telemetry.js"></script>
 <script src="planet-interior.js"></script>
+<script src="geo-data.js"></script>
+<script src="geo-earth.js"></script>
 
 <!-- Tối ưu kết nối & nạp font -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -320,6 +322,60 @@
   .comm-btn-primary:hover{background:rgba(0,136,255,.28);border-color:#29B6F6}
   .comm-btn-fb{background:rgba(24,119,242,.12);border-color:rgba(24,119,242,.35)}
   .comm-btn-fb:hover{background:rgba(24,119,242,.24);border-color:#4267B2}
+
+  /* Hệ thống Phiên bản & Nhật ký Cập nhật (v1.2) */
+  .ver-badge{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.06em;
+    color:var(--brass);background:rgba(232,200,122,.12);border:1px solid rgba(232,200,122,.35);
+    padding:4px 9px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;
+    gap:5px;transition:all .2s ease;text-decoration:none;line-height:1;margin-left:6px}
+  .ver-badge:hover{background:rgba(232,200,122,.24);border-color:var(--brass);box-shadow:0 0 10px rgba(232,200,122,.3)}
+  .ver-new-dot{width:6px;height:6px;border-radius:50%;background:#00E676;box-shadow:0 0 6px #00E676;animation:pulseDot 1.6s infinite}
+  @keyframes pulseDot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.6}}
+
+  .cl-card{background:rgba(232,200,122,.04);border:1px solid var(--hairline-soft);border-radius:6px;padding:12px 14px;transition:.18s}
+  .cl-card:hover{background:rgba(232,200,122,.08);border-color:var(--hairline)}
+  .cl-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+  .cl-ver-num{font-family:var(--font-mono);font-size:15px;font-weight:600;color:var(--brass)}
+  .cl-badge-pill{font-family:var(--font-mono);font-size:9px;font-weight:600;padding:2px 6px;border-radius:3px;background:rgba(0,230,118,.15);border:1px solid rgba(0,230,118,.35);color:#69F0AE}
+  .cl-date{font-family:var(--font-mono);font-size:11px;color:var(--parchment-dim)}
+  .cl-tag{font-size:12px;font-weight:500;color:var(--parchment);margin-bottom:8px}
+  .cl-items{margin:0;padding-left:18px;font-size:11.5px;color:#DED7C6;line-height:1.6}
+  .cl-items li{margin-bottom:4px}
+
+  /* Giao diện Panel Trái Đất Sống (geo-panel) */
+  .geo-stats-card{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;background:rgba(0,180,216,.08);
+    border:1px solid rgba(0,180,216,.25);border-radius:4px;padding:8px 6px;margin:8px 0 10px;text-align:center}
+  .geo-stat-col{display:flex;flex-direction:column;gap:2px}
+  .geo-stat-num{font-family:var(--font-mono);font-size:15px;font-weight:600;color:#00E5FF}
+  .geo-stat-lbl{font-size:9.5px;color:var(--parchment-dim);line-height:1.2}
+  .geo-layer-list{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+  .geo-layer-row{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:11px;padding:4px 6px;
+    border-radius:3px;background:rgba(232,200,122,.03);transition:.15s}
+  .geo-layer-row:hover{background:rgba(232,200,122,.08)}
+  .geo-layer-row input{accent-color:var(--brass);width:14px;height:14px;cursor:pointer}
+  .geo-dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .geo-layer-title{font-size:11px;color:var(--parchment)}
+  .geo-chip{background:rgba(232,200,122,.08);border:1px solid var(--hairline-soft);color:var(--parchment-dim);
+    font-family:var(--font-mono);font-size:9.5px;padding:3px 8px;border-radius:3px;cursor:pointer;transition:.15s}
+  .geo-chip:hover,.geo-chip.active{background:rgba(232,200,122,.22);border-color:var(--brass);color:var(--parchment)}
+  .geo-tabs{display:flex;gap:4px;border-bottom:1px solid var(--hairline-soft);margin-bottom:8px}
+  .geo-tab-btn{flex:1;background:none;border:none;border-bottom:2px solid transparent;padding:6px 0;
+    font-size:11px;font-weight:500;color:var(--parchment-dim);cursor:pointer;transition:.15s}
+  .geo-tab-btn.active{border-bottom-color:var(--brass);color:var(--parchment);font-weight:600}
+  .geo-feed-box{max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding-right:4px}
+  .geo-item{background:rgba(232,200,122,.04);border:1px solid var(--hairline-soft);border-radius:4px;
+    padding:6px 8px;cursor:pointer;transition:.15s}
+  .geo-item:hover{background:rgba(232,200,122,.12);border-color:var(--brass)}
+  .geo-item-top{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+  .geo-mag-badge{font-family:var(--font-mono);font-size:10px;font-weight:600;padding:1px 5px;border-radius:3px;color:#fff}
+  .mag-high{background:#D50000}
+  .mag-med{background:#E65100}
+  .mag-low{background:#455A64}
+  .mag-vol{background:#BF360C}
+  .geo-item-place{font-size:11px;font-weight:500;color:var(--parchment);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .geo-item-sub{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:9.5px;color:var(--parchment-dim)}
+  .geo-item-desc{font-size:10px;color:var(--parchment-dim);line-height:1.35;margin-bottom:3px}
+
   .brand-watermark{position:fixed;bottom:calc(42px + env(safe-area-inset-bottom, 0px));left:16px;z-index:2;
     pointer-events:none;font-family:var(--font-mono);font-size:9.5px;color:rgba(232,200,122,.32);
     letter-spacing:.06em;text-shadow:0 1px 4px rgba(0,0,0,.9);display:flex;align-items:center;gap:6px}
@@ -555,6 +611,20 @@
     </div>
   </div>
 </div>
+
+<div id="changelog-modal" style="position:fixed;inset:0;z-index:9;display:none;place-items:center;background:rgba(4,6,14,.88);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);padding:calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px));overflow-y:auto;-webkit-overflow-scrolling:touch">
+  <div class="wel-box cl-box" style="max-width:620px">
+    <button class="wel-close" id="cl-close" aria-label="Đóng" title="Đóng">✕</button>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <span style="font-size:32px">📜</span>
+      <div>
+        <p class="eyebrow" style="margin:0" id="cl-eyebrow">Nhật Ký Phát Triển & Bản Cập Nhật</p>
+        <h3 style="font-family:var(--font-display);font-size:24px;margin:2px 0 0;color:var(--parchment)" id="cl-title">Lịch Sử Phiên Bản & Tính Năng Mới</h3>
+      </div>
+    </div>
+    <div class="cl-list" id="cl-list" style="display:flex;flex-direction:column;gap:12px;max-height:60vh;overflow-y:auto;padding-right:6px"></div>
+  </div>
+</div>
 <div id="nogl">
   <div class="nogl-box">
     <div style="font-size:38px;margin-bottom:8px">🪐</div>
@@ -584,6 +654,7 @@
     <a href="/dia-hinh" class="brand-contact" style="margin-left:6px;border-color:var(--brass)" title="Phòng Thí Nghiệm Địa Hình Thế Giới 3D">🗺️ Địa Hình 3D</a>
     <button type="button" id="btn-mast-zalo" class="brand-contact" style="margin-left:6px;border-color:rgba(100,181,246,.5);color:#81D4FA;cursor:pointer" title="Cộng đồng Zalo & Tải Cẩm Nang Thiên Văn">💬 Nhóm Zalo</button>
     <button type="button" id="btn-mast-share" class="brand-contact" style="margin-left:6px;border-color:rgba(232,200,122,.4);color:var(--brass);cursor:pointer" title="Chia sẻ website">🚀 Chia sẻ</button>
+    <button type="button" id="btn-ver-badge" class="ver-badge" title="Nhật ký cập nhật / Release Notes">v1.2 <span class="ver-new-dot" id="ver-dot"></span></button>
     <div class="lang-switch" role="group" aria-label="Ngôn ngữ / Language">
       <button class="lang-btn active" id="btn-lang-vi" type="button" title="Tiếng Việt">VN</button>
       <button class="lang-btn" id="btn-lang-en" type="button" title="English (IAU Standard)">EN</button>
@@ -604,6 +675,7 @@
       <dl class="readout" id="d-rows"></dl>
       <button class="solid" id="btn-stand" hidden>Đứng trên Trái Đất</button>
       <button class="ghost" id="btn-xsec" hidden style="width:100%;margin-top:6px;display:none;align-items:center;justify-content:center;gap:6px"><span>🔬</span> <span id="btn-xsec-txt">Cắt Lớp Vùng Lõi</span></button>
+      <button class="ghost" id="btn-geo" hidden style="width:100%;margin-top:6px;display:none;align-items:center;justify-content:center;gap:6px;border-color:rgba(79,195,247,.45);color:#81D4FA"><span>🌊</span> <span id="btn-geo-txt">Trái Đất Sống</span></button>
     </div>
   </section>
 
@@ -629,6 +701,14 @@
     <p class="pnote" style="margin-top:8px;font-size:9.5px;color:var(--brass-dim);line-height:1.4" id="xsec-hint">
       * Click vào từng tầng để xem thành phần địa chất và cơ chế vật lý.
     </p>
+  </aside>
+
+  <aside class="xsec-panel" id="geo-panel" aria-live="polite">
+    <div class="xsec-head">
+      <h3 class="xsec-title"><span>🌊</span> <span id="geo-panel-title">Trái Đất Sống</span></h3>
+      <button class="xsec-close" id="btn-geo-close" title="Đóng bảng Trái Đất Sống" aria-label="Đóng">✕</button>
+    </div>
+    <div id="geo-content"></div>
   </aside>
 
   <aside class="phenom" id="phenom">
@@ -919,6 +999,11 @@ var I18N = {
     xsec_deg_120: "Góc 120°",
     xsec_deg_180: "Bổ đôi 180°",
     xsec_close_tip: "Đóng cắt lớp",
+    geo_btn: "Trái Đất Sống",
+    geo_btn_close: "Đóng Trái Đất Sống",
+    geo_panel_title: "Trái Đất Sống · Địa Cầu Tương Tác",
+    cl_title: "Lịch Sử Phiên Bản & Tính Năng Mới",
+    cl_eyebrow: "Nhật Ký Phát Triển & Bản Cập Nhật",
     hint_orbit: "<b>Kéo</b> để quay · <b>Cuộn</b> để phóng · <b>Nhấn</b> vào thiên thể để tới gần",
     hint_surface: "<b>Kéo</b> để nhìn quanh · <b>Cuộn</b> để phóng như ống nhòm · <b>Esc</b> để quay ra",
     hint_peg: "Nhấn vào <b>Trái Đất, Mặt Trăng, Sao Hỏa, Sao Thủy, Io, Europa, Ganymede, Titan</b> hoặc <b>Triton</b> để đứng lên đó",
@@ -1045,6 +1130,11 @@ var I18N = {
     xsec_deg_120: "120° Cut",
     xsec_deg_180: "180° Half",
     xsec_close_tip: "Close cross-section",
+    geo_btn: "Living Earth",
+    geo_btn_close: "Close Living Earth",
+    geo_panel_title: "Living Earth · Interactive Globe",
+    cl_title: "Changelog & Release Notes",
+    cl_eyebrow: "Version History",
     hint_orbit: "<b>Drag</b> to orbit · <b>Scroll</b> to zoom · <b>Tap/Click</b> a body to focus",
     hint_surface: "<b>Drag</b> to look around · <b>Scroll</b> to zoom binocular · <b>Esc</b> to return to orbit",
     hint_peg: "Tap <b>Earth, Moon, Mars, Mercury, Io, Europa, Ganymede, Titan</b> or <b>Triton</b> to land",
@@ -2912,6 +3002,7 @@ function initGL(){
   };
   buildOrbitLines();
   buildDust();
+  if(window.GEO && window.GEO.init) window.GEO.init(gl);
 }
 /* xích đạo J2000 → hoàng đạo J2000 */
 function eqToEcl(ra, dec){
@@ -3354,6 +3445,12 @@ function drawBody(b, posRel, radius, spin, exposure, occ, sunRel, sunAng, tint, 
 
     // 3. Quả cầu lõi trong 3D phát sáng nóng rực ở tâm (Hình 1 & Hình 2)
     drawInnerCoreOrb(b, posRel, radius, spin, exposure);
+  }
+
+  // ══════════════ MODULE B: TRÁI ĐẤT SỐNG (Living Earth Geo-Overlay) ══════════════
+  if(b.id === "earth" && window.GEO && window.GEO.active){
+    M4.body(mModel, b.frame, spin, radius, b.flat, posRel);
+    window.GEO.draw(mModel, mVP, performance.now() * 0.001);
   }
 }
 function drawAtmoShell(b, posRel, radius, exposure, occ, sunRel, sunAng){
@@ -4149,13 +4246,16 @@ function setSpeed(i){
     x.setAttribute("aria-pressed", j===V.speed?"true":"false"); });
 }
 function closePanels(){
-  ["phenom","tonight","lessons","xsec-panel"].forEach(function(id){
+  ["phenom","tonight","lessons","xsec-panel","geo-panel"].forEach(function(id){
     var el=$(id); if(el) el.classList.remove("open"); });
   ["btn-phenom","btn-tonight","btn-lesson"].forEach(function(id){
     var el=$(id); if(el) el.setAttribute("aria-pressed","false"); });
   var xs=$("btn-xsec");
   if(xs){ xs.classList.remove("solid"); xs.classList.add("ghost"); }
   V.xsec=false;
+  var bg=$("btn-geo");
+  if(bg){ bg.classList.remove("solid"); bg.classList.add("ghost"); }
+  if(window.GEO) window.GEO.active=false;
   document.body.classList.remove("panel");
 }
 
@@ -4257,6 +4357,28 @@ function fillSlab(id){
       xs.hidden=true;
       xs.style.display="none";
       if(V.xsec) closeXsec();
+    }
+  }
+
+  var bg=$("btn-geo");
+  if(bg){
+    if(id === "earth"){
+      bg.hidden=false;
+      bg.style.display="flex";
+      var gTxt = $("btn-geo-txt");
+      if(gTxt){
+        gTxt.textContent = (I18N[LANG] ? (window.GEO && window.GEO.active ? I18N[LANG].geo_btn_close : I18N[LANG].geo_btn) : (window.GEO && window.GEO.active ? "Đóng Trái Đất Sống" : "Trái Đất Sống"));
+      }
+      if(window.GEO && window.GEO.active){
+        bg.classList.remove("ghost"); bg.classList.add("solid");
+        renderGeoPanel();
+      } else {
+        bg.classList.remove("solid"); bg.classList.add("ghost");
+      }
+    } else {
+      bg.hidden=true;
+      bg.style.display="none";
+      if(window.GEO && window.GEO.active) closeGeo();
     }
   }
 
@@ -4387,6 +4509,13 @@ function focusBody(id, keepDist){
       closeXsec();
     }
   }
+  if(window.GEO && window.GEO.active){
+    if(id === "earth"){
+      renderGeoPanel();
+    } else {
+      closeGeo();
+    }
+  }
 }
 window.focusBody = focusBody;
 window.V = V;
@@ -4395,6 +4524,153 @@ window.openXsec = openXsec;
 window.closeXsec = closeXsec;
 window.toggleXsec = toggleXsec;
 window.setXsecAngle = setXsecAngle;
+
+/* ══════════ MODULE B: TRÁI ĐẤT SỐNG & CHANGELOG ══════════ */
+function openGeo(){
+  if(V.focus !== "earth"){
+    focusBody("earth");
+  }
+  if(window.GEO){
+    window.GEO.active = true;
+    if(window.GEO.fetchEarthquakes && (!window.GEO.quakes || window.GEO.quakes.length === 0)){
+      window.GEO.fetchEarthquakes("day");
+    }
+  }
+  var bg = $("btn-geo");
+  if(bg){
+    bg.classList.remove("ghost"); bg.classList.add("solid");
+    var gTxt = $("btn-geo-txt");
+    if(gTxt) gTxt.textContent = (I18N[LANG] ? I18N[LANG].geo_btn_close : "Đóng Trái Đất Sống");
+  }
+  var p = $("geo-panel");
+  if(p) p.classList.add("open");
+  ["phenom", "tonight", "lessons", "xsec-panel"].forEach(function(id){
+    var el = $(id); if(el) el.classList.remove("open");
+  });
+  renderGeoPanel();
+}
+
+function closeGeo(){
+  if(window.GEO) window.GEO.active = false;
+  var bg = $("btn-geo");
+  if(bg){
+    bg.classList.remove("solid"); bg.classList.add("ghost");
+    var gTxt = $("btn-geo-txt");
+    if(gTxt) gTxt.textContent = (I18N[LANG] ? I18N[LANG].geo_btn : "Trái Đất Sống");
+  }
+  var p = $("geo-panel");
+  if(p) p.classList.remove("open");
+}
+
+function toggleGeo(){
+  if(window.GEO && window.GEO.active) closeGeo();
+  else openGeo();
+}
+
+function renderGeoPanel(){
+  if(window.GEO && window.GEO.updatePanelUI){
+    window.GEO.updatePanelUI();
+  }
+}
+
+var CHANGELOG = [
+  {
+    version: "v1.2",
+    date: "2026-09-24",
+    title_vi: "Giai đoạn 2: Trái Đất Sống (Living Earth Geo-Overlay)",
+    title_en: "Phase 2: Living Earth Geo-Overlay & Seismic Telemetry",
+    badge: "Mới nhất / Latest",
+    highlights_vi: [
+      "🌊 <b>Trái Đất Sống 3D</b>: Bổ sung 486 ranh giới mảng kiến tạo toàn cầu (Tectonic Plate Boundaries) và Vành đai lửa Thái Bình Dương (Ring of Fire).",
+      "📡 <b>Dữ liệu Động Đất Thời Gian Thực (USGS Live Feed)</b>: Kết nối trực tiếp API Cục Khảo sát Địa chất Hoa Kỳ, mã hóa màu theo độ sâu chấn tiêu (nông: đỏ <30km, trung bình: cam 30-100km, sâu: tím >100km) kèm sóng chấn động tỏa sáng.",
+      "🌋 <b>Núi Lửa Hoạt Động Toàn Cầu</b>: Bản đồ 22 ngọn núi lửa nguy hiểm bậc nhất thế giới với hiệu ứng nhiệt phát quang rực rỡ.",
+      "🎯 <b>Điều Hướng Máy Bay 3D (Smooth FlyTo)</b>: Nhấp vào bất kỳ trận động đất hoặc núi lửa nào trong danh sách để xoay camera mượt mà tới tâm chấn."
+    ],
+    highlights_en: [
+      "🌊 <b>Living Earth 3D</b>: Overlays 486 global tectonic plate boundaries and the Pacific Ring of Fire onto the spherical globe.",
+      "📡 <b>Real-Time USGS Earthquake Feed</b>: Live telemetry from USGS with depth-coded beacons (<30km red, 30-100km orange, >100km purple) and radiating shockwaves.",
+      "🌋 <b>Global Active Volcanoes</b>: Curated roster of 22 active volcanic hotspots with pulsing heat simmer.",
+      "🎯 <b>Interactive FlyTo Teleport</b>: Click any earthquake or volcano to smoothly orbit and focus directly on the epicenter."
+    ]
+  },
+  {
+    version: "v1.1",
+    date: "2026-09-24",
+    title_vi: "Giai đoạn 1: Bóc Tách Vùng Lõi & Khối Nêm 3D (Core Wedge Lift)",
+    title_en: "Phase 1: Core Exploration & 3D Wedge Explode",
+    badge: "Đã ổn định / Stable",
+    highlights_vi: [
+      "🔥 <b>Mặt Cắt Dung Nham Nóng Chảy 3D</b>: Shader thủ công mô phỏng vân đối lưu Manti và quầng phát sáng cực đẹp cho 12 thiên thể.",
+      "🧩 <b>Thanh Trượt Bóc Tách Khối Nêm (0 - 100%)</b>: Kéo mở khối nêm lát cắt hành tinh bay ra ngoài không gian.",
+      "☀️ <b>Quả Cầu Lõi Sáng Rực</b>: Nhân bên trong phát quang ánh sáng vàng kim xuyên qua khe nứt kiến tạo."
+    ],
+    highlights_en: [
+      "🔥 <b>3D Procedural Magma Shader</b>: Custom shader simulating mantle convection and internal heat glow across 12 celestial bodies.",
+      "🧩 <b>3D Wedge Explode Slider (0 - 100%)</b>: Detach and hover the planetary wedge out into deep space.",
+      "☀️ <b>Incandescent Core Orb</b>: Inner metallic core glowing brilliantly through tectonic fissures."
+    ]
+  },
+  {
+    version: "v1.0",
+    date: "2026-09-20",
+    title_vi: "Thiên Văn Học Hệ Mặt Trời v1.0",
+    title_en: "Solar System Explorer v1.0",
+    badge: "Khởi nguyên / Initial Release",
+    highlights_vi: [
+      "🪐 Mô phỏng quỹ đạo Kepler thực của 8 hành tinh và các vệ tinh chính.",
+      "🔭 Chế độ Đứng trên bề mặt, tính toán nhật thực/nguyệt thực, bảng ngắm sao Tối Nay theo địa điểm Việt Nam.",
+      "🌐 Song ngữ chuẩn IAU (Tiếng Việt & English), đồ họa WebGL2 không phụ thuộc thư viện ngoài."
+    ],
+    highlights_en: [
+      "🪐 Real Keplerian orbital physics for 8 planets and major moons.",
+      "🔭 Surface vantage mode, solar/lunar eclipse forecasting, and Tonight's Sky planner for Vietnam coordinates.",
+      "🌐 IAU bilingual standard (Vietnamese & English), zero-dependency native WebGL2."
+    ]
+  }
+];
+
+function renderChangelog(){
+  var list = $("cl-list");
+  if(!list) return;
+  var lang = (typeof LANG !== "undefined") ? LANG : "vi";
+  list.innerHTML = CHANGELOG.map(function(c){
+    var title = (lang === "en" ? c.title_en : c.title_vi);
+    var items = (lang === "en" ? c.highlights_en : c.highlights_vi);
+    var itemsHtml = items.map(function(it){ return "<li>" + it + "</li>"; }).join("");
+    return '<div class="cl-card">' +
+      '<div class="cl-card-head">' +
+        '<div style="display:flex;align-items:center;gap:8px">' +
+          '<span class="cl-ver-num">' + c.version + '</span>' +
+          '<span class="cl-badge-pill">' + c.badge + '</span>' +
+        '</div>' +
+        '<span class="cl-date">' + c.date + '</span>' +
+      '</div>' +
+      '<div class="cl-tag">' + title + '</div>' +
+      '<ul class="cl-items">' + itemsHtml + '</ul>' +
+    '</div>';
+  }).join("");
+}
+
+function openChangelog(){
+  renderChangelog();
+  var m = $("changelog-modal");
+  if(m) m.style.display = "grid";
+  var dot = $("ver-dot");
+  if(dot) dot.style.display = "none";
+  try { localStorage.setItem("seen_ver_tinh_do", "v1.2"); } catch(e){}
+}
+
+function closeChangelog(){
+  var m = $("changelog-modal");
+  if(m) m.style.display = "none";
+}
+
+window.openGeo = openGeo;
+window.closeGeo = closeGeo;
+window.toggleGeo = toggleGeo;
+window.renderGeoPanel = renderGeoPanel;
+window.openChangelog = openChangelog;
+window.closeChangelog = closeChangelog;
 function wideView(){
   V.focus="sun"; fillSlab("sun");
   if(V.wantPan) V.wantPan=[0,0,0];
@@ -5411,6 +5687,21 @@ if(!GLOK){
       xCls.setAttribute("aria-label", I18N[lang].xsec_close_tip);
     }
     if(V.xsec && V.focus) renderXsecPanel(V.focus);
+
+    // Trái Đất Sống & Changelog
+    var gTitle = $("geo-panel-title");
+    if(gTitle) gTitle.textContent = (lang === "en" ? "Living Earth" : "Trái Đất Sống");
+    var gBtnTxt = $("btn-geo-txt");
+    if(gBtnTxt){
+      var isGActive = window.GEO && window.GEO.active;
+      gBtnTxt.textContent = isGActive ? (lang === "en" ? "Close Living Earth" : "Đóng Trái Đất Sống") : (lang === "en" ? "Living Earth" : "Trái Đất Sống");
+    }
+    var clEyebrow = $("cl-eyebrow");
+    if(clEyebrow) clEyebrow.textContent = (I18N[lang] && I18N[lang].cl_eyebrow) || "Nhật Ký Phát Triển & Bản Cập Nhật";
+    var clTitle = $("cl-title");
+    if(clTitle) clTitle.textContent = (I18N[lang] && I18N[lang].cl_title) || "Lịch Sử Phiên Bản & Tính Năng Mới";
+
+    if(window.GEO && window.GEO.updatePanelUI) window.GEO.updatePanelUI();
     hudClear();
   }
 
@@ -5469,6 +5760,28 @@ if(!GLOK){
       setXsecAngle(parseInt(this.getAttribute("data-angle"), 10));
     });
   });
+
+  /* điều khiển Trái Đất Sống (Living Earth) */
+  var btnGeo = $("btn-geo");
+  if(btnGeo) btnGeo.addEventListener("click", toggleGeo);
+  var btnGeoCls = $("btn-geo-close");
+  if(btnGeoCls) btnGeoCls.addEventListener("click", closeGeo);
+
+  /* nhật ký phiên bản (Changelog modal) */
+  var btnVer = $("btn-ver-badge");
+  if(btnVer) btnVer.addEventListener("click", openChangelog);
+  var btnClClose = $("cl-close");
+  if(btnClClose) btnClClose.addEventListener("click", closeChangelog);
+  var modalCl = $("changelog-modal");
+  if(modalCl) modalCl.addEventListener("click", function(e){
+    if(e.target === modalCl) closeChangelog();
+  });
+  try {
+    if(localStorage.getItem("seen_ver_tinh_do") === "v1.2"){
+      var vDot = $("ver-dot");
+      if(vDot) vDot.style.display = "none";
+    }
+  } catch(e){}
 
   /* bảng Tối nay */
   function renderPlaces(){
