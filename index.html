@@ -1690,8 +1690,15 @@ cv.addEventListener("webglcontextrestored", function(){
   extAni = gl ? gl.getExtension("EXT_texture_filter_anisotropic") : null;
   try { initGL(); resizeGL(); } catch(e){ console.error(e); }
 }, false);
-var gl = cv.getContext("webgl2", {antialias:false, alpha:false, depth:true,
-          powerPreference:"high-performance", preserveDrawingBuffer:false});
+var gl = null;
+try {
+  gl = cv.getContext("webgl2", {antialias:false, alpha:false, depth:true,
+          powerPreference:"high-performance", preserveDrawingBuffer:false})
+    || cv.getContext("webgl2", {antialias:false, alpha:false, depth:true})
+    || cv.getContext("webgl2");
+} catch(e) {
+  try { gl = cv.getContext("webgl2"); } catch(e2){}
+}
 var GLOK = !!gl;
 var extCBF = GLOK ? gl.getExtension("EXT_color_buffer_float") : null;
 var extAni = GLOK ? gl.getExtension("EXT_texture_filter_anisotropic") : null;
@@ -1719,6 +1726,7 @@ function prog(vs, fs, name){
   for(var j=0;j<na;j++){ var a=gl.getActiveAttrib(p,j); p.a[a.name]=gl.getAttribLocation(p,a.name); }
   return p;
 }
+window.prog = prog;
 
 /* ── mesh ── */
 function makeVao(attrs, index){
@@ -1738,6 +1746,7 @@ function makeVao(attrs, index){
   gl.bindVertexArray(null);
   return {vao:vao, count:cnt, indexed:!!index};
 }
+window.makeVao = makeVao;
 function sphereMesh(seg, ring){
   var pos=[], uv=[], idx=[];
   for(var y=0;y<=ring;y++){
@@ -3069,7 +3078,7 @@ function initGL(){
   };
   buildOrbitLines();
   buildDust();
-  if(window.GEO && window.GEO.init) window.GEO.init(gl);
+  if(window.GEO && window.GEO.init) window.GEO.init(gl, prog, makeVao);
 }
 /* xích đạo J2000 → hoàng đạo J2000 */
 function eqToEcl(ra, dec){
@@ -6421,12 +6430,19 @@ if(!GLOK){
   } else {
     try{
       resizeGL();
-      loadImages(function(){ try{ initGL(); startApp(); }catch(e){ console.error(e);
-        $("loading").style.display="none"; $("nogl").style.display="grid"; } });
+      loadImages(function(){
+        try{
+          initGL();
+          startApp();
+        }catch(e){
+          console.error("Application startup error:", e);
+          $("loading").style.display="none";
+          try{ startApp(); }catch(e2){ console.error("startApp fallback error:", e2); }
+        }
+      });
     }catch(err){
-      console.error(err);
+      console.error("Image loading/resize error:", err);
       $("loading").style.display="none";
-      $("nogl").style.display="grid";
     }
   }
   function startApp(){

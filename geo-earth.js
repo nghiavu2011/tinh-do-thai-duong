@@ -132,12 +132,69 @@ void main(){
     lastQuakeFetch: 0,
     selectedItem: null,
 
-    init: function(gl){
+    buildProg: function(vs, fs, name){
+      var gl = this.gl;
+      if(!gl) return null;
+      function sh(type, src){
+        var s = gl.createShader(type);
+        gl.shaderSource(s, src);
+        gl.compileShader(s);
+        if(!gl.getShaderParameter(s, gl.COMPILE_STATUS)){
+          console.error("GEO shader " + name + ":\n" + gl.getShaderInfoLog(s));
+        }
+        return s;
+      }
+      var p = gl.createProgram();
+      gl.attachShader(p, sh(gl.VERTEX_SHADER, vs));
+      gl.attachShader(p, sh(gl.FRAGMENT_SHADER, fs));
+      gl.linkProgram(p);
+      if(!gl.getProgramParameter(p, gl.LINK_STATUS)){
+        console.error("GEO Link " + name + ": " + gl.getProgramInfoLog(p));
+      }
+      p.u = {}; p.a = {};
+      var nu = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+      for(var i = 0; i < nu; i++){
+        var inf = gl.getActiveUniform(p, i);
+        p.u[inf.name] = gl.getUniformLocation(p, inf.name);
+      }
+      var na = gl.getProgramParameter(p, gl.ACTIVE_ATTRIBUTES);
+      for(var j = 0; j < na; j++){
+        var infA = gl.getActiveAttrib(p, j);
+        p.a[infA.name] = gl.getAttribLocation(p, infA.name);
+      }
+      return p;
+    },
+
+    makeVao: function(attrs, index){
+      var gl = this.gl;
+      if(!gl) return null;
+      var vao = gl.createVertexArray();
+      gl.bindVertexArray(vao);
+      attrs.forEach(function(a){
+        var b = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, b);
+        gl.bufferData(gl.ARRAY_BUFFER, a.data, gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(a.loc);
+        gl.vertexAttribPointer(a.loc, a.size, gl.FLOAT, false, 0, 0);
+      });
+      var cnt = 0;
+      if(index){
+        var ib = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, index, gl.STATIC_DRAW);
+        cnt = index.length;
+      }
+      gl.bindVertexArray(null);
+      return { vao: vao, count: cnt, indexed: !!index };
+    },
+
+    init: function(gl, _prog, _makeVao){
       if(this.gl) return;
       this.gl = gl;
+      var pr = _prog || (typeof prog === "function" ? prog : (window.prog || null));
       try {
-        this.progLine = typeof prog === "function" ? prog(GEO_LINE_VS, GEO_LINE_FS, "geoLine") : null;
-        this.progPoint = typeof prog === "function" ? prog(GEO_POINT_VS, GEO_POINT_FS, "geoPoint") : null;
+        this.progLine = pr ? pr(GEO_LINE_VS, GEO_LINE_FS, "geoLine") : this.buildProg(GEO_LINE_VS, GEO_LINE_FS, "geoLine");
+        this.progPoint = pr ? pr(GEO_POINT_VS, GEO_POINT_FS, "geoPoint") : this.buildProg(GEO_POINT_VS, GEO_POINT_FS, "geoPoint");
       } catch(e){
         console.error("GEO shader init error:", e);
       }
@@ -179,7 +236,7 @@ void main(){
       }
 
       this.plateCount = pos.length / 3;
-      this.plateVao = makeVao([
+      this.plateVao = this.makeVao([
         { loc: 0, size: 3, data: new Float32Array(pos) },
         { loc: 1, size: 4, data: new Float32Array(col) }
       ], null);
@@ -208,7 +265,7 @@ void main(){
       }
 
       this.ringCount = pos.length / 3;
-      this.ringVao = makeVao([
+      this.ringVao = this.makeVao([
         { loc: 0, size: 3, data: new Float32Array(pos) },
         { loc: 1, size: 4, data: new Float32Array(col) }
       ], null);
@@ -231,7 +288,7 @@ void main(){
       }
 
       this.volcanoCount = vols.length;
-      this.volcanoVao = makeVao([
+      this.volcanoVao = this.makeVao([
         { loc: 0, size: 3, data: new Float32Array(pos) },
         { loc: 1, size: 4, data: new Float32Array(col) },
         { loc: 2, size: 1, data: new Float32Array(sizes) }
@@ -319,7 +376,7 @@ void main(){
       }
 
       this.quakeCount = this.quakes.length;
-      this.quakeVao = makeVao([
+      this.quakeVao = this.makeVao([
         { loc: 0, size: 3, data: new Float32Array(pos) },
         { loc: 1, size: 4, data: new Float32Array(col) },
         { loc: 2, size: 1, data: new Float32Array(sizes) }
@@ -340,7 +397,7 @@ void main(){
         gl.uniformMatrix4fv(this.progLine.u.uModel, false, mModel);
         gl.uniformMatrix4fv(this.progLine.u.uVP, false, mVP);
         gl.uniform1f(this.progLine.u.uAlpha, 0.85);
-        gl.bindVertexArray(this.plateVao);
+        gl.bindVertexArray(this.plateVao.vao || this.plateVao);
         gl.drawArrays(gl.LINES, 0, this.plateCount);
       }
 
@@ -351,7 +408,7 @@ void main(){
         gl.uniformMatrix4fv(this.progLine.u.uVP, false, mVP);
         var rofAlpha = 0.70 + 0.30 * Math.sin(uTime * 3.0);
         gl.uniform1f(this.progLine.u.uAlpha, rofAlpha);
-        gl.bindVertexArray(this.ringVao);
+        gl.bindVertexArray(this.ringVao.vao || this.ringVao);
         gl.drawArrays(gl.LINES, 0, this.ringCount);
       }
 
@@ -363,7 +420,7 @@ void main(){
         gl.uniform1f(this.progPoint.u.uScale, 1.0);
         gl.uniform1f(this.progPoint.u.uTime, uTime);
         gl.uniform1i(this.progPoint.u.uType, 1); // volcano
-        gl.bindVertexArray(this.volcanoVao);
+        gl.bindVertexArray(this.volcanoVao.vao || this.volcanoVao);
         gl.drawArrays(gl.POINTS, 0, this.volcanoCount);
       }
 
@@ -375,7 +432,7 @@ void main(){
         gl.uniform1f(this.progPoint.u.uScale, 1.0);
         gl.uniform1f(this.progPoint.u.uTime, uTime);
         gl.uniform1i(this.progPoint.u.uType, 0); // earthquake
-        gl.bindVertexArray(this.quakeVao);
+        gl.bindVertexArray(this.quakeVao.vao || this.quakeVao);
         gl.drawArrays(gl.POINTS, 0, this.quakeCount);
       }
 
