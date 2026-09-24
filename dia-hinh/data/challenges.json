@@ -1,0 +1,133 @@
+[
+  {
+    "id": "c1_locate_mariana",
+    "level": "L1",
+    "type": "locate",
+    "title": "Cấp Độ L1 (Locate): Định Vị Vực Thẳm Sâu Nhất Hành Tinh",
+    "instruction": "Hãy xoay quả cầu 3D và CLICK CHÍNH XÁC vào khu vực Rãnh Mariana ở Tây Bắc Thái Bình Dương (nơi sâu gần -11 km).",
+    "target": {
+      "lat": 11.37,
+      "lon": 142.59,
+      "tolerance_deg": 8.0
+    },
+    "feedback_structured": {
+      "observation": "Bạn đã định vị chính xác vị trí Rãnh Mariana ở Tây Bắc Thái Bình Dương.",
+      "evidence": "Tọa độ 11.37°B, 142.59°Đ với Vực thẳm Challenger đạt độ sâu -10,984 m.",
+      "mechanism": "Rãnh hình thành do mảng đại dương Thái Bình Dương cổ, dày và nặng chìm sâu xuống dưới mảng vi lục địa Mariana.",
+      "conclusion": "Đây là điểm sâu nhất trên lớp vỏ Trái Đất, nơi đáy biển sâu hơn chiều cao đỉnh Everest tới hơn 2 km."
+    },
+    "hint": "Gợi ý: Tìm vùng biển phía đông Philippines và nam quần đảo Nhật Bản ở Tây Thái Bình Dương."
+  },
+  {
+    "id": "c2_observe_boundary",
+    "level": "L2",
+    "type": "observe",
+    "title": "Cấp Độ L2 (Observe): Nhận Diện Loại Ranh Giới Mảng Kiến Tạo",
+    "instruction": "Quan sát Rãnh Mariana trên quả cầu 3D và lớp mảng kiến tạo PB2002. Rãnh Mariana nằm dọc theo kiểu ranh giới mảng kiến tạo nào?",
+    "options": [
+      {
+        "t": "Ranh giới tách giãn (Divergent Boundary) — Hai mảng trôi xa nhau tạo vỏ đại dương mới",
+        "c": false
+      },
+      {
+        "t": "Ranh giới hội tụ / Hút chìm (Convergent / Subduction Boundary) — Mảng đại dương chui dưới mảng khác",
+        "c": true,
+        "fb": "Chính xác!"
+      },
+      {
+        "t": "Ranh giới trượt bằng (Transform Boundary) — Hai mảng trượt ngang qua nhau không sinh/hủy vỏ",
+        "c": false
+      },
+      {
+        "t": "Vùng nội mảng ổn định không có ranh giới kiến tạo",
+        "c": false
+      }
+    ],
+    "feedback_structured": {
+      "observation": "Rãnh Mariana là một khe nứt hình cánh cung hẹp và sâu thẳm dưới đáy đại dương.",
+      "evidence": "Dữ liệu PB2002 cho thấy đường ranh giới hội tụ màu đỏ uốn cong với các tâm chấn động đất sâu.",
+      "mechanism": "Mảng Thái Bình Dương hút chìm (Subduction) với góc cắm gần như thẳng đứng vào lớp manti.",
+      "conclusion": "Rãnh Mariana là ranh giới hội tụ hút chìm đại dương - đại dương điển hình nhất hành tinh."
+    }
+  },
+  {
+    "id": "c3_measure_vietnam",
+    "level": "L3",
+    "type": "measure",
+    "title": "Cấp Độ L3 (Measure): Đo Đạc Trắc Địa Chiều Dài Lãnh Thổ Việt Nam",
+    "instruction": "Kích hoạt 'Thước Đo Khoảng Cách', click chọn Điểm A ở Bắc Bộ (Hà Nội ~21.0°B, 105.8°Đ) và Điểm B ở Nam Bộ (TP.HCM ~10.8°B, 106.6°Đ). Khoảng cách đường trắc địa xấp xỉ là bao nhiêu?",
+    "target_dist_km": 1150,
+    "tolerance_km": 250,
+    "feedback_structured": {
+      "observation": "Dải đất hình chữ S của Việt Nam kéo dài trên gần 15 độ vĩ tuyến.",
+      "evidence": "Khoảng cách đường cung lớn (Great Circle Distance) giữa Hà Nội và TP. Hồ Chí Minh đo được khoảng 1,150 km.",
+      "mechanism": "Trắc diện dọc tuyến đo cho thấy sự chuyển tiếp địa hình liên tục: Từ đồng bằng phù sa sông Hồng qua dải núi uốn nếp Trường Sơn hiểm trở đến vùng đất thấp đồng bằng Nam Bộ.",
+      "conclusion": "Khoảng cách địa lý rộng lớn và phân hóa độ cao tạo nên sự khác biệt sâu sắc về khí hậu, thủy văn và sinh thái giữa hai miền Nam - Bắc."
+    },
+    "hint": "Bật công cụ thước đo, click điểm đầu ở Hà Nội và điểm cuối ở TP.HCM trên dải đất Việt Nam."
+  },
+  {
+    "id": "c4_compare_profile",
+    "level": "L4",
+    "type": "compare",
+    "title": "Cấp Độ L4 (Compare): So Sánh Biên Độ Địa Hình Himalaya vs Andes",
+    "instruction": "So sánh trắc diện cắt ngang giữa Dãy Himalaya (châu Á) và Dãy Andes (Nam Mỹ). Điểm khác biệt mấu chốt về hình thái địa hình là gì?",
+    "options": [
+      {
+        "t": "Himalaya có đỉnh cao hơn nhưng bề rộng hẹp hơn, còn Andes thấp hơn nhưng kẹp giữa rãnh biển sâu và đồng bằng thấp",
+        "c": true,
+        "fb": "Chính xác!"
+      },
+      {
+        "t": "Himalaya và Andes có cùng độ sâu rãnh biển sát chân núi",
+        "c": false
+      },
+      {
+        "t": "Andes hoàn toàn nằm sâu trong đất liền không giáp đại dương",
+        "c": false
+      },
+      {
+        "t": "Himalaya có núi lửa hoạt động dày đặc hơn nhiều so với Andes",
+        "c": false
+      }
+    ],
+    "feedback_structured": {
+      "observation": "Himalaya đạt độ cao trên 8,800m kèm cao nguyên Tây Tạng rộng lớn; trong khi Andes dải hẹp trên 6,900m nằm sát ngay Rãnh Peru-Chile sâu -8,000m.",
+      "evidence": "Mặt cắt ngang Andes cho thấy độ dốc cực đại từ đáy rãnh biển lên đỉnh núi chỉ trong cự ly ~250 km (chênh lệch độ cao gần 15 km).",
+      "mechanism": "Andes là đới hút chìm mảng đại dương dưới lục địa sinh núi lửa, còn Himalaya là va chạm lục địa - lục địa làm dày vỏ sâu bên trong đất liền.",
+      "conclusion": "Hình thái địa hình bề mặt phản ánh chính xác bản chất và nguồn gốc cơ học của hai kiểu kiến tạo mảng khác nhau."
+    }
+  },
+  {
+    "id": "c5_explain_andes",
+    "level": "L5",
+    "type": "explain",
+    "title": "Cấp Độ L5 (Explain): Giải Thích Cơ Chế Hình Thành Dãy Andes",
+    "instruction": "Dựa trên các bằng chứng khoa học (lớp mảng PB2002, rãnh biển sâu, chuỗi núi lửa), hãy giải thích tại sao dãy Andes lại hình thành song song với bờ biển Tây Nam Mỹ?",
+    "options": [
+      {
+        "t": "Do mảng Nam Mỹ và châu Phi tách giãn tạo khe nứt",
+        "c": false
+      },
+      {
+        "t": "Do mảng đại dương Nazca hút chìm dưới mảng lục địa Nam Mỹ, gây nén ép uốn nếp và nóng chảy manti tạo magma núi lửa",
+        "c": true,
+        "fb": "Chính xác!"
+      },
+      {
+        "t": "Do dòng trầm tích sông Amazon tích tụ bồi đắp hàng trăm triệu năm",
+        "c": false
+      },
+      {
+        "t": "Do hai mảng lục địa trượt ngang bằng qua nhau dọc đứt gãy",
+        "c": false
+      }
+    ],
+    "feedback_structured": {
+      "observation": "Rãnh đại dương Peru-Chile và chuỗi núi cao Andes chạy song song hoàn hảo dọc rìa phía tây lục địa Nam Mỹ.",
+      "evidence": "Mô hình mảng PB2002 xác nhận mảng Nazca di chuyển về phía đông với vận tốc ~7 cm/năm, đâm vào mảng Nam Mỹ.",
+      "mechanism": "Đới hút chìm (Subduction Zone): Mảng Nazca bị ép chìm xuống manti, giải phóng nước làm giảm nhiệt độ nóng chảy của nêm manti sinh magma trồi lên tạo núi lửa, đồng thời lực nén ngang uốn nếp nâng bổng lớp vỏ lục địa.",
+      "conclusion": "Dãy Andes là mô hình kinh điển của vành đai sinh núi kiểu hút chìm lục địa - đại dương (Cordilleran-type orogen)."
+    }
+  }
+]

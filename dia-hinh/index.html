@@ -1,0 +1,2761 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>N&Mstudio — Địa Hình Thế Giới 3D: Phòng Thí Nghiệm Địa Mạo & GIS</title>
+<meta name="description" content="Phòng thí nghiệm Địa lý tương tác 3D thuộc seri N&Mstudio SolarSystem: mô phỏng địa hình & đáy biển thực nghiệm từ NOAA ETOPO/GEBCO, kiến tạo mảng PB2002, trắc diện cắt ngang 2D-3D, đo khoảng cách trắc địa và phân bậc địa hình Việt Nam. Hotline: +84 985578385.">
+<meta name="theme-color" content="#070A16">
+
+<!-- Favicon SVG đồng bộ Tinh Đồ Thái Dương -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='38' fill='%23E8C87A'/><circle cx='50' cy='50' r='46' fill='none' stroke='%23E8C87A' stroke-width='4' stroke-dasharray='6 6'/></svg>">
+
+<!-- Font chuẩn hoàng gia thiên văn: Cormorant Garamond / Be Vietnam Pro / IBM Plex Mono -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+/* ═══ 1. DESIGN TOKENS (ĐỒNG BỘ TINH ĐỒ THÁI DƯƠNG) ═══ */
+:root{
+  --void:#070A16; --ink:#04060E;
+  --brass:#E8C87A; --brass-dim:#8B7642;
+  --parchment:#F2ECDE; --parchment-dim:#A39C89;
+  --hairline:rgba(232,200,122,.22); --hairline-soft:rgba(232,200,122,.11);
+  --panel:rgba(7,10,22,.88);
+  --font-display:"Cormorant Garamond","Times New Roman",serif;
+  --font-ui:"Be Vietnam Pro","Segoe UI",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,monospace;
+  --accent-cyan:#00ccee; --accent-red:#ff5252; --accent-green:#3dd68c; --accent-yellow:#ffb300;
+  --r:4px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--void);color:var(--parchment);font-family:var(--font-ui);font-weight:300;font-size:12px;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--hairline);border-radius:2px}
+
+/* ═══ 2. CANVAS & KHUNG NHÌN ═══ */
+#c{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
+
+/* ═══ 3. MASTHEAD THƯƠNG HIỆU & OMNIBOX TÌM KIẾM ═══ */
+.masthead{position:absolute;top:0;left:0;max-width:calc(100% - 380px);padding:calc(14px + env(safe-area-inset-top,0px)) 20px 0;z-index:20;pointer-events:none}
+.masthead>*{pointer-events:auto}
+.eyebrow{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--brass-dim);margin:0 0 4px;font-weight:500}
+.wordmark{font-family:var(--font-display);font-weight:600;font-size:clamp(22px,3.2vw,32px);line-height:1;margin:0;color:var(--parchment)}
+.wordmark em{font-style:normal;color:var(--brass)}
+.rule{width:52px;height:1px;background:linear-gradient(90deg,var(--brass),transparent);margin:8px 0 6px}
+.mast-actions{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap}
+.edu-ribbon{display:flex;align-items:center;gap:5px;margin-top:5px;flex-wrap:wrap;max-width:100%}
+.brand-link{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:10px;color:var(--parchment);text-decoration:none;background:rgba(232,200,122,.08);border:1px solid var(--hairline-soft);padding:3px 8px;border-radius:3px;transition:.18s;cursor:pointer}
+.brand-link:hover{background:rgba(232,200,122,.2);color:var(--brass);border-color:var(--hairline)}
+
+/* Thanh tìm kiếm thông minh (Omnibox) */
+.search-box{position:relative;display:inline-flex;align-items:center}
+.search-input{background:rgba(7,10,22,.85);border:1px solid var(--hairline);border-radius:3px;color:var(--parchment);font-family:var(--font-ui);font-size:11px;padding:3px 24px 3px 8px;width:170px;outline:none;transition:.2s}
+.search-input:focus{border-color:var(--brass);width:220px;background:rgba(7,10,22,.96);box-shadow:0 0 10px rgba(232,200,122,.2)}
+.search-results{position:absolute;top:100%;left:0;right:0;background:rgba(8,11,22,.96);border:1px solid var(--hairline);border-radius:3px;max-height:220px;overflow-y:auto;display:none;z-index:30;box-shadow:0 8px 24px rgba(0,0,0,.7);margin-top:3px}
+.search-item{padding:5px 8px;font-size:10.5px;cursor:pointer;display:flex;justify-content:space-between;color:var(--parchment-dim);border-bottom:1px solid var(--hairline-soft)}
+.search-item:hover{background:rgba(232,200,122,.15);color:var(--brass)}
+
+/* ═══ 4. TELEMETRY STRIP (DẢI THÔNG SỐ ĐỊA LÝ ĐỈNH MÀN HÌNH) ═══ */
+#telemetry{position:fixed;top:0;left:0;right:0;z-index:18;display:flex;align-items:center;justify-content:center;gap:10px;padding:calc(4px + env(safe-area-inset-top,0px)) 16px 4px;background:rgba(7,10,22,.88);border-bottom:1px solid var(--hairline-soft);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-family:var(--font-mono);font-size:10px;overflow-x:auto;white-space:nowrap}
+.ti{display:flex;align-items:center;gap:4px}
+.ti-l{color:var(--brass-dim);font-size:9px;text-transform:uppercase;letter-spacing:.08em}
+.ti-v{color:var(--parchment);font-variant-numeric:tabular-nums}
+.ti-sep{color:var(--hairline);padding:0 2px}
+.ti-pill{display:inline-block;padding:1px 6px;background:rgba(232,200,122,.12);border:1px solid var(--hairline);border-radius:2px;font-size:9.5px;color:var(--brass)}
+.ti-pill.real{background:rgba(61,214,140,.12);border-color:rgba(61,214,140,.3);color:var(--accent-green)}
+
+/* ═══ 5. CÁC PANEL KÍNH MỜ (SLABS & DRAWERS) ═══ */
+.slab{position:fixed;z-index:25;background:var(--panel);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--hairline);padding:14px 16px;font-size:11.5px;transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .3s}
+.slab-top{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
+.glyph{width:8px;height:8px;border-radius:50%;flex:none;transform:translateY(-2px);box-shadow:0 0 10px 1px currentColor;background:currentColor}
+.slab-kind{font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass-dim);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}
+.slab-name{font-family:var(--font-display);font-size:22px;font-weight:600;line-height:1.1;margin:0;color:var(--parchment)}
+.slab-close{margin-left:auto;background:none;border:none;color:var(--parchment-dim);font-size:16px;cursor:pointer;line-height:1;transition:.15s}
+.slab-close:hover{color:var(--brass)}
+
+/* Slab Trái: Danh bạ địa lý */
+#left-slab{top:calc(105px + env(safe-area-inset-top,0px));left:20px;width:300px;max-height:calc(100vh - 190px);overflow-y:auto;display:none;z-index:25}
+#left-tab{position:fixed;top:calc(105px + env(safe-area-inset-top,0px));left:0;z-index:26;writing-mode:vertical-rl;background:rgba(7,10,22,.86);border:1px solid var(--hairline);border-left:0;color:var(--brass);font-family:var(--font-mono);font-size:10px;font-weight:500;padding:10px 5px;border-radius:0 4px 4px 0;cursor:pointer;letter-spacing:.08em;transition:.18s;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#left-tab:hover{background:rgba(232,200,122,.2);color:var(--parchment)}
+
+/* Slab Phải: Thẻ Tri Thức 5W & Trắc Diện Cắt Ngang */
+#right-slab{top:calc(78px + env(safe-area-inset-top,0px));right:20px;width:340px;max-height:calc(100vh - 150px);overflow-y:auto;z-index:25}
+#right-slab.collapsed{transform:translateX(calc(100% + 30px));opacity:0;pointer-events:none}
+#right-tab{position:fixed;top:calc(78px + env(safe-area-inset-top,0px));right:0;z-index:26;writing-mode:vertical-rl;background:rgba(7,10,22,.86);border:1px solid var(--hairline);border-right:0;color:var(--brass);font-family:var(--font-mono);font-size:10px;font-weight:500;padding:10px 5px;border-radius:4px 0 0 4px;cursor:pointer;letter-spacing:.08em;transition:.18s;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#right-tab:hover{background:rgba(232,200,122,.2);color:var(--parchment)}
+
+/* Thẻ Tri thức 5W */
+.card-5w{margin-top:8px;display:flex;flex-direction:column;gap:7px}
+.w-box{background:rgba(232,200,122,.04);border:1px solid var(--hairline-soft);border-radius:3px;padding:8px 10px}
+.w-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.w-tag{font-family:var(--font-mono);font-size:8.5px;font-weight:600;letter-spacing:.08em;padding:1px 5px;border-radius:2px;background:rgba(232,200,122,.15);color:var(--brass)}
+.w-label{font-size:10.5px;font-weight:600;color:var(--parchment)}
+.w-body{font-size:11px;color:var(--parchment-dim);line-height:1.55}
+.w-body b{color:var(--parchment);font-weight:500}
+.w-action{margin-top:5px;display:flex;gap:5px}
+
+/* Bảng thông số Readout */
+.readout{margin-top:8px;border-top:1px solid var(--hairline-soft);display:grid}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:4px 0;border-bottom:1px solid var(--hairline-soft)}
+.row dt{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--parchment-dim)}
+.row dd{margin:0;font-family:var(--font-mono);font-size:11px;font-variant-numeric:tabular-nums;text-align:right;color:var(--parchment)}
+.row dd small{font-size:8.5px;color:var(--brass-dim)}
+
+/* Tab Bar */
+.seg-tab{display:flex;border:1px solid var(--hairline-soft);margin-bottom:8px;border-radius:2px;overflow:hidden}
+.seg-tab button{appearance:none;background:none;border:0;border-right:1px solid var(--hairline-soft);color:var(--parchment-dim);font-family:var(--font-ui);font-size:9.5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:6px 4px;cursor:pointer;flex:1;text-align:center;transition:.18s}
+.seg-tab button:last-child{border-right:0}
+.seg-tab button:hover{color:var(--parchment);background:rgba(232,200,122,.08)}
+.seg-tab button.active{color:var(--ink);background:var(--brass);font-weight:600}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* Danh mục Accordion */
+details.accord{border-bottom:1px solid var(--hairline-soft);padding:0}
+details.accord summary{padding:6px 0;font-size:11px;font-weight:500;color:var(--parchment);cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px}
+details.accord summary::before{content:'▸';color:var(--brass-dim);font-size:9px;transition:transform .2s}
+details.accord[open] summary::before{transform:rotate(90deg);color:var(--brass)}
+.landmark-item{display:flex;align-items:center;justify-content:space-between;padding:4px 6px;border-radius:2px;cursor:pointer;transition:.15s;font-size:10.5px;color:var(--parchment-dim)}
+.landmark-item:hover{background:rgba(232,200,122,.12);color:var(--brass)}
+.landmark-item.active{background:rgba(232,200,122,.2);color:var(--brass);font-weight:500}
+.lm-elev{font-family:var(--font-mono);font-size:9.5px;color:var(--brass-dim)}
+
+/* ═══ 6. MẶT CẮT ĐỊA HÌNH 2D THẬT (REAL DEM SAMPLING) ═══ */
+#profile-container{margin-top:10px;background:rgba(4,6,14,.7);border:1px solid var(--hairline-soft);border-radius:3px;padding:8px}
+#profile-canvas{width:100%;height:120px;display:block}
+.profile-meta{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-family:var(--font-mono);font-size:9.5px;color:var(--parchment-dim)}
+.profile-cursor-info{font-family:var(--font-mono);font-size:10px;color:var(--brass);margin-top:4px;text-align:center;min-height:16px}
+.profile-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:6px;padding:4px;background:rgba(232,200,122,.04);border-radius:2px;text-align:center;font-family:var(--font-mono);font-size:9px}
+.profile-stats div span{display:block;color:var(--brass-dim);font-size:8px;text-transform:uppercase}
+
+/* ═══ 7. BẢNG CHÚ GIẢI TẦNG MÀU ĐỘ CAO & ĐÁY BIỂN ═══ */
+#hypso-legend{position:fixed;bottom:85px;left:20px;z-index:15;background:var(--panel);border:1px solid var(--hairline-soft);border-radius:3px;padding:6px 10px;display:none;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.legend-bar{width:180px;height:8px;border-radius:2px;background:linear-gradient(90deg,#040c1e 0%,#0b2246 15%,#17548c 30%,#2fa8b5 45%,#2d7f36 50%,#7ea83b 60%,#e0b853 72%,#964e28 85%,#f0f4f8 100%);margin-bottom:4px}
+.legend-labels{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:8px;color:var(--parchment-dim);width:180px}
+
+/* ═══ 8. CONSOLE ĐIỀU KHIỂN DƯỚI ĐÁY ═══ */
+.console{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:0 12px calc(6px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:5px;pointer-events:none}
+.console>*{pointer-events:auto}
+.controls-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;padding:5px 12px;background:rgba(7,10,22,.88);border:1px solid var(--hairline-soft);border-radius:4px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font-size:10.5px}
+
+.cg{display:flex;align-items:center;gap:5px}
+.cl{color:var(--parchment-dim);font-size:9px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono)}
+.cv{color:var(--brass);font-family:var(--font-mono);font-size:10px;min-width:28px;text-align:right}
+
+/* Switch & Range Sliders */
+.sw{position:relative;width:28px;height:15px;flex-shrink:0}
+.sw input{opacity:0;width:0;height:0;position:absolute}
+.sw b{position:absolute;inset:0;background:rgba(232,200,122,.12);border-radius:8px;cursor:pointer;border:1px solid var(--hairline-soft);transition:.2s}
+.sw b::after{content:'';position:absolute;width:11px;height:11px;left:1px;top:1px;background:var(--brass-dim);border-radius:50%;transition:.2s}
+.sw input:checked+b{background:var(--brass);border-color:var(--brass)}
+.sw input:checked+b::after{transform:translateX(13px);background:var(--ink)}
+
+input[type=range]{-webkit-appearance:none;appearance:none;width:65px;height:3px;background:var(--hairline-soft);border-radius:2px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;background:var(--brass);border-radius:50%;cursor:pointer;box-shadow:0 0 6px rgba(232,200,122,.4)}
+
+/* Nút bấm Ghost & Solid */
+.ghost{appearance:none;font-family:var(--font-ui);font-size:9.5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;cursor:pointer;transition:.16s;border:1px solid var(--hairline-soft);background:none;color:var(--parchment);border-radius:3px}
+.ghost:hover{background:rgba(232,200,122,.12);border-color:var(--brass);color:var(--brass)}
+.ghost.on{background:var(--brass);color:var(--ink);border-color:var(--brass);font-weight:600}
+.sep{width:1px;height:15px;background:var(--hairline-soft);margin:0 2px}
+
+/* ═══ 9. SITE FOOTER ĐỒNG BỘ ═══ */
+.site-footer{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:3px 12px;background:rgba(7,10,22,.86);border:1px solid var(--hairline-soft);border-radius:3px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font-size:9.5px;color:var(--parchment-dim)}
+.footer-left{display:flex;align-items:center;gap:5px}
+.footer-logo{width:15px;height:15px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(232,200,122,.3))}
+.footer-title{font-weight:500;color:var(--parchment);letter-spacing:.02em}
+.footer-phone{color:var(--brass);font-family:var(--font-mono);text-decoration:none;font-weight:500}
+.footer-phone:hover{text-decoration:underline}
+.footer-zalo{display:inline-block;padding:1px 5px;background:rgba(0,136,255,.2);color:#64B5F6;border:1px solid rgba(100,181,246,.3);border-radius:3px;font-size:8.5px;text-decoration:none;font-weight:500}
+.footer-zalo:hover{background:rgba(0,136,255,.35);color:#fff}
+
+/* ═══ 10. MODAL THỬ THÁCH KHÔNG GIAN (SPATIAL CHALLENGE) ═══ */
+#modal-box{position:fixed;inset:0;z-index:100;background:rgba(4,6,14,.85);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:16px}
+#modal-box.show{display:flex}
+.m-card{background:rgba(8,11,22,.96);border:1px solid var(--hairline);border-radius:6px;max-width:560px;width:100%;padding:20px;box-shadow:0 12px 40px rgba(0,0,0,.8)}
+.m-head{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--hairline-soft);padding-bottom:10px;margin-bottom:12px}
+.m-head h2{font-family:var(--font-display);font-size:22px;color:var(--parchment);margin:0}
+.q-type{font-family:var(--font-mono);font-size:9.5px;text-transform:uppercase;color:var(--brass);letter-spacing:.1em;margin-bottom:4px}
+.q-title{font-size:13.5px;font-weight:600;color:var(--parchment);margin-bottom:8px;line-height:1.4}
+.q-desc{font-size:11.5px;color:var(--parchment-dim);line-height:1.6;margin-bottom:14px}
+.q-options{display:grid;grid-template-columns:1fr;gap:7px;margin-bottom:14px}
+.q-btn{appearance:none;background:rgba(232,200,122,.06);border:1px solid var(--hairline-soft);border-radius:4px;padding:8px 10px;color:var(--parchment);font-family:var(--font-ui);font-size:11px;cursor:pointer;text-align:left;transition:.18s}
+.q-btn:hover{background:rgba(232,200,122,.18);border-color:var(--brass);color:var(--brass)}
+.q-btn.correct{background:rgba(61,214,140,.2);border-color:var(--accent-green);color:var(--accent-green);font-weight:600}
+.q-btn.wrong{background:rgba(255,82,82,.2);border-color:var(--accent-red);color:var(--accent-red)}
+.q-feedback{padding:10px;border-radius:4px;font-size:11px;line-height:1.55;display:none}
+.q-feedback.show{display:block}
+
+/* ═══ 11. BANNER HƯỚNG DẪN ĐO ĐẠC / THỬ THÁCH TRÊN QUẢ CẦU ═══ */
+#action-banner{position:fixed;top:45px;left:50%;transform:translateX(-50%);z-index:25;background:rgba(8,11,22,.94);border:1px solid var(--brass);border-radius:4px;padding:8px 16px;display:none;align-items:center;gap:12px;box-shadow:0 6px 20px rgba(0,0,0,.6);font-size:11px}
+#action-banner span{color:var(--parchment)}
+#action-banner b{color:var(--brass)}
+
+/* ═══ 12. LOADING ═══ */
+#loading{position:fixed;inset:0;z-index:999;background:var(--void);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;transition:opacity .5s}
+#loading.done{opacity:0;pointer-events:none}
+.ld-ring{width:36px;height:36px;border:2px solid var(--hairline-soft);border-top-color:var(--brass);border-radius:50%;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ═══ 10B. CÁC THÀNH PHẦN GIÁO DỤC NÂNG CẤP (EDUCATIONAL SYSTEM) ═══ */
+.level-switcher{display:inline-flex;align-items:center;background:rgba(7,10,22,.85);border:1px solid var(--hairline);border-radius:3px;padding:2px;gap:2px}
+.lvl-btn{background:none;border:none;color:var(--parchment-dim);font-family:var(--font-ui);font-size:10px;font-weight:500;padding:3px 8px;border-radius:2px;cursor:pointer;transition:.18s}
+.lvl-btn:hover{color:var(--parchment);background:rgba(232,200,122,.1)}
+.lvl-btn.active{background:var(--brass);color:var(--ink);font-weight:600}
+
+.edu-modal{position:fixed;inset:0;z-index:100;background:rgba(4,6,14,.88);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:16px}
+.edu-modal.show{display:flex}
+.m-card.wide{max-width:680px}
+
+/* Onboarding */
+.ob-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.ob-btn{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(232,200,122,.05);border:1px solid var(--hairline-soft);border-radius:4px;color:var(--parchment);cursor:pointer;text-align:left;transition:.2s}
+.ob-btn:hover{background:rgba(232,200,122,.18);border-color:var(--brass);transform:translateY(-1px)}
+.ob-icon{font-size:22px;flex-shrink:0}
+.ob-text b{display:block;font-size:12px;color:var(--brass);margin-bottom:3px}
+.ob-text small{display:block;font-size:10px;color:var(--parchment-dim);line-height:1.4}
+
+/* Guided Lessons */
+.lesson-nav{display:flex;gap:4px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;border-bottom:1px solid var(--hairline-soft)}
+.l-tab{background:rgba(232,200,122,.06);border:1px solid var(--hairline-soft);border-radius:3px;padding:4px 8px;font-size:10px;color:var(--parchment-dim);cursor:pointer;white-space:nowrap;transition:.18s}
+.l-tab.active{background:var(--brass);color:var(--ink);font-weight:600;border-color:var(--brass)}
+.lesson-step{border-left:2px solid var(--hairline-soft);padding-left:12px;margin-bottom:12px;position:relative}
+.lesson-step.active{border-left-color:var(--brass)}
+.step-badge{font-family:var(--font-mono);font-size:9px;color:var(--brass);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px}
+.step-content{font-size:11.5px;color:var(--parchment);line-height:1.55}
+.step-action{margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
+
+/* Deep Time Timeline */
+.timeline-bar{display:flex;justify-content:space-between;position:relative;margin:24px 10px 16px}
+.timeline-bar::before{content:'';position:absolute;top:50%;left:0;right:0;height:2px;background:var(--hairline-soft);z-index:1}
+.timeline-node{position:relative;z-index:2;background:var(--ink);border:2px solid var(--hairline);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-family:var(--font-mono);color:var(--parchment-dim);cursor:pointer;transition:.2s}
+.timeline-node:hover,.timeline-node.active{border-color:var(--brass);color:var(--brass);background:rgba(232,200,122,.15);box-shadow:0 0 10px rgba(232,200,122,.3);transform:scale(1.1)}
+.t-info{background:rgba(232,200,122,.04);border:1px solid var(--hairline-soft);border-radius:4px;padding:12px;font-size:11.5px;line-height:1.6}
+
+/* Planet Scale */
+.scale-comp{background:rgba(232,200,122,.04);border:1px solid var(--hairline-soft);border-radius:4px;padding:12px;margin-top:10px}
+.scale-bar-box{position:relative;height:24px;background:rgba(232,200,122,.08);border-radius:3px;margin:14px 0 8px;display:flex;align-items:center;padding:0 8px}
+.scale-fill{height:8px;background:linear-gradient(90deg,var(--accent-cyan),var(--brass),var(--accent-red));border-radius:2px}
+
+/* Case Studies Grid (Systems & History) */
+.case-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.case-card{background:rgba(232,200,122,.04);border:1px solid var(--hairline-soft);border-radius:4px;padding:10px;display:flex;flex-direction:column;justify-content:space-between}
+.case-card h4{font-size:12px;color:var(--brass);margin-bottom:4px}
+.case-card p{font-size:10.5px;color:var(--parchment-dim);line-height:1.5;margin-bottom:8px}
+
+/* Structured Feedback */
+.fb-block{display:flex;flex-direction:column;gap:5px;margin-top:6px;font-size:11px}
+.fb-item{background:rgba(0,0,0,.25);padding:6px 8px;border-radius:3px;border-left:2px solid var(--brass)}
+
+/* Compare Table */
+.cmp-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:11px}
+.cmp-table th,.cmp-table td{border:1px solid var(--hairline-soft);padding:6px 8px;text-align:left}
+.cmp-table th{background:rgba(232,200,122,.08);color:var(--brass);font-weight:600}
+
+@media(max-width:768px){
+  .masthead{padding:10px 12px 0}
+  .wordmark{font-size:19px}
+  #left-slab{width:260px;left:8px;top:90px}
+  #right-slab{width:280px;right:8px;top:40px}
+  .controls-bar{gap:4px 6px;padding:4px 8px}
+  #telemetry{font-size:9px;gap:6px;padding:2px 8px}
+  .search-input{width:120px}
+  .search-input:focus{width:160px}
+  .ob-grid,.case-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOADING ═══ -->
+<div id="loading">
+  <div class="ld-ring"></div>
+  <p style="font-family:var(--font-mono);font-size:11px;color:var(--parchment-dim)">Đang nạp dữ liệu địa hình thực nghiệm (NOAA ETOPO / PB2002)…</p>
+</div>
+
+<!-- ═══ ACTION BANNER HƯỚNG DẪN ═══ -->
+<div id="action-banner">
+  <span id="banner-text">Đang ở chế độ đo: Click điểm A trên quả cầu...</span>
+  <button class="ghost" onclick="cancelCurrentAction()">Hủy bỏ</button>
+</div>
+
+<!-- ═══ DẢI TELEMETRY ĐỊA LÝ ĐỈNH MÀN HÌNH ═══ -->
+<div id="telemetry">
+  <div class="ti"><span class="ti-l">Tâm ngắm</span><span class="ti-v" id="tel-coord">27.99°B, 86.93°Đ</span></div><span class="ti-sep">·</span>
+  <div class="ti"><span class="ti-l">Độ cao/Độ sâu</span><span class="ti-v" id="tel-elev">+8,849 m</span></div><span class="ti-sep">·</span>
+  <div class="ti"><span class="ti-l">Phóng đại VE</span><span class="ti-pill" id="tel-ve">12× (Sư phạm)</span></div><span class="ti-sep">·</span>
+  <div class="ti"><span class="ti-l">Địa mạo</span><span class="ti-v" id="tel-type">Núi uốn nếp trẻ</span></div>
+  <span class="ti-sep lab-only" style="display:none">·</span>
+  <div class="ti lab-only" style="display:none"><span class="ti-l">Mảng</span><span class="ti-v" id="tel-plate">Ấn Độ ↔ Á-Âu</span></div>
+  <span class="ti-sep lab-only" style="display:none">·</span>
+  <div class="ti lab-only" style="display:none"><span class="ti-l">Độ phân giải</span><span class="ti-v">0.5° (720×360)</span></div>
+  <span class="ti-sep lab-only" style="display:none">·</span>
+  <div class="ti lab-only" style="display:none"><span class="ti-l">FPS</span><span class="ti-v" id="tel-fps">60</span></div>
+</div>
+
+<!-- ═══ MASTHEAD THƯƠNG HIỆU & OMNIBOX ═══ -->
+<div class="masthead">
+  <div class="eyebrow">N&Mstudio · Seri Hành Tinh</div>
+  <h1 class="wordmark">Địa Hình <em>Thế Giới 3D</em></h1>
+  <div class="rule"></div>
+  
+  <div class="mast-actions">
+    <!-- Level Switcher 3 Cấp Độ Tuổi -->
+    <div class="level-switcher" role="radiogroup" aria-label="Cấp độ học tập">
+      <button class="lvl-btn active" id="btn-lvl-explore" onclick="setLearningLevel('explore')" title="Cấp 1: Khám phá (Lớp 6–7)">🌍 Khám phá</button>
+      <button class="lvl-btn" id="btn-lvl-understand" onclick="setLearningLevel('understand')" title="Cấp 2: Giải thích (Lớp 8–9)">💡 Giải thích</button>
+      <button class="lvl-btn" id="btn-lvl-lab" onclick="setLearningLevel('lab')" title="Cấp 3: Phòng thí nghiệm (Lớp 10–12+)">🔬 Phòng thí nghiệm</button>
+    </div>
+
+    <!-- Nút trở về Đài Quan Sát Tổng Thể -->
+    <a href="../index.html" class="brand-link" title="Mở Đài Quan Sát Hệ Mặt Trời">
+      <span>🌌</span> Tinh Đồ Thái Dương
+    </a>
+    <a href="../earth.html" class="brand-link" title="Mở Chuyên Đề Tự Quay & 4 Mùa">
+      <span>☀️</span> Trái Đất & 4 Mùa
+    </a>
+    <button class="brand-link" onclick="resetView()" title="Đặt lại góc nhìn Trái Đất về Việt Nam & Châu Á">
+      <span>🧭</span> Reset View
+    </button>
+
+    <!-- Omnibox tìm kiếm địa danh -->
+    <div class="search-box">
+      <input type="text" class="search-input" id="search-input" placeholder="🔍 Tìm kiếm địa danh..." aria-label="Tìm kiếm địa danh trên quả cầu 3D" oninput="onSearchInput(this.value)">
+      <div class="search-results" id="search-results"></div>
+    </div>
+
+    <!-- Chọn nhanh chuyên đề Việt Nam & Lát cắt -->
+    <select class="mast-select" id="sel-transect" aria-label="Chọn chuyên đề địa lý Việt Nam hoặc lát cắt trắc diện" onchange="onTransectSelect(this.value)" style="appearance:none;background:rgba(7,10,22,.85);border:1px solid var(--hairline);border-radius:3px;color:var(--parchment);font-family:var(--font-ui);font-size:10.5px;padding:3px 8px;cursor:pointer;outline:none">
+      <option value="">🇻🇳 Chuyên đề Địa lý Việt Nam & Lát cắt...</option>
+      <option value="vn_north">🇻🇳 Bắc Bộ: Tây Bắc ➔ Fansipan ➔ ĐB Sông Hồng ➔ Vịnh Bắc Bộ</option>
+      <option value="vn_central">🇻🇳 Trung Bộ: Lào ➔ Ngọc Linh (Trường Sơn) ➔ Duyên hải ➔ Biển Đông</option>
+      <option value="vn_south">🇻🇳 Nam Bộ: Tây Nguyên (Lâm Viên) ➔ Đông Nam Bộ ➔ ĐB Sông Cửu Long</option>
+      <option value="everest">🏔️ Nóc nhà thế giới: Vịnh Bengal ➔ Everest ➔ Tây Tạng ➔ Tarim</option>
+      <option value="mariana">🌊 Vực thẳm sâu nhất: Đảo Guam ➔ Vực Challenger (-10,984m)</option>
+      <option value="andes">🌎 Dãy Andes: Rãnh Peru-Chile ➔ Aconcagua ➔ Đồng bằng Pampas</option>
+      <option value="mid_atlantic">🌋 Sống núi giữa Đại Tây Dương: Nam Mỹ ➔ Khe nứt tách giãn ➔ Châu Phi</option>
+      <option value="three_step">🇨🇳 Địa hình 3 bậc thang Đông Á: Tây Tạng ➔ Tứ Xuyên ➔ Đồng bằng Trường Giang ➔ Biển Hoa Đông</option>
+    </select>
+
+  </div>
+
+  <!-- CÁC CÔNG CỤ GIÁO DỤC TƯƠNG TÁC (EDU RIBBON) -->
+  <div class="edu-ribbon">
+    <button class="brand-link" onclick="openLessonsModal()" title="5 bài học mẫu chuẩn sư phạm 3–6 phút">
+      <span>📚</span> Bài Học (5)
+    </button>
+    <button class="brand-link" onclick="openCompareModal()" title="So sánh địa mạo giữa hai vùng">
+      <span>⚖️</span> So Sánh
+    </button>
+    <button class="brand-link" onclick="openDeepTimeModal()" title="Thời gian Trái Đất: Tiến trình kiến tạo Himalaya">
+      <span>⏳</span> Thời Gian
+    </button>
+    <button class="brand-link" onclick="openPlanetModal()" title="Quy mô hành tinh: So sánh độ gồ ghề với bán kính 6,371 km">
+      <span>🌐</span> Hành Tinh
+    </button>
+    <button class="brand-link" onclick="openSystemsModal()" title="Địa hình & Hệ Trái Đất: Khí hậu, sông ngòi, gió mùa">
+      <span>🌦</span> Hệ Trái Đất
+    </button>
+    <button class="brand-link" onclick="openHistoryModal()" title="Địa hình & Lịch sử Con người: Nile, Lưỡng Hà, Hoàng Hà, Mê Kông">
+      <span>🏺</span> Lịch Sử
+    </button>
+    <button class="brand-link" onclick="openChallengeModal()" title="5 cấp độ thử thách tư duy không gian (L1–L5)">
+      <span>🏆</span> Thử Thách
+    </button>
+    <button class="brand-link" onclick="openProvenanceModal()" title="Nguồn gốc dữ liệu NOAA ETOPO, PB2002, độ phân giải và giới hạn">
+      <span>ⓘ</span> Nguồn Dữ Liệu
+    </button>
+  </div>
+</div>
+
+<!-- Nút Tab mở Slab trái -->
+<div id="left-tab" onclick="toggleLeftSlab()">☰ DANH BẠ ĐỊA MẠO</div>
+
+<!-- ═══ SLAB TRÁI: DANH BẠ ĐỊA MẠO HỌC (VIỆT NAM & THẾ GIỚI) ═══ -->
+<div id="left-slab" class="slab">
+  <div class="slab-top">
+    <div class="glyph" style="color:var(--brass)"></div>
+    <div class="slab-kind">Cơ Sở Dữ Liệu Địa Mạo</div>
+    <button class="slab-close" aria-label="Đóng danh bạ địa mạo" onclick="toggleLeftSlab()">✕</button>
+  </div>
+  <h3 class="slab-name">Khám Phá Địa Hình</h3>
+  
+  <div class="seg-tab" style="margin-top:6px">
+    <button class="active" id="btn-subtab-vn" onclick="switchLeftSubtab('vn')">🇻🇳 Việt Nam (9)</button>
+    <button id="btn-subtab-world" onclick="switchLeftSubtab('world')">🌍 Thế Giới (27)</button>
+  </div>
+
+  <div id="vietnam-list">
+    <!-- Render động 9 vùng địa mạo Việt Nam -->
+  </div>
+  <div id="landmarks-list" style="display:none">
+    <!-- Render động từ data/landmarks.json -->
+  </div>
+</div>
+
+<!-- Nút Tab mở Slab phải -->
+<div id="right-tab" onclick="toggleRightSlab()">📊 TRẮC DIỆN & TRI THỨC 5W</div>
+
+<!-- ═══ SLAB PHẢI: THẺ TRI THỨC 5W & MẶT CẮT NGANG THỰC NGHIỆM ═══ -->
+<div id="right-slab" class="slab">
+  <div class="slab-top">
+    <div class="glyph" style="color:var(--accent-cyan)" id="p-glyph"></div>
+    <div class="slab-kind" id="p-kind">Khảo Sát Địa Mạo</div>
+    <button class="slab-close" aria-label="Đóng bảng trắc diện và tri thức" onclick="toggleRightSlab()">✕</button>
+  </div>
+  <h3 class="slab-name" id="p-name">Đỉnh Everest</h3>
+
+  <div class="seg-tab">
+    <button class="active" onclick="switchRightTab('tab-5w', this)">Thẻ Tri Thức 5W</button>
+    <button onclick="switchRightTab('tab-profile', this)">Mặt Cắt Ngang 2D</button>
+    <button onclick="switchRightTab('tab-measure', this)">Thước Đo A–B</button>
+    <button onclick="switchRightTab('tab-compare', this)">So Sánh</button>
+  </div>
+
+  <!-- TAB 1: THẺ TRI THỨC 5W (TƯƠNG TÁC SƯ PHẠM) -->
+  <div id="tab-5w" class="tab-content active">
+    <div class="readout">
+      <div class="row"><dt>Tọa độ trắc địa</dt><dd id="rw-coord">27.9881° B, 86.9250° Đ</dd></div>
+      <div class="row"><dt>Độ cao / Độ sâu</dt><dd id="rw-elev">+8,848.86 m <small>(VERIFIED)</small></dd></div>
+      <div class="row"><dt>Dạng địa mạo</dt><dd id="rw-type">Núi uốn nếp trẻ</dd></div>
+      <div class="row"><dt>Mảng kiến tạo</dt><dd id="rw-plate">Mảng Ấn Độ ↔ Mảng Á-Âu</dd></div>
+      <div class="row"><dt>Điểm đối cực</dt><dd id="rw-antipode" style="color:var(--accent-cyan);cursor:pointer" onclick="flyToAntipode()" title="Bấm để bay xuyên tâm Trái Đất sang điểm đối xứng">--</dd></div>
+    </div>
+
+    <div class="card-5w" id="card-5w-body">
+      <div class="w-box">
+        <div class="w-head"><span class="w-tag">WHERE?</span><span class="w-label">Vị trí địa lý</span></div>
+        <div class="w-body" id="w-where">Nằm trên biên giới giữa Nepal và Tây Tạng (Trung Quốc), thuộc dãy Himalaya.</div>
+        <div class="w-action"><button class="ghost" onclick="flyToActiveLandmark()">🎯 Bay đến vị trí</button></div>
+      </div>
+      <div class="w-box">
+        <div class="w-head"><span class="w-tag">WHAT?</span><span class="w-label">Bản chất địa hình</span></div>
+        <div class="w-body" id="w-what">Đỉnh núi cao nhất trên đất liền Trái Đất, đỉnh phủ băng tuyết vĩnh cửu.</div>
+        <div class="w-action"><button class="ghost" onclick="openActiveTransect()">📈 Xem lát cắt trắc diện 2D</button></div>
+      </div>
+      <div class="w-box">
+        <div class="w-head"><span class="w-tag">WHY THERE?</span><span class="w-label">Cơ chế kiến tạo</span></div>
+        <div class="w-body" id="w-why">Khoảng 50–60 triệu năm trước, mảng Ấn Độ bắt đầu va chạm và xô húc vào mảng Á-Âu, làm dày lớp vỏ lục địa lên khoảng 60–80 km ở nhiều khu vực của cao nguyên Tây Tạng.</div>
+        <div class="w-action"><button class="ghost" onclick="focusTectonicLayer()">🌋 Xem Bằng Chứng Kiến Tạo</button></div>
+      </div>
+      <div class="w-box">
+        <div class="w-head"><span class="w-tag">WHY CARE?</span><span class="w-label">Ý nghĩa sinh thái & nhân sinh</span></div>
+        <div class="w-body" id="w-care">Hệ thống núi cao Himalaya–Tây Tạng và các vùng núi cao châu Á đóng vai trò quan trọng đối với nhiều lưu vực sông lớn, nơi hơn một tỷ người sinh sống; đồng thời là bức tường chắn gió mùa định hình khí hậu toàn lục địa châu Á.</div>
+      </div>
+      <div class="w-box">
+        <div class="w-head"><span class="w-tag">WHAT IF?</span><span class="w-label">Tư duy phản biện & Câu hỏi mở</span></div>
+        <div class="w-body" id="w-whatif">Nếu Himalaya–Tây Tạng thấp hơn đáng kể, cấu trúc hoàn lưu khí quyển và phân bố lượng mưa tại châu Á có thể khác hiện nay. Bạn dự đoán vùng nào ở châu Á sẽ chịu tác động lớn nhất?</div>
+        <div class="w-action"><button class="ghost" onclick="toggleScaleContrast()">⚖️ Đối soát 1× vs 12×</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: SO SÁNH ĐỊA MẠO (EDUCATIONAL COMPARE) -->
+  <div id="tab-compare" class="tab-content">
+    <p style="font-size:10.5px;color:var(--parchment-dim);margin-bottom:8px">So sánh trực quan các cặp địa mạo kinh điển để hiểu rõ cơ chế và quy mô:</p>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <button class="ghost on" onclick="applyComparePreset('everest_fansipan')">🏔️ Everest (+8,849m) vs Fansipan (+3,147m)</button>
+      <button class="ghost" onclick="applyComparePreset('himalaya_andes')">🌎 Himalaya (Va chạm) vs Andes (Hút chìm)</button>
+      <button class="ghost" onclick="applyComparePreset('tibet_taynguyen')">🏞️ Tây Tạng (+4,500m) vs Tây Nguyên (+800m)</button>
+      <button class="ghost" onclick="applyComparePreset('redriver_mekong')">🌾 ĐB Sông Hồng (Có đê) vs ĐB Sông Cửu Long (Lũ tự nhiên)</button>
+    </div>
+    <div id="compare-result" style="margin-top:10px"></div>
+  </div>
+
+  <!-- TAB 2: MẶT CẮT NGANG THỰC NGHIỆM (REAL DEM SAMPLING) -->
+  <div id="tab-profile" class="tab-content">
+    <button class="ghost on" style="width:100%;margin-bottom:8px;padding:6px 10px;background:rgba(0,204,238,.12);border-color:var(--accent-cyan);color:var(--accent-cyan);font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer" onclick="start3DMeasureMode()" title="Click 2 điểm bất kỳ trên quả cầu 3D để tạo mặt cắt thực tế">
+      <span>🎯</span> Chỉ Định 2 Điểm Trên 3D Để Cắt Lát
+    </button>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <span style="font-size:10px;color:var(--brass);font-weight:600" id="prof-title">Trắc diện: Vịnh Bengal ➔ Everest ➔ Tarim</span>
+    </div>
+    <div id="profile-container">
+      <canvas id="profile-canvas"></canvas>
+      <div class="profile-cursor-info" id="prof-cursor">Rê chuột trên biểu đồ để dò cao độ đồng bộ trên quả cầu 3D</div>
+      <div class="profile-meta">
+        <span id="prof-start">Điểm A</span>
+        <span id="prof-end">Điểm B</span>
+      </div>
+      <div class="profile-stats">
+        <div><span>Khoảng cách</span><b id="prof-dist">-- km</b></div>
+        <div><span>Cao độ cực đại</span><b id="prof-max">-- m</b></div>
+        <div><span>Độ sâu cực đại</span><b id="prof-min">-- m</b></div>
+      </div>
+    </div>
+    <div style="margin-top:8px;font-size:10px;color:var(--parchment-dim);line-height:1.5">
+      💡 <b>Thực nghiệm khoa học:</b> Lát cắt được hiển thị trực tiếp bằng <b>đường ruy-băng 3D trên quả cầu</b> và lấy mẫu từ <b>NOAA ETOPO & GEBCO (720×360)</b> dọc theo đường cung lớn (Great Circle).
+    </div>
+  </div>
+
+  <!-- TAB 3: THƯỚC ĐO KHOẢNG CÁCH A–B (MEASUREMENT ENGINE) -->
+  <div id="tab-measure" class="tab-content">
+    <button class="ghost on" style="width:100%;margin-bottom:8px;padding:6px 10px;background:rgba(0,204,238,.12);border-color:var(--accent-cyan);color:var(--accent-cyan);font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer" onclick="start3DMeasureMode()" title="Click 2 điểm bất kỳ trên quả cầu 3D để đo khoảng cách">
+      <span>🎯</span> Chỉ Định 2 Điểm Trên 3D Để Đo Đạc
+    </button>
+    <p style="font-size:10.5px;color:var(--parchment-dim);margin-bottom:8px">Đo khoảng cách trắc địa thực tế (Great Circle Distance) và trắc diện giữa 2 điểm bất kỳ trên Trái Đất:</p>
+    <div style="display:flex;flex-direction:column;gap:6px;background:rgba(232,200,122,.04);border:1px solid var(--hairline-soft);border-radius:3px;padding:8px">
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--parchment-dim)">Điểm A:</span><b id="m-pt-a" style="font-family:var(--font-mono);color:var(--brass)">Chưa chọn (Click trên quả cầu)</b></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--parchment-dim)">Điểm B:</span><b id="m-pt-b" style="font-family:var(--font-mono);color:var(--brass)">Chưa chọn</b></div>
+      <div style="display:flex;justify-content:space-between;border-top:1px solid var(--hairline-soft);padding-top:4px"><span style="color:var(--parchment-dim)">Khoảng cách:</span><b id="m-dist" style="font-family:var(--font-mono);color:var(--accent-cyan);font-size:12px">-- km</b></div>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <button class="ghost" onclick="resetMeasure()">🧹 Xóa đường đo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BẢNG CHÚ GIẢI TẦNG MÀU ĐỘ CAO (HYPSOMETRIC LEGEND) ═══ -->
+<div id="hypso-legend">
+  <div style="font-size:8.5px;text-transform:uppercase;color:var(--brass-dim);margin-bottom:3px;letter-spacing:.06em">Phân tầng màu độ cao & đáy biển (m)</div>
+  <div class="legend-bar"></div>
+  <div class="legend-labels">
+    <span>-11km</span>
+    <span>-4km</span>
+    <span>-200m</span>
+    <span>0</span>
+    <span>500m</span>
+    <span>2km</span>
+    <span>>5km</span>
+  </div>
+</div>
+
+<!-- ═══ CONSOLE ĐIỀU KHIỂN DƯỚI ĐÁY ═══ -->
+<div class="console">
+  <div class="controls-bar">
+    <!-- Tự quay quả cầu -->
+    <div class="cg">
+      <span class="cl">Tự quay</span>
+      <label class="sw"><input type="checkbox" id="tog-rot" checked><b></b></label>
+      <input type="range" id="spd-rot" min="0" max="5" step="0.1" value="0.5">
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- Phóng đại địa hình thẳng đứng (Vertical Exaggeration) -->
+    <div class="cg">
+      <span class="cl">Độ gồ ghề (VE)</span>
+      <input type="range" id="rng-ve" min="0" max="25" step="0.5" value="12">
+      <span class="cv" id="val-ve">12×</span>
+      <button class="ghost" id="btn-ve-1x" onclick="setVE(1)" title="Trở về tỉ lệ hình học thực tế (1× Physical Scale)">1× Thật</button>
+      <button class="ghost on" id="btn-ve-12x" onclick="setVE(12)" title="Tỉ lệ mô phỏng sư phạm chuẩn (12× Educational Exaggeration)">12× Sư phạm</button>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- 3 Chế độ bản đồ -->
+    <div class="cg">
+      <span class="cl">Lớp phủ:</span>
+      <button class="ghost on" id="btn-tex-sat" onclick="setMapMode('sat')">🛰️ Vệ tinh</button>
+      <button class="ghost" id="btn-tex-hyp" onclick="setMapMode('hyp')">🗺️ Phân tầng màu</button>
+      <button class="ghost" id="btn-tex-nit" onclick="setMapMode('nit')">🌃 Cảnh đêm</button>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- Lớp mảng kiến tạo, vành đai lửa, cọc tiêu & lưới tọa độ -->
+    <div class="cg">
+      <button class="ghost on" id="btn-plates" onclick="togglePlates()">🌋 Mảng PB2002</button>
+      <button class="ghost on" id="btn-rof" onclick="toggleRingOfFire()">🔥 Vành đai lửa</button>
+      <button class="ghost" id="btn-grid" onclick="toggleGrid()">🌐 Lưới tọa độ</button>
+      <button class="ghost on" id="btn-markers" onclick="toggleMarkers()" title="Bật/Tắt cọc tiêu địa danh 3D trên địa cầu">📍 Địa danh</button>
+      <button class="ghost" id="btn-sun" onclick="toggleSun()" title="Bật/Tắt bóng tối ngày đêm theo góc chiếu Mặt Trời">🌗 Ngày/Đêm</button>
+    </div>
+  </div>
+
+  <!-- Site Footer đồng bộ Tinh Đồ Thái Dương -->
+  <footer class="site-footer">
+    <div class="footer-left">
+      <img src="../logo/logo.png" alt="N&Mstudio Logo" class="footer-logo" onerror="this.style.display='none'">
+      <span class="footer-title">N&Mstudio · Tinh Đồ Thái Dương Seri</span>
+    </div>
+    <span class="footer-sep">|</span>
+    <div class="footer-center">
+      <span>Hotline/Zalo:</span>
+      <a href="tel:+84985578385" class="footer-phone">+84 985578385</a>
+      <a href="https://zalo.me/0985578385" target="_blank" rel="noopener" class="footer-zalo">Zalo</a>
+    </div>
+    <span class="footer-sep">|</span>
+    <div class="footer-right">© N&Mstudio. Đồ họa WebGL 3D & Phòng Thí Nghiệm Địa Mạo Học Trái Đất</div>
+  </footer>
+</div>
+
+<!-- ═══ MODAL THỬ THÁCH ĐỊA LÝ KHÔNG GIAN (SPATIAL CHALLENGE) ═══ -->
+<div id="modal-box" role="dialog" aria-modal="true" aria-labelledby="q-title">
+  <div class="m-card">
+    <div class="m-head">
+      <h2>🏆 Thử Thách Địa Lý Không Gian</h2>
+      <button class="slab-close" aria-label="Đóng hộp thoại thử thách địa lý" onclick="closeChallengeModal()">✕</button>
+    </div>
+    <div class="q-type" id="q-type">DẠNG 1: LOCATE (ĐỊNH VỊ KHÔNG GIAN)</div>
+    <div class="q-title" id="q-title">Tìm Vực Thẳm Sâu Nhất Hành Tinh</div>
+    <div class="q-desc" id="q-desc">Hãy xoay quả cầu 3D và CLICK CHÍNH XÁC vào khu vực Rãnh Mariana ở Tây Bắc Thái Bình Dương (nơi sâu gần -11 km).</div>
+    <div class="q-options" id="q-options"></div>
+    <div class="q-feedback" id="q-feedback"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
+      <span id="q-step" style="font-family:var(--font-mono);font-size:10px;color:var(--parchment-dim)">Thử thách 1 / 5</span>
+      <div style="display:flex;gap:6px">
+        <button class="ghost" id="btn-action-q" onclick="performChallengeAction()">🎯 Bắt đầu thao tác trên Globe</button>
+        <button class="ghost" id="btn-next-q" onclick="nextQuestion()" style="display:none">Thử thách tiếp theo ➔</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 1. MODAL ONBOARDING ("BẠN MUỐN KHÁM PHÁ ĐIỀU GÌ?") ═══ -->
+<div id="onboarding-modal" class="edu-modal" role="dialog" aria-modal="true" aria-labelledby="ob-title">
+  <div class="m-card ob-card">
+    <div class="m-head">
+      <h2 id="ob-title">🌟 Chào Mừng Đến Với Phòng Thí Nghiệm Địa Hình 3D</h2>
+      <button class="slab-close" aria-label="Đóng onboarding" onclick="closeOnboarding()">✕</button>
+    </div>
+    <p style="font-size:12px;color:var(--parchment-dim);margin-bottom:12px">Bạn muốn bắt đầu hành trình khám phá Trái Đất từ chủ đề nào?</p>
+    <div class="ob-grid">
+      <button class="ob-btn" onclick="startGuidedLesson(0)">
+        <span class="ob-icon">🌐</span>
+        <div class="ob-text">
+          <b>Trái Đất gồ ghề đến đâu?</b>
+          <small>So sánh tỷ lệ thực 1× và phóng đại 12× so với bán kính hành tinh (6,371 km)</small>
+        </div>
+      </button>
+      <button class="ob-btn" onclick="startGuidedLesson(1)">
+        <span class="ob-icon">🏔️</span>
+        <div class="ob-text">
+          <b>Vì sao có Himalaya?</b>
+          <small>Khám phá vụ va chạm mảng Ấn Độ ↔ Á-Âu và sự dày lên của vỏ lục địa</small>
+        </div>
+      </button>
+      <button class="ob-btn" onclick="startGuidedLesson(3)">
+        <span class="ob-icon">🇻🇳</span>
+        <div class="ob-text">
+          <b>Việt Nam từ núi ra biển</b>
+          <small>Quy luật phân bậc địa hình Tây Bắc ➔ Hoàng Liên Sơn ➔ ĐB Sông Hồng ➔ Vịnh Bắc Bộ</small>
+        </div>
+      </button>
+      <button class="ob-btn" onclick="closeOnboarding()">
+        <span class="ob-icon">🧭</span>
+        <div class="ob-text">
+          <b>Tự do khám phá</b>
+          <small>Tự xoay quả cầu, chọn 27 địa mạo, đo đạc khoảng cách và khảo sát địa hình</small>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 2. MODAL 5 BÀI HỌC MẪU (GUIDED LESSONS) ═══ -->
+<div id="lessons-modal" class="edu-modal" role="dialog" aria-modal="true" aria-labelledby="l-title">
+  <div class="m-card wide">
+    <div class="m-head">
+      <h2 id="l-title">📚 Bài Học Địa Lý Không Gian</h2>
+      <button class="slab-close" aria-label="Đóng bài học" onclick="closeLessonsModal()">✕</button>
+    </div>
+    <div class="lesson-nav" id="lesson-nav">
+      <!-- 5 Tabs bài học -->
+    </div>
+    <div id="lesson-body">
+      <!-- Nội dung bài học hiện tại -->
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 3. MODAL THỜI GIAN TRÁI ĐẤT (DEEP TIME) ═══ -->
+<div id="deeptime-modal" class="edu-modal" role="dialog" aria-modal="true" aria-labelledby="dt-title">
+  <div class="m-card wide">
+    <div class="m-head">
+      <h2 id="dt-title">⏳ Thời Gian Trái Đất — Tiến Trình Himalaya (100 Ma ➔ Nay)</h2>
+      <button class="slab-close" aria-label="Đóng thời gian Trái Đất" onclick="closeDeepTimeModal()">✕</button>
+    </div>
+    <p style="font-size:11.5px;color:var(--parchment-dim);line-height:1.5">Dãy núi cao nhất hành tinh không hình thành trong một ngày, mà là kết quả của một hành trình kiến tạo kéo dài hàng chục triệu năm:</p>
+    
+    <div class="timeline-bar" id="timeline-nodes">
+      <!-- Render 4 mốc: ~100 Ma, ~60-50 Ma, Cenozoic, Hiện tại -->
+    </div>
+    <div class="t-info" id="t-info-content">
+      <!-- Nội dung chi tiết mốc thời gian -->
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 4. MODAL TRÁI ĐẤT NHƯ MỘT HÀNH TINH (EARTH AS A PLANET) ═══ -->
+<div id="planet-modal" class="edu-modal" role="dialog" aria-modal="true" aria-labelledby="pl-title">
+  <div class="m-card">
+    <div class="m-head">
+      <h2 id="pl-title">🌐 Trái Đất Như Một Hành Tinh — Tương Quan Quy Mô</h2>
+      <button class="slab-close" aria-label="Đóng quy mô hành tinh" onclick="closePlanetModal()">✕</button>
+    </div>
+    <p style="font-size:11.5px;color:var(--parchment-dim);line-height:1.5">Con người cảm thấy các ngọn núi cao ngút ngàn và đại dương sâu thăm thẳm, nhưng ở quy mô hành tinh thì sao?</p>
+    
+    <div class="scale-comp">
+      <div style="display:flex;justify-content:space-between;font-size:11px">
+        <span>Bán kính trung bình Trái Đất ($R$)</span>
+        <b style="font-family:var(--font-mono);color:var(--brass)">≈ 6,371 km</b>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-top:4px">
+        <span>Đỉnh Everest (Cao nhất đất liền)</span>
+        <b style="font-family:var(--font-mono);color:var(--accent-green)">+8.85 km (0.14% R)</b>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-top:4px">
+        <span>Vực Mariana (Sâu nhất đáy biển)</span>
+        <b style="font-family:var(--font-mono);color:var(--accent-cyan)">-10.98 km (0.17% R)</b>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-top:6px;border-top:1px solid var(--hairline-soft);padding-top:6px">
+        <span style="font-weight:600">Tổng biên độ cứu cánh (Total Relief)</span>
+        <b style="font-family:var(--font-mono);color:var(--accent-yellow)">≈ 19.83 km (0.31% R)</b>
+      </div>
+
+      <div class="scale-bar-box">
+        <div class="scale-fill" style="width:0.31%"></div>
+        <span style="font-family:var(--font-mono);font-size:9.5px;color:var(--parchment-dim);margin-left:8px">Biên độ địa hình chỉ chiếm 0.31% bán kính Trái Đất</span>
+      </div>
+      
+      <p style="font-size:10.5px;color:var(--parchment-dim);line-height:1.5;margin-top:8px">
+        💡 <b>Sự thật khoa học:</b> Nếu thu nhỏ Trái Đất bằng kích thước một quả bóng bàn hoặc quả bi-a, đầu ngón tay của bạn sẽ khó lòng cảm nhận được độ nhấp nhô của Everest hay Mariana. Vì vậy, trên quả cầu 3D này, chúng tôi cung cấp mức <b>12× Phóng đại Sư phạm</b> để người học dễ dàng nhận diện hình thái địa mạo.
+      </p>
+      
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="ghost" onclick="setVE(1);closePlanetModal()">Trở về 1× Chuẩn vật lý</button>
+        <button class="ghost on" onclick="setVE(12);closePlanetModal()">Bật 12× Phóng đại sư phạm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 5. MODAL ĐỊA HÌNH & HỆ TRÁI ĐẤT (EARTH SYSTEMS) ═══ -->
+<div id="systems-modal" class="edu-modal" role="dialog" aria-modal="true" aria-labelledby="sys-title">
+  <div class="m-card wide">
+    <div class="m-head">
+      <h2 id="sys-title">🌦 Địa Hình & Các Hệ Trái Đất (Tương Tác Tự Nhiên)</h2>
+      <button class="slab-close" aria-label="Đóng hệ Trái Đất" onclick="closeSystemsModal()">✕</button>
+    </div>
+    <p style="font-size:11.5px;color:var(--parchment-dim);line-height:1.5">Địa hình không tồn tại cô lập mà tương tác liên tục với khí quyển, thủy quyển và sinh quyển:</p>
+
+    <div class="case-grid">
+      <div class="case-card">
+        <div>
+          <h4>1. Núi ➔ Hiệu ứng khuất gió (Rain Shadow)</h4>
+          <p>Không khí ẩm gặp sườn núi bị đẩy lên cao, lạnh dần và ngưng tụ gây mưa lớn ở sườn đón gió. Khi vượt qua đỉnh sang sườn khuất gió, không khí khô đi xuống bị nén đoạn nhiệt trở nên khô nóng (Ví dụ: Gió phơn Tây Nam ở Duyên hải miền Trung Việt Nam; sa mạc Atacama phía tây dãy Andes).</p>
+        </div>
+        <button class="ghost" onclick="focusEarthSystem('rain_shadow')">🔍 Xem Vùng Điển Hình (Trường Sơn / Andes)</button>
+      </div>
+
+      <div class="case-card">
+        <div>
+          <h4>2. Núi ➔ Mạng lưới sông ngòi & Châu thổ</h4>
+          <p>Địa hình dốc cao ở thượng nguồn tạo động năng mạnh cho dòng chảy xói mòn và bào mòn đá mẹ, vận chuyển phù sa màu mỡ xuống hạ lưu bồi tụ nên các đồng bằng châu thổ trù phú (Ví dụ: Dãy Hoàng Liên Sơn nuôi dưỡng Sông Hồng; Cao nguyên Tây Tạng khởi nguồn Sông Mê Kông).</p>
+        </div>
+        <button class="ghost" onclick="focusEarthSystem('river')">🔍 Xem Lát Cắt Sông Ngòi (Sông Hồng / Mê Kông)</button>
+      </div>
+
+      <div class="case-card" style="grid-column:1/-1">
+        <div>
+          <h4>3. Cao nguyên ➔ Hoàn lưu gió mùa Châu Á</h4>
+          <p>Khối cao nguyên Tây Tạng đồ sộ (trung bình >4,500m) hấp thụ bức xạ mặt trời vào mùa hè, hoạt động như một 'nguồn nhiệt khổng lồ' đốt nóng tầng đối lưu giữa, tạo ra một vùng áp thấp nhiệt lực mạnh mẽ hút gió mùa tây nam ẩm từ Ấn Độ Dương tràn sâu vào lục địa châu Á.</p>
+        </div>
+        <button class="ghost" onclick="focusEarthSystem('plateau_monsoon')">🔍 Xem Cao Nguyên Tây Tạng</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 6. MODAL ĐỊA HÌNH & LỊCH SỬ CON NGƯỜI (HUMAN HISTORY) ═══ -->
+<div id="history-modal" class="edu-modal" role="dialog" aria-modal="true" aria-labelledby="hist-title">
+  <div class="m-card wide">
+    <div class="m-head">
+      <h2 id="hist-title">🏺 Địa Hình & Lịch Sử Con Người</h2>
+      <button class="slab-close" aria-label="Đóng lịch sử" onclick="closeHistoryModal()">✕</button>
+    </div>
+    <p style="font-size:11.5px;color:var(--parchment-dim);line-height:1.5">
+      Địa hình tạo ra môi trường tự nhiên, mở ra tiềm năng và đặt ra thách thức sinh tồn, nhưng <b>không định đoạt tuyệt đối</b> số phận con người. Các nền văn minh lớn đều ra đời từ sự thích ứng và sáng tạo không ngừng:
+    </p>
+
+    <div class="case-grid">
+      <div class="case-card">
+        <div>
+          <h4>1. Sông Nile & Nền văn minh Ai Cập</h4>
+          <p>Thung lũng sông Nile kẹp giữa sa mạc khô cằn đón nhận lũ định kỳ mang phù sa bồi đắp hàng năm. Nhu cầu đo đạc lại ruộng đất sau mỗi mùa lũ đã kích thích sự phát triển vượt bậc của hình học, lịch pháp và kiến trúc cổ đại.</p>
+        </div>
+        <button class="ghost" onclick="flyToHistoryCase('nile')">🌍 Xem Lưu Vực Sông Nile</button>
+      </div>
+
+      <div class="case-card">
+        <div>
+          <h4>2. Lưỡng Hà (Tigris & Euphrates)</h4>
+          <p>Vùng đồng bằng phù sa giữa hai con sông lớn ở Tây Á đòi hỏi công tác thủy lợi đào kênh dẫn nước quy mô lớn. Yêu cầu tổ chức cộng đồng tưới tiêu đã dẫn tới sự ra đời của các nhà nước thành bang Sumer, bộ luật Hammurabi và chữ viết hình nêm.</p>
+        </div>
+        <button class="ghost" onclick="flyToHistoryCase('mesopotamia')">🌍 Xem Đồng Bằng Lưỡng Hà</button>
+      </div>
+
+      <div class="case-card">
+        <div>
+          <h4>3. Hoàng Hà & Đất Hoàng Thổ</h4>
+          <p>Cao nguyên đất hoàng thổ bở xốp, phì nhiêu giúp nghề nông sơ khai dễ canh tác mà không cần công cụ kim loại phức tạp. Tuy nhiên, sông hay đổi dòng ngập lụt dữ dội đã thôi thúc truyền thống trị thủy và gắn kết cộng đồng sớm của văn minh Trung Hoa.</p>
+        </div>
+        <button class="ghost" onclick="flyToHistoryCase('yellow_river')">🌍 Xem Lưu Vực Hoàng Hà</button>
+      </div>
+
+      <div class="case-card">
+        <div>
+          <h4>4. Sông Mê Kông & Văn minh lúa nước</h4>
+          <p>Dòng chảy dài qua 6 quốc gia kết hợp túi nước tự nhiên Biển Hồ (Tonle Sap) tạo nên chế độ nước điều hòa, nuôi dưỡng nền văn minh lúa nước trù phú với các nét văn hóa chợ nổi và sinh kế thích ứng mùa nước nổi ở ĐB Sông Cửu Long.</p>
+        </div>
+        <button class="ghost" onclick="flyToHistoryCase('mekong')">🌍 Xem Châu Thổ Sông Mê Kông</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 7. MODAL SO SÁNH ĐỊA MẠO (COMPARE MODAL) ═══ -->
+<div id="compare-modal" class="edu-modal" role="dialog" aria-modal="true" aria-labelledby="cmp-title">
+  <div class="m-card wide">
+    <div class="m-head">
+      <h2 id="cmp-title">⚖️ So Sánh Địa Mạo Đối Chiếu</h2>
+      <button class="slab-close" aria-label="Đóng so sánh" onclick="closeCompareModal()">✕</button>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+      <button class="ghost on" id="btn-cmp-1" onclick="selectCompareModalPreset('everest_fansipan')">Everest vs Fansipan</button>
+      <button class="ghost" id="btn-cmp-2" onclick="selectCompareModalPreset('himalaya_andes')">Himalaya vs Andes</button>
+      <button class="ghost" id="btn-cmp-3" onclick="selectCompareModalPreset('tibet_taynguyen')">Tây Tạng vs Tây Nguyên</button>
+      <button class="ghost" id="btn-cmp-4" onclick="selectCompareModalPreset('redriver_mekong')">ĐB Sông Hồng vs ĐB Sông Cửu Long</button>
+    </div>
+    <div id="modal-compare-content">
+      <!-- Bảng so sánh chi tiết -->
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 8. MODAL NGUỒN GỐC DỮ LIỆU & GIỚI HẠN (DATA LITERACY) ═══ -->
+<div id="provenance-modal" class="edu-modal" role="dialog" aria-modal="true" aria-labelledby="prov-title">
+  <div class="m-card">
+    <div class="m-head">
+      <h2 id="prov-title">ⓘ Dữ Liệu Này Đến Từ Đâu? (Data Literacy)</h2>
+      <button class="slab-close" aria-label="Đóng nguồn dữ liệu" onclick="closeProvenanceModal()">✕</button>
+    </div>
+    <div style="font-size:11.5px;line-height:1.6;color:var(--parchment)">
+      <p style="margin-bottom:8px">
+        <b>1. Lưới Cao Độ & Đáy Biển (Unified Relief Grid):</b><br>
+        Web visualization raster: <b>720 × 360</b> (độ phân giải không gian $0.5^\circ \times 0.5^\circ$, tương đương ~55 km tại xích đạo), được tái lấy mẫu (resampled) và nội suy song tuyến từ mô hình địa hình toàn cầu <b>NOAA ETOPO & GEBCO 2024 Calibration</b> kết hợp <b>NASA Blue Marble Topology</b>.
+      </p>
+      <p style="margin-bottom:8px">
+        <b>2. Ranh Giới Mảng Kiến Tạo (PB2002):</b><br>
+        Dữ liệu được số hóa từ mô hình <b>PB2002</b> do nhà địa vật lý <i>Peter Bird</i> công bố năm 2003. Đây là mô hình khoa học tiêu chuẩn dùng để biểu diễn các mảng và ranh giới mảng, không phải là một đường biên tuyệt đối hoàn hảo của tự nhiên.
+      </p>
+      <p style="margin-bottom:8px">
+        <b>3. Giới Hạn Của Dữ Liệu (Limitations):</b><br>
+        Do được tối ưu cho kiến trúc WebGL tĩnh 60fps trên trình duyệt, các địa hình hẹp cục bộ dưới 50 km (như đỉnh núi đá tai mèo hoặc hẻm vực nhỏ) được làm mịn trung bình. Số liệu đỉnh núi chính xác được chuẩn hóa theo các cuộc khảo sát đo đạc thực tế (ví dụ: Everest khảo sát liên hợp Nepal - TQ 2020: 8,848.86 m; Fansipan Cục Đo đạc Bản đồ VN 2019: 3,147.3 m).
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CANVAS WEBGL CHÍNH ═══ -->
+<canvas id="c" role="region" aria-label="Khung nhìn mô phỏng địa hình Trái Đất 3D" tabindex="0"></canvas>
+
+<!-- ═══ THREE.JS MODULES QUA JSDELIVR CDN (CHUẨN VERCEL CSP) ═══ -->
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"}}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+/* ══════════════════════════════════════════════════
+   1. CẤU HÌNH HỆ THỐNG & UNIFIED RELIEF GRID
+   ══════════════════════════════════════════════════ */
+const CFG = {
+  earthR: 2.5,
+  maxDisplacement: 0.18,
+  texBlueMarble: 'https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg',
+  texNight: 'https://unpkg.com/three-globe/example/img/earth-night.jpg',
+  texTopology: 'https://unpkg.com/three-globe/example/img/earth-topology.png',
+  texWater: 'https://unpkg.com/three-globe/example/img/earth-water.png',
+  gridW: 720,
+  gridH: 360
+};
+
+const DEG = Math.PI / 180, RAD = 180 / Math.PI;
+
+// Dữ liệu toàn cục
+let reliefGrid = null;      // Int16Array 720x360
+let landmarksData = [];     // 27 landmarks từ data/landmarks.json
+let tectonicData = null;    // PB2002 data
+let challengesData = [];    // 5 spatial challenges
+let activeLandmark = null;
+
+/* ══════════════════════════════════════════════════
+   2. UNIFIED GEOSAMPLER (HÀM ĐỌC CAO ĐỘ TRUNG TÂM)
+   ══════════════════════════════════════════════════ */
+window.sampleRelief = function(lat, lon) {
+  if (!reliefGrid) return 0;
+  if (typeof lat !== 'number' || typeof lon !== 'number' || isNaN(lat) || isNaN(lon)) return 0;
+  
+  // Chuẩn hóa kinh độ về [-180, 180]
+  lon = ((((lon + 180) % 360) + 360) % 360) - 180;
+  lat = Math.max(-90, Math.min(90, lat));
+
+  // Tọa độ lưới
+  const gx = ((lon + 180) / 360) * (CFG.gridW - 1);
+  const gy = ((90 - lat) / 180) * (CFG.gridH - 1);
+
+  const x0 = Math.floor(gx), x1 = Math.min(CFG.gridW - 1, x0 + 1), dx = gx - x0;
+  const y0 = Math.floor(gy), y1 = Math.min(CFG.gridH - 1, y0 + 1), dy = gy - y0;
+
+  const v00 = reliefGrid[y0 * CFG.gridW + x0] || 0;
+  const v10 = reliefGrid[y0 * CFG.gridW + x1] || 0;
+  const v01 = reliefGrid[y1 * CFG.gridW + x0] || 0;
+  const v11 = reliefGrid[y1 * CFG.gridW + x1] || 0;
+
+  // Nội suy song tuyến (Bilinear Interpolation)
+  const val = (1 - dx) * (1 - dy) * v00 + dx * (1 - dy) * v10 + (1 - dx) * dy * v01 + dx * dy * v11;
+  return Math.round(val);
+};
+
+// Tính khoảng cách Great Circle (Haversine Formula) tính bằng km (Chống NaN khi điểm đối cực)
+window.calcGreatCircleDistance = function(lat1, lon1, lat2, lon2) {
+  if (lat1 === lat2 && lon1 === lon2) return 0;
+  const phi1 = lat1 * DEG, phi2 = lat2 * DEG;
+  const dPhi = (lat2 - lat1) * DEG, dLambda = (lon2 - lon1) * DEG;
+  const a = Math.sin(dPhi / 2) * Math.sin(dPhi / 2) +
+            Math.cos(phi1) * Math.cos(phi2) * Math.sin(dLambda / 2) * Math.sin(dLambda / 2);
+  // Kẹp an toàn trong [0, 1] ngăn căn bậc hai số âm do sai số float
+  const safeA = Math.min(1, Math.max(0, a));
+  const c = 2 * Math.atan2(Math.sqrt(safeA), Math.sqrt(Math.max(0, 1 - safeA)));
+  return Math.round(6371 * c);
+};
+
+/* ══════════════════════════════════════════════════
+   3. KHỞI TẠO WEBGL & THREE.JS SCENE
+   ══════════════════════════════════════════════════ */
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+camera.position.set(0, 1.8, 6.5);
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.minDistance = 3.1;
+controls.maxDistance = 18;
+controls.rotateSpeed = 0.6;
+controls.zoomSpeed = 0.8;
+
+// Nhóm Trái Đất (chứa quả cầu, lưới, mảng kiến tạo, cọc tiêu)
+const earthGroup = new THREE.Group();
+earthGroup.rotation.z = -23.44 * DEG; // Độ nghiêng trục Trái Đất
+scene.add(earthGroup);
+
+// Ánh sáng: Mặc định chiếu sáng toàn cảnh 100% đồng đều mọi góc nhìn (không bóng tối)
+const sunLight = new THREE.DirectionalLight(0xfffaed, 2.2);
+sunLight.position.set(20, 5, 15);
+sunLight.visible = false; // Mặc định tắt để toàn cảnh Trái Đất sáng 100% đồng bộ mọi phía
+scene.add(sunLight);
+
+// Đèn môi trường chính: Sáng trắng 100% đồng đều mọi bán cầu theo yêu cầu quan sát
+const ambientLight = new THREE.AmbientLight(0xffffff, 1.25);
+scene.add(ambientLight);
+
+// Đèn bổ trợ gắn theo camera (Headlight): Giúp các nếp nhăn địa hình 3D luôn sáng rõ và nổi khối từ mọi góc nhìn
+const cameraLight = new THREE.DirectionalLight(0xffffff, 0.4);
+camera.add(cameraLight);
+scene.add(camera);
+
+// Vầng sáng khí quyển (Atmospheric Rim Glow)
+const atmoGeo = new THREE.SphereGeometry(CFG.earthR * 1.018, 64, 64);
+const atmoMat = new THREE.ShaderMaterial({
+  vertexShader: `
+    varying vec3 vNorm;
+    void main() {
+      vNorm = normalize(normalMatrix * normal);
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  fragmentShader: `
+    varying vec3 vNorm;
+    void main() {
+      float intensity = pow(0.65 - dot(vNorm, vec3(0, 0, 1.0)), 2.8);
+      gl_FragColor = vec4(0.3, 0.65, 1.0, 1.0) * intensity * 1.6;
+    }
+  `,
+  blending: THREE.AdditiveBlending,
+  side: THREE.BackSide,
+  transparent: true
+});
+const atmoMesh = new THREE.Mesh(atmoGeo, atmoMat);
+scene.add(atmoMesh);
+
+/* ══════════════════════════════════════════════════
+   4. TẢI DỮ LIỆU & TEXTURES
+   ══════════════════════════════════════════════════ */
+const textureLoader = new THREE.TextureLoader();
+let texSat, texNight, texTopo, texWater, texHypso;
+let earthMat, earthMesh;
+const earthGeo = new THREE.SphereGeometry(CFG.earthR, 256, 128);
+
+// Cọc tiêu địa danh và con trỏ mặt cắt
+const markersGroup = new THREE.Group();
+earthGroup.add(markersGroup);
+
+let cursorMarker;
+const curGeo = new THREE.SphereGeometry(0.038, 16, 16);
+const curMat = new THREE.MeshBasicMaterial({ color: 0xff0055, wireframe: false });
+cursorMarker = new THREE.Mesh(curGeo, curMat);
+cursorMarker.visible = false;
+earthGroup.add(cursorMarker);
+
+// Nhóm đường đo khoảng cách A-B
+const measureGroup = new THREE.Group();
+earthGroup.add(measureGroup);
+
+// Hàm nạp asset an toàn hỗ trợ đa môi trường (Vercel cleanUrls, Local server, Absolute path)
+async function fetchAsset(relPath) {
+  const candidates = [
+    `/Dia%20Hinh%20The%20Gioi%203D/${relPath}`,
+    `./${relPath}`,
+    `${relPath}`,
+    `/${relPath}`
+  ];
+  for (const url of candidates) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) return res;
+    } catch (e) {}
+  }
+  throw new Error(`HTTP 404: Không thể nạp ${relPath}`);
+}
+
+// Khởi chạy nạp đồng bộ dữ liệu
+async function initApplication() {
+  try {
+    // 1. Nạp Unified Relief Grid
+    const resRelief = await fetchAsset('data/relief_grid.bin');
+    const buf = await resRelief.arrayBuffer();
+    if (buf.byteLength % 2 !== 0) {
+      throw new Error(`Dữ liệu relief_grid không hợp lệ (${buf.byteLength} bytes)`);
+    }
+    reliefGrid = new Int16Array(buf);
+
+    // 2. Nạp Landmarks Database
+    const resLm = await fetchAsset('data/landmarks.json');
+    landmarksData = await resLm.json();
+
+    // 3. Nạp Plate Boundaries
+    const resPb = await fetchAsset('data/plate_boundaries.json');
+    tectonicData = await resPb.json();
+
+    // 4. Nạp Challenges
+    const resCh = await fetchAsset('data/challenges.json');
+    challengesData = await resCh.json();
+
+    // 5. Nạp Textures
+    await Promise.all([
+      new Promise(resolve => { texSat = textureLoader.load(CFG.texBlueMarble, resolve); }),
+      new Promise(resolve => { texNight = textureLoader.load(CFG.texNight, resolve); }),
+      new Promise(resolve => { texTopo = textureLoader.load(CFG.texTopology, resolve); }),
+      new Promise(resolve => { texWater = textureLoader.load(CFG.texWater, resolve); })
+    ]);
+
+    createHypsometricTexture();
+    initEarthMesh();
+    initPlateBoundaries();
+    initCoordinateGrid();
+    initLandmarksMarkers();
+
+    // Khởi tạo trắc diện đầu tiên: Everest
+    selectLandmark('everest');
+    renderVietnamList();
+    setLearningLevel('explore');
+
+    // Tự động mở Onboarding chào mừng lần đầu truy cập
+    try {
+      if (!sessionStorage.getItem('nm_topography_onboarded')) {
+        setTimeout(() => { openOnboarding(); }, 600);
+      }
+    } catch(e) {}
+
+    document.getElementById('loading').classList.add('done');
+  } catch (err) {
+    console.error("Lỗi khi nạp dữ liệu địa không gian:", err);
+    document.getElementById('loading').innerHTML = `
+      <p style="color:#ff5252;font-family:var(--font-mono);font-size:12px">⚠️ Không thể nạp dữ liệu địa hình: ${err.message}</p>
+    `;
+  }
+}
+
+// Tạo texture phân tầng màu từ Unified Relief Grid
+function createHypsometricTexture() {
+  const hCanvas = document.createElement('canvas');
+  hCanvas.width = 1024;
+  hCanvas.height = 512;
+  const hCtx = hCanvas.getContext('2d');
+  const outImg = hCtx.createImageData(1024, 512);
+  const oData = outImg.data;
+
+  for (let y = 0; y < 512; y++) {
+    const lat = 90 - (y / 511) * 180;
+    for (let x = 0; x < 1024; x++) {
+      const lon = -180 + (x / 1023) * 360;
+      const elev = sampleRelief(lat, lon);
+      const idx = (y * 1024 + x) * 4;
+
+      if (elev < 0) {
+        // Đáy đại dương (Bathymetry)
+        if (elev < -6000) {
+          oData[idx] = 4; oData[idx+1] = 12; oData[idx+2] = 30; // Rãnh sâu tím đen
+        } else if (elev < -3000) {
+          oData[idx] = 11; oData[idx+1] = 34; oData[idx+2] = 70; // Đồng bằng vực thẳm
+        } else if (elev < -200) {
+          oData[idx] = 23; oData[idx+1] = 84; oData[idx+2] = 140; // Sườn lục địa / Sống núi
+        } else {
+          oData[idx] = 47; oData[idx+1] = 168; oData[idx+2] = 181; // Thềm lục địa nông
+        }
+      } else {
+        // Đất liền (Hypsometric)
+        if (elev < 200) {
+          oData[idx] = 45; oData[idx+1] = 127; oData[idx+2] = 54; // Đồng bằng
+        } else if (elev < 500) {
+          oData[idx] = 126; oData[idx+1] = 168; oData[idx+2] = 59; // Trung du
+        } else if (elev < 1500) {
+          oData[idx] = 224; oData[idx+1] = 184; oData[idx+2] = 83; // Cao nguyên
+        } else if (elev < 3500) {
+          oData[idx] = 150; oData[idx+1] = 78; oData[idx+2] = 40; // Núi cao
+        } else if (elev < 5500) {
+          oData[idx] = 100; oData[idx+1] = 55; oData[idx+2] = 45; // Núi rất cao
+        } else {
+          oData[idx] = 240; oData[idx+1] = 244; oData[idx+2] = 248; // Băng tuyết trắng
+        }
+      }
+      oData[idx+3] = 255;
+    }
+  }
+  hCtx.putImageData(outImg, 0, 0);
+  texHypso = new THREE.CanvasTexture(hCanvas);
+}
+
+function initEarthMesh() {
+  earthMat = new THREE.MeshStandardMaterial({
+    map: texSat,
+    displacementMap: texTopo,
+    displacementScale: (12 / 25) * CFG.maxDisplacement,
+    displacementBias: 0,
+    roughness: 0.85,
+    metalness: 0.05
+  });
+
+  earthMesh = new THREE.Mesh(earthGeo, earthMat);
+  earthGroup.add(earthMesh);
+}
+
+/* ══════════════════════════════════════════════════
+   5. MẢNG KIẾN TẠO PB2002 & VÀNH ĐAI LỬA
+   ══════════════════════════════════════════════════ */
+const platesGroup = new THREE.Group();
+earthGroup.add(platesGroup);
+
+const rofGroup = new THREE.Group();
+earthGroup.add(rofGroup);
+
+function latLonToVec3(lat, lon, r) {
+  const phi = (90 - lat) * DEG;
+  const theta = (lon + 180) * DEG;
+  const x = -(r * Math.sin(phi) * Math.cos(theta));
+  const z = r * Math.sin(phi) * Math.sin(theta);
+  const y = r * Math.cos(phi);
+  return new THREE.Vector3(x, y, z);
+}
+
+function initPlateBoundaries() {
+  if (!tectonicData) return;
+  const rad = CFG.earthR * 1.006;
+
+  // Render các ranh giới mảng PB2002
+  tectonicData.boundaries.forEach(b => {
+    let color = 0xffffff;
+    if (b.type === 'convergent') color = 0xff5252;      // Xô húc (Đỏ)
+    else if (b.type === 'divergent') color = 0x3dd68c;  // Tách giãn (Xanh lục)
+    else if (b.type === 'transform') color = 0xffb300;  // Trượt bằng (Vàng)
+
+    const pts = [
+      latLonToVec3(b.p1[0], b.p1[1], rad),
+      latLonToVec3(b.p2[0], b.p2[1], rad)
+    ];
+    const geom = new THREE.BufferGeometry().setFromPoints(pts);
+    const mat = new THREE.LineBasicMaterial({ color, linewidth: 2, transparent: true, opacity: 0.85 });
+    const line = new THREE.Line(geom, mat);
+    line.userData = { isPlate: true, info: b };
+    platesGroup.add(line);
+  });
+
+  // Render Vành đai lửa Thái Bình Dương (Volcanic & Seismic Belt)
+  const rofPts = tectonicData.ring_of_fire.map(c => latLonToVec3(c[0], c[1], rad * 1.002));
+  const rofGeom = new THREE.BufferGeometry().setFromPoints(rofPts);
+  const rofMat = new THREE.LineDashedMaterial({ color: 0xff3300, dashSize: 0.08, gapSize: 0.04, linewidth: 3 });
+  const rofLine = new THREE.Line(rofGeom, rofMat);
+  rofLine.computeLineDistances();
+  rofGroup.add(rofLine);
+}
+
+/* ══════════════════════════════════════════════════
+   6. LƯỚI TỌA ĐỘ KINH VĨ TUYẾN
+   ══════════════════════════════════════════════════ */
+const gridGroup = new THREE.Group();
+earthGroup.add(gridGroup);
+gridGroup.visible = false;
+
+function initCoordinateGrid() {
+  const r = CFG.earthR * 1.004;
+  const mat = new THREE.LineBasicMaterial({ color: 0xe8c87a, transparent: true, opacity: 0.25 });
+  const matMajor = new THREE.LineBasicMaterial({ color: 0x00ccee, transparent: true, opacity: 0.6 });
+
+  const lats = [0, 23.44, -23.44, 66.56, -66.56];
+  lats.forEach(lat => {
+    const pts = [];
+    for (let lon = -180; lon <= 180; lon += 3) {
+      pts.push(latLonToVec3(lat, lon, r));
+    }
+    const geom = new THREE.BufferGeometry().setFromPoints(pts);
+    gridGroup.add(new THREE.Line(geom, lat === 0 ? matMajor : mat));
+  });
+
+  for (let lon = -180; lon < 180; lon += 30) {
+    const pts = [];
+    for (let lat = -90; lat <= 90; lat += 3) {
+      pts.push(latLonToVec3(lat, lon, r));
+    }
+    const geom = new THREE.BufferGeometry().setFromPoints(pts);
+    gridGroup.add(new THREE.Line(geom, mat));
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   7. CỌC TIÊU ĐỊA DANH 3D & DANH BẠ
+   ══════════════════════════════════════════════════ */
+function initLandmarksMarkers() {
+  while (markersGroup.children.length > 0) {
+    markersGroup.remove(markersGroup.children[0]);
+  }
+
+  // Cọc tiêu địa danh chuẩn GIS không gian hiện đại: Chân kim mảnh + Hạt ngọc phát sáng + Vòng định vị chân đế
+  landmarksData.forEach(lm => {
+    const isTrench = lm.elev_m <= 0;
+    const mainColor = isTrench ? 0x00ccee : 0xe8c87a;
+    const glowColor = isTrench ? 0x66eeff : 0xffe6a3;
+
+    const marker = new THREE.Group();
+    marker.userData = { id: lm.id };
+
+    // 1. Chân ghim siêu mảnh (Pin Stem)
+    const stemGeo = new THREE.CylinderGeometry(0.0016, 0.0016, 0.038, 8);
+    stemGeo.translate(0, 0.019, 0);
+    stemGeo.rotateX(Math.PI / 2);
+    const stemMat = new THREE.MeshBasicMaterial({ color: mainColor, transparent: true, opacity: 0.85 });
+    const stem = new THREE.Mesh(stemGeo, stemMat);
+    stem.userData = { id: lm.id };
+    marker.add(stem);
+
+    // 2. Đầu ngọc phát sáng nhỏ nhắn (Glowing Pin Head)
+    const headGeo = new THREE.SphereGeometry(0.014, 16, 16);
+    headGeo.translate(0, 0, 0.038);
+    const headMat = new THREE.MeshBasicMaterial({ color: glowColor });
+    const head = new THREE.Mesh(headGeo, headMat);
+    head.userData = { id: lm.id };
+    marker.add(head);
+
+    // 3. Vòng hào quang chân đế đánh dấu tâm tọa độ (Coordinate Base Ring)
+    const ringGeo = new THREE.RingGeometry(0.006, 0.015, 24);
+    const ringMat = new THREE.MeshBasicMaterial({ color: mainColor, side: THREE.DoubleSide, transparent: true, opacity: 0.65 });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.userData = { id: lm.id };
+    marker.add(ring);
+
+    const pos = latLonToVec3(lm.lat, lm.lon, CFG.earthR * 1.003);
+    marker.position.copy(pos);
+    marker.lookAt(pos.clone().multiplyScalar(2));
+    markersGroup.add(marker);
+  });
+
+  renderLandmarksList();
+}
+
+function renderLandmarksList() {
+  const container = document.getElementById('landmarks-list');
+  const cats = {
+    "🏔️ Đỉnh Cao & Dãy Núi": landmarksData.filter(l => l.elev_m > 2000 && !l.category.includes('Cao nguyên') && !l.category.includes('sông')),
+    "🏞️ Cao Nguyên & Bồn Địa": landmarksData.filter(l => (l.category.includes('Cao nguyên') || l.category.includes('Bồn địa')) && !l.id.includes('baikal') && !l.category.includes('sông')),
+    "🌊 Rãnh Biển & Vực Sâu": landmarksData.filter(l => l.elev_m <= 0 && !l.category.includes('Eo biển') && l.id !== 'deadsea' && l.id !== 'caspian'),
+    "💧 Sông Lớn & Thủy Văn": landmarksData.filter(l => l.category.includes('sông') || l.category.includes('châu thổ') || l.id === 'yangtze' || l.id === 'mississippi' || l.id === 'nile' || l.id === 'amazon' || l.id === 'baikallake' || l.id === 'caspian' || l.id === 'deadsea'),
+    "🚢 Eo Biển Chiến Lược": landmarksData.filter(l => l.category.includes('Eo biển') || l.id === 'malacca' || l.id === 'gibraltar' || l.id === 'bering')
+  };
+
+  let html = '';
+  for (const [catName, items] of Object.entries(cats)) {
+    if (items.length === 0) continue;
+    html += `
+      <details class="accord" open>
+        <summary>${catName} (${items.length})</summary>
+        ${items.map(l => `
+          <div class="landmark-item" id="lmi-${l.id}" onclick="selectLandmark('${l.id}')">
+            <span>${l.name_vi.split('(')[0]}</span>
+            <span class="lm-elev">${l.elev_m > 0 ? '+' : ''}${l.elev_m.toLocaleString()}m</span>
+          </div>
+        `).join('')}
+      </details>
+    `;
+  }
+  container.innerHTML = html;
+}
+
+/* ══════════════════════════════════════════════════
+   8. HỆ THỐNG ĐIỀU HƯỚNG & CAMERA BAY (FLY-TO)
+   ══════════════════════════════════════════════════ */
+let flyTarget = null, flyStartTime = 0;
+const FLY_DURATION = 1200;
+
+// Web Audio Synthesizer: Hiệu ứng âm thanh không gian tương tác (Zero dependencies)
+let audioCtx = null;
+function playChime(freq = 587.33, duration = 0.22) {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(freq * 1.35, audioCtx.currentTime + duration);
+    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  } catch (e) {}
+}
+
+// Hiệu ứng sóng radar phát sáng lan tỏa 3D (Radar Ping Beacon)
+let activePulseRing = null;
+let pulseStartTime = 0;
+function triggerRadarPulse(lat, lon, color = 0xe8c87a) {
+  if (activePulseRing) {
+    earthGroup.remove(activePulseRing);
+    if (activePulseRing.geometry) activePulseRing.geometry.dispose();
+    if (activePulseRing.material) activePulseRing.material.dispose();
+    activePulseRing = null;
+  }
+  const ringGeo = new THREE.RingGeometry(0.012, 0.024, 32);
+  const ringMat = new THREE.MeshBasicMaterial({ 
+    color, 
+    side: THREE.DoubleSide, 
+    transparent: true, 
+    opacity: 0.9 
+  });
+  activePulseRing = new THREE.Mesh(ringGeo, ringMat);
+  const pos = latLonToVec3(lat, lon, CFG.earthR * 1.012);
+  activePulseRing.position.copy(pos);
+  activePulseRing.lookAt(pos.clone().multiplyScalar(2));
+  earthGroup.add(activePulseRing);
+  pulseStartTime = performance.now();
+}
+
+function flyToLocation(lat, lon, dist = 3.5) {
+  const phi = (90 - lat) * DEG;
+  const theta = (lon + 180) * DEG;
+  
+  const localTarget = new THREE.Vector3(
+    -(dist * Math.sin(phi) * Math.cos(theta)),
+    dist * Math.cos(phi),
+    dist * Math.sin(phi) * Math.sin(theta)
+  );
+  localTarget.applyAxisAngle(new THREE.Vector3(0, 0, 1), -23.44 * DEG);
+
+  flyTarget = {
+    startPos: camera.position.clone(),
+    endPos: localTarget,
+    startLook: controls.target.clone(),
+    endLook: new THREE.Vector3(0, 0, 0)
+  };
+  flyStartTime = performance.now();
+}
+
+window.selectLandmark = function(id) {
+  const lm = landmarksData.find(l => l.id === id);
+  if (!lm) return;
+  activeLandmark = lm;
+
+  // Âm thanh phản hồi xúc giác nhẹ nhàng
+  playChime(587.33);
+
+  // Hiệu ứng sóng radar 3D tại tọa độ mốc
+  triggerRadarPulse(lm.lat, lm.lon, lm.elev_m < 0 ? 0x00ccee : 0xe8c87a);
+
+  // Active item trong danh bạ
+  document.querySelectorAll('.landmark-item').forEach(el => el.classList.remove('active'));
+  const activeEl = document.getElementById(`lmi-${id}`);
+  if (activeEl) activeEl.classList.add('active');
+
+  // Cập nhật UI
+  document.getElementById('p-name').textContent = lm.name_vi;
+  document.getElementById('p-kind').textContent = lm.category;
+  document.getElementById('rw-coord').textContent = `${lm.lat.toFixed(2)}° B, ${lm.lon.toFixed(2)}° Đ`;
+  document.getElementById('rw-elev').innerHTML = `${lm.elev_m > 0 ? '+' : ''}${lm.elev_m.toLocaleString()} m <small>(${lm.status})</small>`;
+  document.getElementById('rw-type').textContent = lm.category;
+  document.getElementById('rw-plate').textContent = lm.plate;
+
+  // 5W
+  document.getElementById('w-where').textContent = lm.where;
+  document.getElementById('w-what').textContent = lm.what;
+  document.getElementById('w-why').textContent = lm.why_there;
+  document.getElementById('w-care').textContent = lm.why_care;
+  document.getElementById('w-whatif').textContent = lm.what_if;
+
+  // Telemetry
+  document.getElementById('tel-coord').textContent = `${lm.lat.toFixed(2)}°B, ${lm.lon.toFixed(2)}°Đ`;
+  document.getElementById('tel-elev').textContent = `${lm.elev_m > 0 ? '+' : ''}${lm.elev_m.toLocaleString()} m`;
+  document.getElementById('tel-type').textContent = lm.category;
+  document.getElementById('tel-plate').textContent = lm.plate;
+
+  // Tạo trắc diện thực nghiệm (Real DEM Profile)
+  if (lm.transect) {
+    generateRealProfile(lm.transect.p1[0], lm.transect.p1[1], lm.transect.p2[0], lm.transect.p2[1], lm.transect.name);
+  }
+
+  // Điểm đối cực Antipode (Xuyên tâm Trái Đất)
+  const antiLat = -lm.lat;
+  const antiLon = lm.lon > 0 ? lm.lon - 180 : lm.lon + 180;
+  const antiEl = document.getElementById('rw-antipode');
+  if (antiEl) {
+    antiEl.innerHTML = `<span style="text-decoration:underline">${Math.abs(antiLat).toFixed(2)}°${antiLat >= 0 ? 'B' : 'N'}, ${Math.abs(antiLon).toFixed(2)}°${antiLon >= 0 ? 'Đ' : 'T'}</span> 🌐`;
+    antiEl.setAttribute('data-lat', antiLat);
+    antiEl.setAttribute('data-lon', antiLon);
+  }
+
+  // Camera bay mượt mà vào cận cảnh đỉnh núi / rãnh biển
+  flyToLocation(lm.lat, lm.lon, 3.5);
+  document.getElementById('right-slab').classList.remove('collapsed');
+};
+
+window.flyToAntipode = function() {
+  const el = document.getElementById('rw-antipode');
+  if (!el) return;
+  const lat = parseFloat(el.getAttribute('data-lat'));
+  const lon = parseFloat(el.getAttribute('data-lon'));
+  if (!isNaN(lat) && !isNaN(lon)) {
+    playChime(440);
+    flyToLocation(lat, lon, 3.8);
+    triggerRadarPulse(lat, lon, 0x00ccee);
+  }
+};
+
+/* ══════════════════════════════════════════════════
+   9. PHÒNG THÍ NGHIỆM TRẮC DIỆN THỰC NGHIỆM (REAL DEM SAMPLING)
+   ══════════════════════════════════════════════════ */
+let currentProfileData = null; // { points: [{lat, lon, distKm, elev}], totalDist, minH, maxH, name }
+
+// Vẽ dải trắc diện 3D và 2 cọc tiêu A-B trực tiếp trên quả cầu
+function renderProfile3DVisuals(lat1, lon1, lat2, lon2, pts) {
+  while (measureGroup.children.length > 0) {
+    measureGroup.remove(measureGroup.children[0]);
+  }
+
+  // Cọc tiêu A (Xanh ngọc)
+  const pA = latLonToVec3(lat1, lon1, CFG.earthR * 1.014);
+  const pinA = new THREE.Mesh(new THREE.SphereGeometry(0.024, 16, 16), new THREE.MeshBasicMaterial({ color: 0x3dd68c }));
+  pinA.position.copy(pA);
+  measureGroup.add(pinA);
+
+  const ringA = new THREE.Mesh(new THREE.RingGeometry(0.012, 0.024, 24), new THREE.MeshBasicMaterial({ color: 0x3dd68c, side: THREE.DoubleSide, transparent: true, opacity: 0.7 }));
+  ringA.position.copy(pA);
+  ringA.lookAt(pA.clone().multiplyScalar(2));
+  measureGroup.add(ringA);
+
+  // Cọc tiêu B (Đỏ cam)
+  const pB = latLonToVec3(lat2, lon2, CFG.earthR * 1.014);
+  const pinB = new THREE.Mesh(new THREE.SphereGeometry(0.024, 16, 16), new THREE.MeshBasicMaterial({ color: 0xff5252 }));
+  pinB.position.copy(pB);
+  measureGroup.add(pinB);
+
+  const ringB = new THREE.Mesh(new THREE.RingGeometry(0.012, 0.024, 24), new THREE.MeshBasicMaterial({ color: 0xff5252, side: THREE.DoubleSide, transparent: true, opacity: 0.7 }));
+  ringB.position.copy(pB);
+  ringB.lookAt(pB.clone().multiplyScalar(2));
+  measureGroup.add(ringB);
+
+  // Đường cung lớn 3D (Luminous Geodesic Arc Ribbon)
+  const arcPts = pts.map(p => latLonToVec3(p.lat, p.lon, CFG.earthR * 1.014));
+  const arcGeom = new THREE.BufferGeometry().setFromPoints(arcPts);
+  const arcLine = new THREE.Line(arcGeom, new THREE.LineBasicMaterial({ 
+    color: 0x00ccee, 
+    linewidth: 3, 
+    transparent: true, 
+    opacity: 0.9 
+  }));
+  measureGroup.add(arcLine);
+
+  // Đồng bộ thông số hiển thị
+  const dist = calcGreatCircleDistance(lat1, lon1, lat2, lon2);
+  const elevA = sampleRelief(lat1, lon1);
+  const elevB = sampleRelief(lat2, lon2);
+  const elA = document.getElementById('m-pt-a');
+  if (elA) elA.textContent = `${lat1.toFixed(1)}°B, ${lon1.toFixed(1)}°Đ (${elevA > 0 ? '+' : ''}${elevA}m)`;
+  const elB = document.getElementById('m-pt-b');
+  if (elB) elB.textContent = `${lat2.toFixed(1)}°B, ${lon2.toFixed(1)}°Đ (${elevB > 0 ? '+' : ''}${elevB}m)`;
+  const elDist = document.getElementById('m-dist');
+  if (elDist) elDist.textContent = `${dist.toLocaleString()} km`;
+}
+
+function generateRealProfile(lat1, lon1, lat2, lon2, name = "Trắc diện khảo sát") {
+  const SAMPLES = 180;
+  const totalDist = calcGreatCircleDistance(lat1, lon1, lat2, lon2);
+  const pts = [];
+
+  let minH = 99999, maxH = -99999;
+
+  // Lấy mẫu dọc đường cung lớn (Great Circle Interpolation)
+  const p1 = latLonToVec3(lat1, lon1, 1);
+  const p2 = latLonToVec3(lat2, lon2, 1);
+
+  for (let i = 0; i <= SAMPLES; i++) {
+    const t = i / SAMPLES;
+    const v = new THREE.Vector3().lerpVectors(p1, p2, t).normalize();
+
+    // Chuyển ngược lại Lat/Lon
+    const lat = 90 - (Math.acos(v.y) * RAD);
+    const lon = ((Math.atan2(v.z, -v.x) * RAD) - 180);
+    const normLon = ((((lon + 180) % 360) + 360) % 360) - 180;
+
+    const elev = sampleRelief(lat, normLon);
+    if (elev < minH) minH = elev;
+    if (elev > maxH) maxH = elev;
+
+    pts.push({
+      lat, lon: normLon,
+      distKm: Math.round(t * totalDist),
+      elev
+    });
+  }
+
+  currentProfileData = {
+    name,
+    p1Name: `${lat1.toFixed(1)}°, ${lon1.toFixed(1)}°`,
+    p2Name: `${lat2.toFixed(1)}°, ${lon2.toFixed(1)}°`,
+    totalDist,
+    minH, maxH,
+    points: pts
+  };
+
+  // Vẽ dải trắc diện 3D trên quả cầu
+  renderProfile3DVisuals(lat1, lon1, lat2, lon2, pts);
+
+  drawRealProfileCanvas();
+}
+
+function drawRealProfileCanvas() {
+  if (!currentProfileData) return;
+  const pCanvas = document.getElementById('profile-canvas');
+  const ctx = pCanvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+
+  pCanvas.width = pCanvas.clientWidth * dpr;
+  pCanvas.height = pCanvas.clientHeight * dpr;
+  ctx.scale(dpr, dpr);
+
+  const w = pCanvas.clientWidth;
+  const h = pCanvas.clientHeight;
+  const pts = currentProfileData.points;
+
+  ctx.clearRect(0, 0, w, h);
+
+  // Cập nhật text
+  document.getElementById('prof-title').textContent = currentProfileData.name;
+  document.getElementById('prof-start').textContent = `A: ${currentProfileData.p1Name}`;
+  document.getElementById('prof-end').textContent = `B: ${currentProfileData.p2Name}`;
+  document.getElementById('prof-dist').textContent = `${currentProfileData.totalDist.toLocaleString()} km`;
+  document.getElementById('prof-max').textContent = `+${currentProfileData.maxH.toLocaleString()} m`;
+  document.getElementById('prof-min').textContent = `${currentProfileData.minH.toLocaleString()} m`;
+
+  // Thang đo cao độ (dựa trên dữ liệu thực)
+  const minAxis = Math.min(-2000, currentProfileData.minH - 500);
+  const maxAxis = Math.max(2000, currentProfileData.maxH + 500);
+  const toY = (val) => h - ((val - minAxis) / (maxAxis - minAxis)) * (h - 24) - 12;
+  const seaY = toY(0);
+
+  // Đường mực nước biển (0m)
+  ctx.strokeStyle = 'rgba(0, 204, 238, 0.4)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(0, seaY);
+  ctx.lineTo(w, seaY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle = 'rgba(0, 204, 238, 0.7)';
+  ctx.font = '9px "IBM Plex Mono", monospace';
+  ctx.fillText('0 m (Mực nước biển)', 6, seaY - 4);
+
+  // Vẽ đường trắc diện thực nghiệm
+  ctx.beginPath();
+  pts.forEach((p, idx) => {
+    const x = (idx / (pts.length - 1)) * w;
+    const y = toY(p.elev);
+    if (idx === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+
+  ctx.strokeStyle = '#e8c87a';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Tô màu nền trắc diện
+  ctx.lineTo(w, h);
+  ctx.lineTo(0, h);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(232, 200, 122, 0.1)';
+  ctx.fill();
+}
+
+// Rê chuột trên trắc diện 2D ➔ Đồng bộ con trỏ 3D trên quả cầu
+const pCanvas = document.getElementById('profile-canvas');
+pCanvas.addEventListener('mousemove', (e) => {
+  if (!currentProfileData || !currentProfileData.points || !currentProfileData.points.length) return;
+  const rect = pCanvas.getBoundingClientRect();
+  if (!rect.width || rect.width <= 0) return;
+  const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+
+  const pts = currentProfileData.points;
+  const idx = Math.min(pts.length - 1, Math.floor(ratio * (pts.length - 1)));
+  const pt = pts[idx];
+  if (!pt) return;
+
+  // Cập nhật text hiển thị
+  document.getElementById('prof-cursor').textContent = `Vị trí: ${pt.distKm} km ➔ Cao độ: ${pt.elev > 0 ? '+' : ''}${pt.elev.toLocaleString()} m (${pt.lat.toFixed(1)}°B, ${pt.lon.toFixed(1)}°Đ)`;
+
+  // ĐỒNG BỘ CON TRỎ 3D TRÊN QUẢ CẦU
+  const markerPos = latLonToVec3(pt.lat, pt.lon, CFG.earthR * 1.02);
+  cursorMarker.position.copy(markerPos);
+  cursorMarker.visible = true;
+});
+
+pCanvas.addEventListener('mouseleave', () => {
+  cursorMarker.visible = false;
+  document.getElementById('prof-cursor').textContent = "Rê chuột trên biểu đồ để dò cao độ đồng bộ trên quả cầu 3D";
+});
+
+/* ══════════════════════════════════════════════════
+   10. CÔNG CỤ ĐO KHOẢNG CÁCH A–B (MEASUREMENT ENGINE)
+   ══════════════════════════════════════════════════ */
+let isMeasuring = false;
+let measurePtA = null, measurePtB = null;
+
+window.start3DMeasureMode = window.startMeasureMode = function() {
+  isMeasuring = true;
+  measurePtA = null; measurePtB = null;
+  resetMeasureVisuals();
+  canvas.style.cursor = 'crosshair';
+  document.getElementById('action-banner').style.display = 'flex';
+  document.getElementById('banner-text').textContent = "🎯 CHẾ ĐỘ ĐO & CẮT LÁT 3D: Click điểm A bất kỳ trên quả cầu...";
+  playChime(440);
+};
+
+window.cancelCurrentAction = function() {
+  isMeasuring = false;
+  activeChallenge = null;
+  canvas.style.cursor = 'default';
+  document.getElementById('action-banner').style.display = 'none';
+  resetMeasureVisuals();
+};
+
+window.resetMeasure = function() {
+  measurePtA = null; measurePtB = null;
+  resetMeasureVisuals();
+  canvas.style.cursor = 'default';
+  document.getElementById('m-pt-a').textContent = "Chưa chọn";
+  document.getElementById('m-pt-b').textContent = "Chưa chọn";
+  document.getElementById('m-dist').textContent = "-- km";
+};
+
+function resetMeasureVisuals() {
+  while (measureGroup.children.length > 0) {
+    measureGroup.remove(measureGroup.children[0]);
+  }
+}
+
+function handleMeasureClick(lat, lon) {
+  const elev = sampleRelief(lat, lon);
+  if (!measurePtA) {
+    measurePtA = { lat, lon, elev };
+    playChime(523.25); // C5
+    triggerRadarPulse(lat, lon, 0x3dd68c);
+    const elA = document.getElementById('m-pt-a');
+    if (elA) elA.textContent = `${lat.toFixed(1)}°B, ${lon.toFixed(1)}°Đ (${elev > 0 ? '+' : ''}${elev}m)`;
+    document.getElementById('banner-text').textContent = `🎯 Đã chọn Điểm A (${elev > 0 ? '+' : ''}${elev}m). Bây giờ click chọn Điểm B trên quả cầu...`;
+
+    // Cắm cọc tiêu A
+    const pA = latLonToVec3(lat, lon, CFG.earthR * 1.015);
+    const pin = new THREE.Mesh(new THREE.SphereGeometry(0.025, 16, 16), new THREE.MeshBasicMaterial({ color: 0x3dd68c }));
+    pin.position.copy(pA);
+    measureGroup.add(pin);
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.015, 0.03, 24), new THREE.MeshBasicMaterial({ color: 0x3dd68c, side: THREE.DoubleSide, transparent: true, opacity: 0.7 }));
+    ring.position.copy(pA);
+    ring.lookAt(pA.clone().multiplyScalar(2));
+    measureGroup.add(ring);
+  } else if (!measurePtB) {
+    measurePtB = { lat, lon, elev };
+    playChime(659.25); // E5
+    triggerRadarPulse(lat, lon, 0xff5252);
+    const elB = document.getElementById('m-pt-b');
+    if (elB) elB.textContent = `${lat.toFixed(1)}°B, ${lon.toFixed(1)}°Đ (${elev > 0 ? '+' : ''}${elev}m)`;
+
+    // Tính khoảng cách
+    const dist = calcGreatCircleDistance(measurePtA.lat, measurePtA.lon, measurePtB.lat, measurePtB.lon);
+    const elDist = document.getElementById('m-dist');
+    if (elDist) elDist.textContent = `${dist.toLocaleString()} km`;
+    document.getElementById('banner-text').textContent = `✅ Đo hoàn tất: ${dist.toLocaleString()} km! Đang tạo lát cắt trắc diện 3D...`;
+
+    // Tự động tạo trắc diện A-B và vẽ dải 3D trên quả cầu
+    generateRealProfile(measurePtA.lat, measurePtA.lon, measurePtB.lat, measurePtB.lon, `Lát cắt 3D tự chọn: A ➔ B (${dist.toLocaleString()} km)`);
+
+    // Chuyển sang Tab Mặt cắt ngang 2D ngay lập tức
+    const tabs = document.querySelectorAll('.seg-tab button');
+    if (tabs && tabs[1]) switchRightTab('tab-profile', tabs[1]);
+    document.getElementById('right-slab').classList.remove('collapsed');
+
+    isMeasuring = false;
+    canvas.style.cursor = 'default';
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   11. THỬ THÁCH ĐỊA LÝ KHÔNG GIAN (SPATIAL CHALLENGE ENGINE)
+   ══════════════════════════════════════════════════ */
+let curQIdx = 0;
+let activeChallenge = null;
+
+window.openChallengeModal = function() {
+  curQIdx = 0;
+  loadQuestion(curQIdx);
+  document.getElementById('modal-box').classList.add('show');
+};
+
+window.closeChallengeModal = function() {
+  document.getElementById('modal-box').classList.remove('show');
+};
+
+function loadQuestion(idx) {
+  const q = challengesData[idx];
+  activeChallenge = q;
+
+  document.getElementById('q-type').textContent = `CẤP ĐỘ ${q.level || 'L' + (idx + 1)}: ${q.type.toUpperCase()}`;
+  document.getElementById('q-title').textContent = q.title;
+  document.getElementById('q-desc').textContent = q.instruction;
+  document.getElementById('q-step').textContent = `Thử thách ${idx + 1} / ${challengesData.length}`;
+  document.getElementById('btn-next-q').style.display = 'none';
+
+  const fb = document.getElementById('q-feedback');
+  fb.className = 'q-feedback';
+  fb.style.display = 'none';
+
+  const optContainer = document.getElementById('q-options');
+  const btnAction = document.getElementById('btn-action-q');
+
+  if (q.type === 'locate' || q.type === 'measure') {
+    optContainer.style.display = 'none';
+    btnAction.style.display = 'block';
+    btnAction.textContent = q.type === 'locate' ? "🎯 Bắt đầu click định vị trên Globe" : "📏 Kích hoạt thước đo trên Globe";
+  } else {
+    optContainer.style.display = 'grid';
+    btnAction.style.display = 'none';
+    optContainer.innerHTML = q.options.map((o, i) => `
+      <button class="q-btn" onclick="answerQuestion(${idx}, ${i}, this)">${o.t}</button>
+    `).join('');
+  }
+}
+
+window.performChallengeAction = function() {
+  closeChallengeModal();
+  document.getElementById('action-banner').style.display = 'flex';
+
+  if (activeChallenge.type === 'locate') {
+    document.getElementById('banner-text').textContent = activeChallenge.instruction;
+  } else if (activeChallenge.type === 'measure') {
+    startMeasureMode();
+  }
+};
+
+function handleChallengeClick(lat, lon) {
+  if (!activeChallenge || activeChallenge.type !== 'locate') return;
+
+  const target = activeChallenge.target;
+  const dist = calcGreatCircleDistance(lat, lon, target.lat, target.lon);
+
+  // Mở lại modal để thông báo kết quả
+  openChallengeModal();
+  const fb = document.getElementById('q-feedback');
+
+  if (dist <= target.tolerance_deg * 111) {
+    const fbStruct = activeChallenge.feedback_structured;
+    fb.innerHTML = `
+      <div style="font-weight:600;color:var(--accent-green);margin-bottom:6px">✅ CHÍNH XÁC TUYỆT VỜI! (Sai lệch chỉ ${dist} km)</div>
+      <div class="fb-block">
+        <div class="fb-item"><b>👁️ QUAN SÁT:</b> ${fbStruct ? fbStruct.observation : activeChallenge.evidence}</div>
+        <div class="fb-item"><b>🔍 BẰNG CHỨNG:</b> ${fbStruct ? fbStruct.evidence : ''}</div>
+        <div class="fb-item"><b>⚙️ CƠ CHẾ:</b> ${fbStruct ? fbStruct.mechanism : ''}</div>
+        <div class="fb-item"><b>📌 KẾT LUẬN:</b> ${fbStruct ? fbStruct.conclusion : ''}</div>
+      </div>
+    `;
+    fb.style.color = 'var(--parchment)';
+    fb.style.background = 'rgba(61,214,140,.12)';
+    document.getElementById('btn-next-q').style.display = 'block';
+  } else {
+    fb.innerHTML = `❌ <b>Chưa chính xác!</b> Điểm bạn vừa click cách mục tiêu ${dist.toLocaleString()} km.<br><i>${activeChallenge.hint}</i>`;
+    fb.style.color = 'var(--accent-red)';
+    fb.style.background = 'rgba(255,82,82,.15)';
+  }
+  fb.style.display = 'block';
+  activeChallenge = null;
+  document.getElementById('action-banner').style.display = 'none';
+}
+
+window.answerQuestion = function(qIdx, optIdx, btn) {
+  const q = challengesData[qIdx];
+  const opt = q.options[optIdx];
+  const fb = document.getElementById('q-feedback');
+
+  document.querySelectorAll('.q-btn').forEach(b => b.disabled = true);
+  const fbStruct = q.feedback_structured;
+
+  if (opt.c) {
+    btn.classList.add('correct');
+    fb.innerHTML = `
+      <div style="font-weight:600;color:var(--accent-green);margin-bottom:6px">✅ CHÍNH XÁC! ${opt.fb || ''}</div>
+      <div class="fb-block">
+        <div class="fb-item"><b>👁️ QUAN SÁT:</b> ${fbStruct ? fbStruct.observation : q.evidence}</div>
+        <div class="fb-item"><b>🔍 BẰNG CHỨNG:</b> ${fbStruct ? fbStruct.evidence : ''}</div>
+        <div class="fb-item"><b>⚙️ CƠ CHẾ:</b> ${fbStruct ? fbStruct.mechanism : ''}</div>
+        <div class="fb-item"><b>📌 KẾT LUẬN:</b> ${fbStruct ? fbStruct.conclusion : ''}</div>
+      </div>
+    `;
+    fb.style.color = 'var(--parchment)';
+    fb.style.background = 'rgba(61,214,140,.12)';
+  } else {
+    btn.classList.add('wrong');
+    fb.innerHTML = `
+      <div style="font-weight:600;color:var(--accent-red);margin-bottom:6px">❌ CHƯA CHÍNH XÁC! Hãy đối chiếu lại các bằng chứng địa mạo & kiến tạo.</div>
+      <div class="fb-block">
+        <div class="fb-item"><b>🔍 BẰNG CHỨNG:</b> ${fbStruct ? fbStruct.evidence : q.evidence}</div>
+        <div class="fb-item"><b>⚙️ CƠ CHẾ:</b> ${fbStruct ? fbStruct.mechanism : ''}</div>
+      </div>
+    `;
+    fb.style.color = 'var(--parchment)';
+    fb.style.background = 'rgba(255,82,82,.15)';
+  }
+  fb.style.display = 'block';
+
+  if (qIdx < challengesData.length - 1) {
+    document.getElementById('btn-next-q').style.display = 'block';
+  }
+};
+
+window.nextQuestion = function() {
+  curQIdx++;
+  if (curQIdx < challengesData.length) {
+    loadQuestion(curQIdx);
+  }
+};
+
+/* ══════════════════════════════════════════════════
+   12. TÌM KIẾM THÔNG MINH (OMNIBOX SEARCH)
+   ══════════════════════════════════════════════════ */
+window.onSearchInput = function(query) {
+  const resBox = document.getElementById('search-results');
+  query = (query || '').trim().toLowerCase();
+  if (!query) {
+    resBox.style.display = 'none';
+    resBox.innerHTML = '';
+    return;
+  }
+
+  const matches = landmarksData.filter(l => 
+    (l.name_vi && l.name_vi.toLowerCase().includes(query)) || 
+    (l.name_en && l.name_en.toLowerCase().includes(query)) ||
+    (l.category && l.category.toLowerCase().includes(query))
+  );
+
+  resBox.innerHTML = '';
+  if (matches.length === 0) {
+    const emptyDiv = document.createElement('div');
+    emptyDiv.className = 'search-item';
+    emptyDiv.textContent = 'Không tìm thấy địa danh phù hợp';
+    resBox.appendChild(emptyDiv);
+  } else {
+    matches.slice(0, 8).forEach(m => {
+      const item = document.createElement('div');
+      item.className = 'search-item';
+      item.setAttribute('role', 'option');
+      item.onclick = () => {
+        selectLandmark(m.id);
+        resBox.style.display = 'none';
+      };
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = (m.name_vi || '').split('(')[0];
+      const elevSpan = document.createElement('span');
+      elevSpan.style.fontFamily = 'var(--font-mono)';
+      elevSpan.style.fontSize = '9.5px';
+      elevSpan.style.color = 'var(--brass)';
+      elevSpan.textContent = `${m.elev_m > 0 ? '+' : ''}${m.elev_m}m`;
+      item.appendChild(nameSpan);
+      item.appendChild(elevSpan);
+      resBox.appendChild(item);
+    });
+  }
+  resBox.style.display = 'block';
+};
+
+// Đóng kết quả tìm kiếm khi click ngoài
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.search-box')) {
+    document.getElementById('search-results').style.display = 'none';
+  }
+});
+
+/* ══════════════════════════════════════════════════
+   13. RAYCASTING & TƯƠNG TÁC QUẢ CẦU
+   ══════════════════════════════════════════════════ */
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+let pointerDownPos = { x: 0, y: 0 };
+
+canvas.addEventListener('pointerdown', (e) => {
+  pointerDownPos = { x: e.clientX, y: e.clientY };
+});
+
+canvas.addEventListener('click', (e) => {
+  if (e.target !== canvas) return;
+  const dx = e.clientX - pointerDownPos.x;
+  const dy = e.clientY - pointerDownPos.y;
+  if (Math.hypot(dx, dy) > 8) return; // Bỏ qua nếu là thao tác xoay / kéo quả cầu (Drag/Pan)
+
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects([earthMesh, ...markersGroup.children], true);
+
+  if (intersects.length > 0) {
+    const hit = intersects[0];
+
+    // Click trúng cọc tiêu địa danh (hỗ trợ cả mesh con và group)
+    const landmarkId = (hit.object.userData && hit.object.userData.id) || (hit.object.parent && hit.object.parent.userData && hit.object.parent.userData.id);
+    if (landmarkId) {
+      selectLandmark(landmarkId);
+      return;
+    }
+
+    // Tọa độ trên mặt cầu Trái Đất
+    const p = earthGroup.worldToLocal(hit.point.clone());
+    const r = p.length();
+    const lat = 90 - (Math.acos(p.y / r) * RAD);
+    const lon = ((Math.atan2(p.z, -p.x) * RAD) - 180);
+    const normLon = ((((lon + 180) % 360) + 360) % 360) - 180;
+
+    // ĐỌC CAO ĐỘ TRUNG TÂM QUA UNIFIED GEOSAMPLER
+    const elev = sampleRelief(lat, normLon);
+
+    // Cập nhật Telemetry
+    document.getElementById('tel-coord').textContent = `${lat.toFixed(2)}°B, ${normLon.toFixed(2)}°Đ`;
+    document.getElementById('tel-elev').textContent = `${elev > 0 ? '+' : ''}${elev.toLocaleString()} m`;
+    document.getElementById('tel-type').textContent = elev < 0 ? (elev < -3000 ? "Vực thẳm / Đáy đại dương" : "Thềm lục địa") : (elev > 1500 ? "Núi cao / Cao nguyên" : "Đồng bằng / Đồi thấp");
+
+    // Xử lý chế độ đo
+    if (isMeasuring) {
+      handleMeasureClick(lat, normLon);
+      return;
+    }
+
+    // Xử lý chế độ thử thách
+    if (activeChallenge && activeChallenge.type === 'locate') {
+      handleChallengeClick(lat, normLon);
+      return;
+    }
+  }
+});
+
+/* ══════════════════════════════════════════════════
+   14. CÁC TƯƠNG TÁC ĐIỀU KHIỂN GIAO DIỆN
+   ══════════════════════════════════════════════════ */
+// Reset View về Việt Nam & Châu Á
+window.resetView = function() {
+  flyToLocation(16.0, 108.0, 4.8);
+};
+
+// Vertical Exaggeration Slider
+const rngVE = document.getElementById('rng-ve');
+const valVE = document.getElementById('val-ve');
+const telVE = document.getElementById('tel-ve');
+
+window.setVE = function(val) {
+  rngVE.value = val;
+  updateVE(val);
+};
+
+rngVE.addEventListener('input', (e) => updateVE(parseFloat(e.target.value)));
+
+function updateVE(val) {
+  valVE.textContent = `${val}×`;
+  if (val === 1) {
+    telVE.textContent = '1× (Chuẩn vật lý)';
+    telVE.className = 'ti-pill scale-badge real';
+    document.getElementById('btn-ve-1x').classList.add('on');
+    document.getElementById('btn-ve-12x').classList.remove('on');
+  } else {
+    telVE.textContent = `${val}× (Sư phạm)`;
+    telVE.className = 'ti-pill scale-badge';
+    document.getElementById('btn-ve-1x').classList.remove('on');
+    if (val === 12) document.getElementById('btn-ve-12x').classList.add('on');
+    else document.getElementById('btn-ve-12x').classList.remove('on');
+  }
+
+  if (earthMat) {
+    earthMat.displacementScale = (val / 25) * CFG.maxDisplacement;
+  }
+}
+
+// Đối soát nhanh 1x vs 12x
+window.toggleScaleContrast = function() {
+  const current = parseFloat(rngVE.value);
+  setVE(current === 1 ? 12 : 1);
+};
+
+// Kích hoạt layer mảng kiến tạo
+window.focusTectonicLayer = function() {
+  platesGroup.visible = true;
+  document.getElementById('btn-plates').classList.add('on');
+};
+
+// Chế độ bản đồ
+window.setMapMode = function(mode) {
+  document.getElementById('btn-tex-sat').classList.toggle('on', mode === 'sat');
+  document.getElementById('btn-tex-hyp').classList.toggle('on', mode === 'hyp');
+  document.getElementById('btn-tex-nit').classList.toggle('on', mode === 'nit');
+
+  const legend = document.getElementById('hypso-legend');
+  legend.style.display = (mode === 'hyp') ? 'block' : 'none';
+
+  if (!earthMat) return;
+  if (mode === 'sat') {
+    earthMat.map = texSat;
+    earthMat.needsUpdate = true;
+  } else if (mode === 'hyp') {
+    earthMat.map = texHypso;
+    earthMat.needsUpdate = true;
+  } else if (mode === 'nit') {
+    earthMat.map = texNight;
+    earthMat.needsUpdate = true;
+  }
+};
+
+window.togglePlates = function() {
+  platesGroup.visible = !platesGroup.visible;
+  document.getElementById('btn-plates').classList.toggle('on', platesGroup.visible);
+};
+
+window.toggleRingOfFire = function() {
+  rofGroup.visible = !rofGroup.visible;
+  document.getElementById('btn-rof').classList.toggle('on', rofGroup.visible);
+};
+
+window.toggleGrid = function() {
+  gridGroup.visible = !gridGroup.visible;
+  document.getElementById('btn-grid').classList.toggle('on', gridGroup.visible);
+};
+
+window.toggleMarkers = function() {
+  markersGroup.visible = !markersGroup.visible;
+  const btn = document.getElementById('btn-markers');
+  if (btn) btn.classList.toggle('on', markersGroup.visible);
+};
+
+window.toggleSun = function() {
+  const isDayNight = !sunLight.visible;
+  sunLight.visible = isDayNight;
+  if (isDayNight) {
+    // Chế độ mô phỏng Ngày/Đêm thực tế: Nắng gắt một bên, phía đối diện chìm vào bóng đêm
+    ambientLight.color.setHex(0x223344);
+    ambientLight.intensity = 0.42;
+    cameraLight.intensity = 0.0;
+  } else {
+    // Chế độ Mặc định: Chiếu sáng toàn cảnh 100% đồng đều mọi phía (không bóng tối)
+    ambientLight.color.setHex(0xffffff);
+    ambientLight.intensity = 1.25;
+    cameraLight.intensity = 0.4;
+  }
+  const btn = document.getElementById('btn-sun');
+  if (btn) btn.classList.toggle('on', isDayNight);
+};
+
+window.toggleLeftSlab = function() {
+  const s = document.getElementById('left-slab');
+  s.style.display = (s.style.display === 'block') ? 'none' : 'block';
+};
+
+window.toggleRightSlab = function() {
+  document.getElementById('right-slab').classList.toggle('collapsed');
+};
+
+window.switchRightTab = function(tabId, btn) {
+  document.querySelectorAll('.seg-tab button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+};
+
+// Chọn nhanh trắc diện kinh điển & Việt Nam
+window.onTransectSelect = function(val) {
+  if (!val) return;
+  if (val === 'vn_north') {
+    generateRealProfile(21.5, 101.5, 20.5, 107.5, "Lát cắt Bắc Bộ: Lào ➔ Fansipan ➔ ĐB Sông Hồng ➔ Vịnh Bắc Bộ");
+    flyToLocation(21.0, 105.0, 3.6);
+  } else if (val === 'vn_central') {
+    generateRealProfile(15.0, 106.5, 15.5, 109.5, "Lát cắt Trung Bộ: Lào ➔ Ngọc Linh ➔ Duyên hải ➔ Biển Đông");
+    flyToLocation(15.2, 108.0, 3.6);
+  } else if (val === 'vn_south') {
+    generateRealProfile(11.9, 108.4, 9.5, 106.8, "Lát cắt Nam Bộ: Tây Nguyên ➔ Đông Nam Bộ ➔ ĐB Sông Cửu Long");
+    flyToLocation(10.5, 107.0, 3.6);
+  } else if (val === 'three_step') {
+    generateRealProfile(32.5, 88.0, 31.0, 122.5, "Lát cắt 3 bậc thang Đông Á: Tây Tạng ➔ Tứ Xuyên ➔ ĐB Trường Giang ➔ Biển Hoa Đông");
+    flyToLocation(31.5, 105.0, 4.2);
+  } else if (landmarksData.find(l => l.id === val)) {
+    selectLandmark(val);
+  }
+  document.getElementById('right-slab').classList.remove('collapsed');
+  switchRightTab('tab-profile', document.querySelectorAll('.seg-tab button')[1]);
+};
+
+/* ══════════════════════════════════════════════════
+   14B. HỆ THỐNG GIÁO DỤC NÂNG CẤP (EDUCATIONAL SYSTEM)
+   ══════════════════════════════════════════════════ */
+
+// 1. Phân tầng kiến thức 3 cấp (Learning Levels)
+window.currentLearningLevel = 'explore';
+window.setLearningLevel = function(lvl) {
+  window.currentLearningLevel = lvl;
+  document.querySelectorAll('.lvl-btn').forEach(b => {
+    b.classList.toggle('active', b.id === `btn-lvl-${lvl}`);
+  });
+
+  const labElements = document.querySelectorAll('.lab-only');
+  labElements.forEach(el => {
+    el.style.display = (lvl === 'lab') ? 'inline-flex' : 'none';
+  });
+
+  if (lvl === 'explore') {
+    setVE(12);
+  } else if (lvl === 'understand') {
+    focusTectonicLayer();
+  } else if (lvl === 'lab') {
+    focusTectonicLayer();
+    gridGroup.visible = true;
+    document.getElementById('btn-grid').classList.add('on');
+  }
+};
+
+// 2. Onboarding CTA
+window.closeOnboarding = function() {
+  document.getElementById('onboarding-modal').classList.remove('show');
+  try { sessionStorage.setItem('nm_topography_onboarded', 'true'); } catch(e) {}
+};
+
+window.openOnboarding = function() {
+  document.getElementById('onboarding-modal').classList.add('show');
+};
+
+// 3. Tương tác 5W
+window.flyToActiveLandmark = function() {
+  if (activeLandmark) flyToLocation(activeLandmark.lat, activeLandmark.lon);
+};
+
+window.openActiveTransect = function() {
+  if (activeLandmark && activeLandmark.transect) {
+    document.getElementById('right-slab').classList.remove('collapsed');
+    switchRightTab('tab-profile', document.querySelectorAll('.seg-tab button')[1]);
+  }
+};
+
+// 4. Tuyến Địa hình Việt Nam (First-class content)
+const vietnamRegions = [
+  {
+    id: "vn_fansipan",
+    name: "Hoàng Liên Sơn & Đỉnh Fansipan",
+    category: "Núi uốn nếp Kainozoi trẻ",
+    lat: 22.3033, lon: 103.7753, elev: 3147,
+    transect: { name: "Lào Cai ➔ Fansipan ➔ Than Uyên", p1: [22.5, 104.0], p2: [21.8, 103.5] },
+    desc: "Nóc nhà Đông Dương (3,147.3m), đỉnh cao nhất dãy Hoàng Liên Sơn, khối nếp uốn granit nâng cao mãnh liệt thời Tân kiến tạo."
+  },
+  {
+    id: "vn_taybac",
+    name: "Vùng núi Tây Bắc",
+    category: "Địa hình núi cao & thung lũng sâu",
+    lat: 21.5, lon: 103.5, elev: 1850,
+    transect: { name: "Điện Biên ➔ Sơn La ➔ Hòa Bình", p1: [21.8, 103.0], p2: [20.8, 105.3] },
+    desc: "Các dãy núi cao chạy theo hướng Tây Bắc - Đông Nam xen kẽ các bồn địa thung lũng sông Đà và sông Mã sâu hiểm trở."
+  },
+  {
+    id: "vn_dongbac",
+    name: "Vùng núi Đông Bắc & Vịnh Hạ Long",
+    category: "Địa hình cánh cung & Karst đá vôi",
+    lat: 21.8, lon: 106.2, elev: 650,
+    transect: { name: "Cánh cung Ngân Sơn ➔ Bắc Sơn ➔ Vịnh Hạ Long", p1: [22.5, 105.8], p2: [20.9, 107.1] },
+    desc: "Các cánh cung núi chụm đầu ở Tam Đảo mở rộng về phía bắc, cùng cảnh quan karst đá vôi ngập nước Vịnh Hạ Long kỳ vĩ."
+  },
+  {
+    id: "vn_dongbang_sh",
+    name: "Đồng bằng sông Hồng",
+    category: "Đồng bằng châu thổ bồi tụ phù sa cổ",
+    lat: 20.8, lon: 106.0, elev: 15,
+    transect: { name: "Việt Trì ➔ Hà Nội ➔ Cửa Ba Lạt", p1: [21.3, 105.4], p2: [20.3, 106.6] },
+    desc: "Tam giác châu thổ phù sa màu mỡ với hệ thống đê điều nhân tạo dài hàng nghìn km ngăn lũ, chia cắt mặt đồng bằng thành các ô trũng."
+  },
+  {
+    id: "vn_truongson_bac",
+    name: "Dãy Trường Sơn Bắc",
+    category: "Núi uốn nếp cổ trẻ hóa",
+    lat: 18.0, lon: 105.8, elev: 1200,
+    transect: { name: "Khối núi Kẻ Bàng ➔ Duyên hải Quảng Bình", p1: [17.5, 105.9], p2: [17.5, 106.6] },
+    desc: "Sườn đông dốc đứng đổ về Biển Đông, sườn tây thoải dần sang lưu vực sông Mê Kông; tạo bức tường chắn gió gây hiệu ứng phơn khô nóng."
+  },
+  {
+    id: "vn_truongson_nam",
+    name: "Khối núi Kon Tum & Đỉnh Ngọc Linh",
+    category: "Khối tảng kết tinh nâng cao",
+    lat: 15.08, lon: 107.98, elev: 2598,
+    transect: { name: "Ngọc Linh ➔ Duyên hải Quảng Nam", p1: [15.1, 107.7], p2: [15.5, 108.6] },
+    desc: "Đỉnh núi cao nhất miền Trung (2,598m), khối nền cổ tiền Cambri nâng bổng, ranh giới sinh thái và khí hậu trọng yếu."
+  },
+  {
+    id: "vn_taynguyen",
+    name: "Cao nguyên xếp tầng Tây Nguyên",
+    category: "Cao nguyên dung nham Bazan",
+    lat: 13.0, lon: 108.0, elev: 850,
+    transect: { name: "Cao nguyên Pleiku ➔ Đắk Lắk ➔ Di Linh", p1: [14.0, 108.0], p2: [11.5, 108.3] },
+    desc: "Các bề mặt san bằng xếp tầng bazan màu mỡ (Lâm Viên, Pleiku, Đắk Lắk, Di Linh) độ cao 500–1500m hình thành do phun trào núi lửa Kainozoi."
+  },
+  {
+    id: "vn_dongnambo",
+    name: "Bán bình nguyên Đông Nam Bộ",
+    category: "Địa hình chuyển tiếp phù sa cổ",
+    lat: 11.2, lon: 106.8, elev: 80,
+    transect: { name: "Bình Phước ➔ TP.HCM ➔ Cần Giờ", p1: [11.8, 106.9], p2: [10.4, 106.9] },
+    desc: "Vùng đất lượn sóng chuyển tiếp từ cao nguyên Tây Nguyên xuống đồng bằng Nam Bộ, địa hình đồi thấp và đất xám phù sa cổ trù phú."
+  },
+  {
+    id: "vn_dongbang_scl",
+    name: "Đồng bằng sông Cửu Long",
+    category: "Đồng bằng châu thổ trẻ ngập nước",
+    lat: 10.0, lon: 105.5, elev: 2,
+    transect: { name: "Đồng Tháp Mười ➔ Cần Thơ ➔ Mũi Cà Mau", p1: [10.8, 105.8], p2: [8.6, 104.8] },
+    desc: "Đồng bằng châu thổ trẻ bồi đắp bởi hệ thống sông Mê Kông, cao độ trung bình dưới 2m, mạng lưới kênh rạch chằng chịt thích ứng 'sống chung với lũ'."
+  }
+];
+
+window.switchLeftSubtab = function(subtab) {
+  document.getElementById('btn-subtab-vn').classList.toggle('active', subtab === 'vn');
+  document.getElementById('btn-subtab-world').classList.toggle('active', subtab === 'world');
+  document.getElementById('vietnam-list').style.display = (subtab === 'vn') ? 'block' : 'none';
+  document.getElementById('landmarks-list').style.display = (subtab === 'world') ? 'block' : 'none';
+};
+
+window.renderVietnamList = function() {
+  const container = document.getElementById('vietnam-list');
+  container.innerHTML = `
+    <div style="font-size:10px;color:var(--parchment-dim);margin:4px 0 8px;line-height:1.4">
+      🇻🇳 <b>Quy luật phân bậc:</b> Núi cao hiểm trở ➔ Cao nguyên xếp tầng ➔ Đồng bằng phù sa ➔ Thềm lục địa Biển Đông:
+    </div>
+    ${vietnamRegions.map(r => `
+      <div class="landmark-item" onclick="selectVietnamRegion('${r.id}')" style="margin-bottom:4px">
+        <div>
+          <b style="color:var(--parchment);display:block">${r.name}</b>
+          <small style="font-size:9.5px;color:var(--parchment-dim)">${r.category}</small>
+        </div>
+        <span class="lm-elev">${r.elev > 0 ? '+' : ''}${r.elev}m</span>
+      </div>
+    `).join('')}
+  `;
+};
+
+window.selectVietnamRegion = function(id) {
+  const r = vietnamRegions.find(x => x.id === id);
+  if (!r) return;
+  flyToLocation(r.lat, r.lon, 3.6);
+  if (r.transect) {
+    generateRealProfile(r.transect.p1[0], r.transect.p1[1], r.transect.p2[0], r.transect.p2[1], r.transect.name);
+    document.getElementById('right-slab').classList.remove('collapsed');
+    switchRightTab('tab-profile', document.querySelectorAll('.seg-tab button')[1]);
+  }
+};
+
+// 5. 5 Bài Học Mẫu (Guided Lessons Engine)
+const guidedLessons = [
+  {
+    id: "l1_roughness",
+    title: "Bài 1: Trái Đất thực sự gồ ghề đến mức nào?",
+    duration: "3 phút",
+    question: "Nhìn quả cầu ở tỉ lệ 12×, bề mặt có vẻ hiểm trở. Nhưng nếu nhìn ở kích thước thật 1× thì sao?",
+    observe: "Quan sát biên độ núi Everest (+8.85 km) và rãnh Mariana (-11 km) so với bán kính Trái Đất (6,371 km).",
+    interactAction: "ve_scale_contrast",
+    interactText: "⚖️ Chuyển Đổi Đối Soát 12× vs 1×",
+    evidence: "Tổng biên độ địa hình toàn cầu chỉ 19.83 km, chiếm chưa đầy 0.31% bán kính Trái Đất.",
+    explanation: "Ở quy mô hành tinh, Trái Đất gần như nhẵn mịn. Độ gồ ghề 12× là thủ pháp sư phạm để mắt người nhìn rõ hình thái địa mạo.",
+    checkQ: {
+      q: "Nếu Trái Đất thu nhỏ bằng quả bóng bàn (đường kính 40 mm), ngọn núi Everest sẽ cao tương đương bao nhiêu?",
+      opts: [
+        { t: "Khoảng 0.028 mm (nhẵn hơn mắt thường có thể nhìn thấy)", c: true },
+        { t: "Khoảng 2 mm (như một hạt cát nhỏ)", c: false },
+        { t: "Khoảng 5 mm (nhô hẳn lên)", c: false }
+      ]
+    }
+  },
+  {
+    id: "l2_himalaya",
+    title: "Bài 2: Tại sao Himalaya ở đúng vị trí này?",
+    duration: "4 phút",
+    question: "Vì sao dãy núi cao nhất thế giới lại nằm giữa bán đảo Ấn Độ và lục địa châu Á?",
+    observe: "Quan sát đới va chạm giữa mảng Ấn Độ và mảng Á-Âu dọc theo đường ranh giới kiến tạo PB2002.",
+    interactAction: "focus_himalaya",
+    interactText: "🌋 Bay Đến Himalaya & Bật Mảng Kiến Tạo",
+    evidence: "Mảng Ấn Độ xô húc vào mảng Á-Âu với tốc độ ~5 cm/năm, làm dày vỏ lục địa lên khoảng 60–80 km ở Tây Tạng.",
+    explanation: "Do cả hai mảng đều là vỏ lục địa nhẹ (chủ yếu là granit), chúng không thể hút chìm sâu vào manti mà bị dồn nén, rút ngắn và đội lên tạo chuỗi núi cao.",
+    checkQ: {
+      q: "Tại sao mảng Ấn Độ không hút chìm sâu xuống manti như mảng Nazca ở Nam Mỹ?",
+      opts: [
+        { t: "Vì vỏ lục địa có tỷ trọng nhẹ không thể chìm sâu vào lớp manti đặc hơn", c: true },
+        { t: "Vì mảng Ấn Độ đứng yên không chuyển động", c: false },
+        { t: "Vì giữa hai mảng có đới tách giãn tạo vỏ mới", c: false }
+      ]
+    }
+  },
+  {
+    id: "l3_everest_mariana",
+    title: "Bài 3: Từ Everest xuống Mariana — Cứu cánh địa hình",
+    duration: "4 phút",
+    question: "Từ nóc nhà đất liền xuống vực sâu đại dương, địa hình Trái Đất phân bố ra sao so với mực nước biển?",
+    observe: "Quan sát dải phân tầng màu độ cao & đáy biển (Hypsometric / Bathymetric) trên quả cầu 3D.",
+    interactAction: "focus_mariana",
+    interactText: "🌊 Bật Chế Độ Phân Tầng Màu & Bay Đến Mariana",
+    evidence: "Thềm lục địa nông (-200m) ➔ Sườn lục địa dốc ➔ Đồng bằng vực thẳm (-4,000m) ➔ Rãnh Mariana (-10,984m).",
+    explanation: "Hai bậc địa hình lớn phản ánh bản chất của hai loại vỏ: Vỏ lục địa dày nhẹ nổi cao (đất liền) và vỏ đại dương mỏng nặng chìm sâu (đại dương).",
+    checkQ: {
+      q: "Mực nước biển (0 m) đóng vai trò gì trong đo đạc trắc địa địa hình?",
+      opts: [
+        { t: "Là mặt chuẩn trắc địa (Geoid/Datum) để tính cao độ dương và độ sâu âm", c: true },
+        { t: "Là điểm sâu nhất của thềm lục địa", c: false },
+        { t: "Là ranh giới giữa tầng đối lưu và tầng bình lưu", c: false }
+      ]
+    }
+  },
+  {
+    id: "l4_vietnam_transect",
+    title: "Bài 4: Việt Nam từ núi ra biển — Quy luật phân bậc",
+    duration: "4 phút",
+    question: "Địa hình Việt Nam biến đổi như thế nào từ biên giới phía Tây Bắc ra đến Biển Đông?",
+    observe: "Khảo sát lát cắt trắc diện 2D từ Fansipan qua Đồng bằng Sông Hồng ra Vịnh Bắc Bộ.",
+    interactAction: "focus_vietnam_transect",
+    interactText: "🇻🇳 Mở Lát Cắt Trắc Diện Bắc Bộ",
+    evidence: "Địa hình hạ thấp dần theo hướng Tây Bắc ➔ Đông Nam: Núi cao hiểm trở (3,147m) ➔ Đồi trung du ➔ Đồng bằng (15m) ➔ Vịnh Bắc Bộ (-45m).",
+    explanation: "Tân kiến tạo Kainozoi nâng mạnh ở phía tây và sụt lún bồi tụ ở phía đông, quy định hướng chảy chính của hệ thống sông Hồng và sông Đà.",
+    checkQ: {
+      q: "Hướng nghiêng chung của địa hình Việt Nam là hướng nào?",
+      opts: [
+        { t: "Tây Bắc — Đông Nam", c: true },
+        { t: "Bắc — Nam", c: false },
+        { t: "Tây — Đông", c: false }
+      ]
+    }
+  },
+  {
+    id: "l5_andes_subduction",
+    title: "Bài 5: Dãy Andes và Kiến tạo mảng — Hút chìm vs Xô húc",
+    duration: "5 phút",
+    question: "Cùng là núi cao đồ sộ, tại sao dãy Andes ở Nam Mỹ lại khác biệt căn bản so với Himalaya?",
+    observe: "Quan sát Rãnh Peru-Chile sâu -8,000m chạy song song sát ngay chân dãy núi tuyết Andes.",
+    interactAction: "focus_andes",
+    interactText: "🌎 Bay Đến Dãy Andes & Xem Rãnh Biển",
+    evidence: "Mảng đại dương Nazca hút chìm dưới mảng lục địa Nam Mỹ sinh động đất mạnh, rãnh biển sâu và chuỗi núi lửa hoạt động.",
+    explanation: "Andes là đới hút chìm (Subduction) lục địa - đại dương, trong khi Himalaya là đới va chạm (Collision) giữa hai mảng lục địa thuần túy.",
+    checkQ: {
+      q: "Đặc điểm nào ở Andes chứng minh đây là đới hút chìm mà Himalaya không có?",
+      opts: [
+        { t: "Có rãnh đại dương sâu sát bờ biển và chuỗi núi lửa hoạt động liên tục", c: true },
+        { t: "Có đỉnh núi cao trên 8,000 m", c: false },
+        { t: "Có cao nguyên băng tuyết vĩnh cửu", c: false }
+      ]
+    }
+  }
+];
+
+let curLessonIdx = 0;
+window.openLessonsModal = function() {
+  document.getElementById('lessons-modal').classList.add('show');
+  renderLessonsNav();
+  renderLesson(curLessonIdx);
+};
+
+window.closeLessonsModal = function() {
+  document.getElementById('lessons-modal').classList.remove('show');
+};
+
+window.startGuidedLesson = function(idx) {
+  closeOnboarding();
+  curLessonIdx = idx;
+  openLessonsModal();
+};
+
+function renderLessonsNav() {
+  const nav = document.getElementById('lesson-nav');
+  nav.innerHTML = guidedLessons.map((l, i) => `
+    <button class="l-tab ${i === curLessonIdx ? 'active' : ''}" onclick="selectLesson(${i})">
+      ${l.title.split(':')[0]} (${l.duration})
+    </button>
+  `).join('');
+}
+
+window.selectLesson = function(idx) {
+  curLessonIdx = idx;
+  renderLessonsNav();
+  renderLesson(idx);
+};
+
+function renderLesson(idx) {
+  const l = guidedLessons[idx];
+  const body = document.getElementById('lesson-body');
+  body.innerHTML = `
+    <h3 style="font-family:var(--font-display);font-size:18px;color:var(--brass);margin-bottom:8px">${l.title}</h3>
+    
+    <div class="lesson-step active">
+      <div class="step-badge">1. CÂU HỎI KHOA HỌC (QUESTION)</div>
+      <div class="step-content"><b>${l.question}</b></div>
+    </div>
+
+    <div class="lesson-step">
+      <div class="step-badge">2. QUAN SÁT THỰC ĐỊA (OBSERVE)</div>
+      <div class="step-content">${l.observe}</div>
+    </div>
+
+    <div class="lesson-step">
+      <div class="step-badge">3. TƯƠNG TÁC QUẢ CẦU (INTERACT)</div>
+      <div class="step-action">
+        <button class="ghost on" onclick="executeLessonAction('${l.interactAction}')">${l.interactText}</button>
+      </div>
+    </div>
+
+    <div class="lesson-step">
+      <div class="step-badge">4. BẰNG CHỨNG THỰC NGHIỆM (EVIDENCE)</div>
+      <div class="step-content">${l.evidence}</div>
+    </div>
+
+    <div class="lesson-step">
+      <div class="step-badge">5. GIẢI THÍCH CƠ CHẾ (EXPLANATION)</div>
+      <div class="step-content">${l.explanation}</div>
+    </div>
+
+    <div class="lesson-step" style="background:rgba(232,200,122,.04);padding:8px 12px;border-radius:4px">
+      <div class="step-badge" style="color:var(--accent-green)">6. KIỂM TRA HIỂU BIẾT (CHECK)</div>
+      <div class="step-content" style="margin-bottom:6px"><b>${l.checkQ.q}</b></div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        ${l.checkQ.opts.map(o => `
+          <button class="q-btn" onclick="checkLessonAnswer(this, ${o.c})">${o.t}</button>
+        `).join('')}
+      </div>
+      <div class="lesson-check-fb" style="margin-top:6px;font-size:11px;display:none"></div>
+    </div>
+  `;
+}
+
+window.checkLessonAnswer = function(btn, isCorrect) {
+  const fb = btn.parentElement.nextElementSibling;
+  btn.parentElement.querySelectorAll('.q-btn').forEach(b => b.disabled = true);
+  if (isCorrect) {
+    btn.classList.add('correct');
+    fb.innerHTML = `<span style="color:var(--accent-green)">✅ <b>Chính xác tuyệt vời!</b> Bạn đã nắm vững cơ chế khoa học của bài học này.</span>`;
+  } else {
+    btn.classList.add('wrong');
+    fb.innerHTML = `<span style="color:var(--accent-red)">❌ <b>Chưa chính xác!</b> Hãy đọc lại phần giải thích cơ chế ở bước 5.</span>`;
+  }
+  fb.style.display = 'block';
+};
+
+window.executeLessonAction = function(act) {
+  closeLessonsModal();
+  if (act === 've_scale_contrast') {
+    toggleScaleContrast();
+  } else if (act === 'focus_himalaya') {
+    flyToLocation(27.99, 86.93, 3.8);
+    focusTectonicLayer();
+  } else if (act === 'focus_mariana') {
+    flyToLocation(11.37, 142.59, 4.0);
+    setMapMode('hyp');
+  } else if (act === 'focus_vietnam_transect') {
+    onTransectSelect('vn_north');
+  } else if (act === 'focus_andes') {
+    flyToLocation(-32.65, -70.01, 4.0);
+    focusTectonicLayer();
+  }
+};
+
+// 6. Thời Gian Trái Đất (Deep Time Engine)
+const deepTimeMilestones = [
+  {
+    time: "~100 Ma",
+    title: "Kỷ Phấn Trắng: Mảng Ấn Độ ở Nam Bán Cầu",
+    desc: "Cách đây khoảng 100 triệu năm, tiểu lục địa Ấn Độ là một hòn đảo biệt lập tách ra từ siêu lục địa Gondwana ở bán cầu nam. Biển Tethys cổ đại mênh mông ngăn cách Ấn Độ với châu Á."
+  },
+  {
+    time: "~60–50 Ma",
+    title: "Đầu Cenozoic: Tiếp Xúc & Bắt Đầu Va Chạm",
+    desc: "Mảng Ấn Độ di chuyển về phía bắc với tốc độ kỷ lục (~15–20 cm/năm). Khoảng 50–60 triệu năm trước, phần rìa lục địa Ấn Độ bắt đầu tiếp xúc và xô húc vào rìa mảng Á-Âu, khép lại biển Tethys."
+  },
+  {
+    time: "30–10 Ma",
+    title: "Cenozoic: Rút Ngắn, Làm Dày Vỏ & Nâng Cao Mãnh Liệt",
+    desc: "Do không thể hút chìm sâu vào manti, lực nén ép khổng lồ làm lớp vỏ lục địa ở Tây Tạng bị rút ngắn và dày lên gấp đôi (khoảng 60–80 km), đẩy toàn bộ cao nguyên Tây Tạng và các nếp uốn Himalaya nhô cao."
+  },
+  {
+    time: "Hiện tại",
+    title: "Hiện Đại: Kiến Tạo Tiếp Diễn & Động Đất",
+    desc: "Mảng Ấn Độ vẫn tiếp tục tiến về phía bắc khoảng ~5 cm/năm. Đỉnh Everest vẫn được đo nâng cao khoảng 4 mm/năm, đồng thời giải phóng các trận động đất mạnh dọc theo đới đứt gãy đè trườn chính (Main Himalayan Thrust)."
+  }
+];
+
+let curDtIdx = 0;
+window.openDeepTimeModal = function() {
+  document.getElementById('deeptime-modal').classList.add('show');
+  renderDeepTime();
+};
+
+window.closeDeepTimeModal = function() {
+  document.getElementById('deeptime-modal').classList.remove('show');
+};
+
+function renderDeepTime() {
+  const bar = document.getElementById('timeline-nodes');
+  bar.innerHTML = deepTimeMilestones.map((m, i) => `
+    <div class="timeline-node ${i === curDtIdx ? 'active' : ''}" onclick="selectDeepTime(${i})">
+      ${i + 1}
+    </div>
+  `).join('');
+
+  const m = deepTimeMilestones[curDtIdx];
+  document.getElementById('t-info-content').innerHTML = `
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--brass);margin-bottom:4px">MỐC THỜI GIAN: ${m.time}</div>
+    <h4 style="font-size:14px;color:var(--parchment);margin-bottom:6px">${m.title}</h4>
+    <p style="color:var(--parchment-dim);line-height:1.6">${m.desc}</p>
+    <div style="margin-top:10px;display:flex;gap:6px">
+      <button class="ghost on" onclick="flyToLocation(27.99, 86.93, 3.8);closeDeepTimeModal()">🔭 Quan Sát Vị Trí Hiện Tại Trên Quả Cầu</button>
+    </div>
+  `;
+}
+
+window.selectDeepTime = function(idx) {
+  curDtIdx = idx;
+  renderDeepTime();
+};
+
+// 7. Các Modals Khác (Planet Scale, Earth Systems, History, Compare, Data Literacy)
+window.openPlanetModal = function() { document.getElementById('planet-modal').classList.add('show'); };
+window.closePlanetModal = function() { document.getElementById('planet-modal').classList.remove('show'); };
+
+window.openSystemsModal = function() { document.getElementById('systems-modal').classList.add('show'); };
+window.closeSystemsModal = function() { document.getElementById('systems-modal').classList.remove('show'); };
+
+window.focusEarthSystem = function(type) {
+  closeSystemsModal();
+  if (type === 'rain_shadow') {
+    onTransectSelect('vn_central');
+  } else if (type === 'river') {
+    onTransectSelect('vn_north');
+  } else if (type === 'plateau_monsoon') {
+    flyToLocation(32.0, 88.0, 4.5);
+  }
+};
+
+window.openHistoryModal = function() { document.getElementById('history-modal').classList.add('show'); };
+window.closeHistoryModal = function() { document.getElementById('history-modal').classList.remove('show'); };
+
+window.flyToHistoryCase = function(caseId) {
+  closeHistoryModal();
+  if (caseId === 'nile') flyToLocation(26.8, 30.8, 4.0);
+  else if (caseId === 'mesopotamia') flyToLocation(33.2, 44.3, 4.0);
+  else if (caseId === 'yellow_river') flyToLocation(35.0, 110.0, 4.0);
+  else if (caseId === 'mekong') flyToLocation(10.5, 106.0, 4.0);
+};
+
+// Compare Mode Data & Functions
+const comparePresets = {
+  everest_fansipan: {
+    title: "Everest (Nóc nhà thế giới) vs Fansipan (Nóc nhà Đông Dương)",
+    itemA: { name: "Đỉnh Everest", elev: "+8,848.86 m", type: "Núi uốn nếp Kainozoi", plate: "Ấn Độ ↔ Á-Âu", relief: "Rất lớn (>8,000m)" },
+    itemB: { name: "Đỉnh Fansipan", elev: "+3,147.3 m", type: "Khối nếp uốn Granit", plate: "Nội mảng Á-Âu", relief: "Lớn (~2,500m)" },
+    insight: "Cả hai đều chịu tác động nâng bổng mạnh mẽ từ vận động Tân kiến tạo Kainozoi, nhưng Everest nằm ngay ranh giới va chạm mảng còn Fansipan chịu ảnh hưởng gián tiếp qua đới trượt cắt Sông Hồng."
+  },
+  himalaya_andes: {
+    title: "Dãy Himalaya (Va chạm lục địa) vs Dãy Andes (Hút chìm đại dương)",
+    itemA: { name: "Himalaya & Tây Tạng", elev: "Đỉnh 8,849m (TB >4,500m)", type: "Va chạm lục địa - lục địa", plate: "Ấn Độ ↔ Á-Âu", relief: "Rộng lớn, không rãnh biển" },
+    itemB: { name: "Dãy Andes", elev: "Đỉnh 6,961m (TB ~4,000m)", type: "Hút chìm đại dương - lục địa", plate: "Nazca ➔ Nam Mỹ", relief: "Dải hẹp kẹp rãnh sâu -8,000m" },
+    insight: "Sự khác biệt căn bản về cơ chế kiến tạo: Đới hút chìm Andes có rãnh biển sâu sát bờ và hoạt động núi lửa mãnh liệt, trong khi đới va chạm lục địa Himalaya không có rãnh đại dương và ít hoạt động núi lửa phun trào."
+  },
+  tibet_taynguyen: {
+    title: "Cao nguyên Tây Tạng (Châu Á) vs Cao nguyên Tây Nguyên (Việt Nam)",
+    itemA: { name: "Cao nguyên Tây Tạng", elev: "Trung bình >4,500 m", type: "Cao nguyên nâng bổng do xô húc", plate: "Vỏ lục địa dày 60–80 km", relief: "Đồ sộ nhất hành tinh" },
+    itemB: { name: "Cao nguyên Tây Nguyên", elev: "500 – 1,500 m", type: "Cao nguyên xếp tầng Bazan", plate: "Phun trào magma Kainozoi", relief: "Bề mặt san bằng lượn sóng" },
+    insight: "Tây Tạng nâng cao do nén ép cơ học rút ngắn vỏ lục địa; Tây Nguyên hình thành do các đợt phun trào dung nham bazan phủ lên nền đá cổ, tạo đất đỏ trù phú."
+  },
+  redriver_mekong: {
+    title: "Đồng bằng Sông Hồng (Miền Bắc) vs Đồng bằng Sông Cửu Long (Miền Nam)",
+    itemA: { name: "ĐB Sông Hồng", elev: "Trung bình 5–15 m", type: "Châu thổ phù sa cổ có đê", plate: "Bồn trũng sụt lún Kainozoi", relief: "Chia cắt thành nhiều ô trũng" },
+    itemB: { name: "ĐB Sông Cửu Long", elev: "Trung bình 1–2 m", type: "Châu thổ trẻ ngập nước", plate: "Bồi tụ hạ lưu Mê Kông", relief: "Bằng phẳng, ngập lũ tự nhiên" },
+    insight: "ĐB Sông Hồng có hệ thống đê ngăn lũ biển và sông từ hàng nghìn năm; ĐB Sông Cửu Long cao độ cực thấp, địa hình bằng phẳng tạo tập quán 'sống chung với lũ'."
+  }
+};
+
+window.openCompareModal = function() {
+  document.getElementById('compare-modal').classList.add('show');
+  selectCompareModalPreset('everest_fansipan');
+};
+
+window.closeCompareModal = function() {
+  document.getElementById('compare-modal').classList.remove('show');
+};
+
+window.selectCompareModalPreset = function(key) {
+  ['btn-cmp-1', 'btn-cmp-2', 'btn-cmp-3', 'btn-cmp-4'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.classList.remove('on');
+  });
+  if (key === 'everest_fansipan') document.getElementById('btn-cmp-1')?.classList.add('on');
+  else if (key === 'himalaya_andes') document.getElementById('btn-cmp-2')?.classList.add('on');
+  else if (key === 'tibet_taynguyen') document.getElementById('btn-cmp-3')?.classList.add('on');
+  else if (key === 'redriver_mekong') document.getElementById('btn-cmp-4')?.classList.add('on');
+
+  const p = comparePresets[key];
+  const container = document.getElementById('modal-compare-content');
+  container.innerHTML = `
+    <h4 style="color:var(--brass);font-size:13px;margin-bottom:6px">${p.title}</h4>
+    <table class="cmp-table">
+      <thead>
+        <tr><th>Đặc điểm</th><th>${p.itemA.name}</th><th>${p.itemB.name}</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><b>Cao độ / Quy mô</b></td><td>${p.itemA.elev}</td><td>${p.itemB.elev}</td></tr>
+        <tr><td><b>Loại địa mạo</b></td><td>${p.itemA.type}</td><td>${p.itemB.type}</td></tr>
+        <tr><td><b>Bối cảnh kiến tạo</b></td><td>${p.itemA.plate}</td><td>${p.itemB.plate}</td></tr>
+        <tr><td><b>Đặc trưng relief</b></td><td>${p.itemA.relief}</td><td>${p.itemB.relief}</td></tr>
+      </tbody>
+    </table>
+    <div style="background:rgba(232,200,122,.04);border:1px solid var(--hairline-soft);border-radius:4px;padding:8px 10px;margin-top:8px;font-size:11px;line-height:1.5">
+      💡 <b>Nhận thức sư phạm:</b> ${p.insight}
+    </div>
+  `;
+};
+
+window.applyComparePreset = function(key) {
+  const p = comparePresets[key];
+  const container = document.getElementById('compare-result');
+  container.innerHTML = `
+    <h5 style="color:var(--brass);margin-bottom:4px">${p.title}</h5>
+    <div style="font-size:10.5px;color:var(--parchment-dim);line-height:1.5">${p.insight}</div>
+  `;
+};
+
+window.openProvenanceModal = function() { document.getElementById('provenance-modal').classList.add('show'); };
+window.closeProvenanceModal = function() { document.getElementById('provenance-modal').classList.remove('show'); };
+
+// Đóng tất cả modal khi nhấn ESC
+window.closeAllModals = function() {
+  document.querySelectorAll('.edu-modal').forEach(m => m.classList.remove('show'));
+  document.getElementById('modal-box')?.classList.remove('show');
+};
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeAllModals();
+});
+
+/* ══════════════════════════════════════════════════
+   15. VÒNG LẶP RENDER & FPS MONITOR
+   ══════════════════════════════════════════════════ */
+let lastTime = performance.now();
+let frameCount = 0, lastFpsTime = performance.now();
+const telFps = document.getElementById('tel-fps');
+
+function animate(time) {
+  requestAnimationFrame(animate);
+
+  frameCount++;
+  if (time - lastFpsTime >= 1000) {
+    telFps.textContent = Math.round((frameCount * 1000) / (time - lastFpsTime));
+    frameCount = 0;
+    lastFpsTime = time;
+  }
+
+  // Tự quay Trái Đất
+  const togRot = document.getElementById('tog-rot');
+  const spdRot = document.getElementById('spd-rot');
+  if (togRot && togRot.checked && !flyTarget && !isMeasuring) {
+    earthGroup.rotation.y += parseFloat(spdRot.value) * 0.005;
+  }
+
+  // Hiệu ứng sóng radar phát sáng lan tỏa 3D (Radar Pulse Animation)
+  if (activePulseRing) {
+    const elapsed = (time - pulseStartTime) / 1000;
+    if (elapsed < 1.5) {
+      const scale = 1.0 + elapsed * 3.5;
+      activePulseRing.scale.set(scale, scale, 1);
+      if (activePulseRing.material) {
+        activePulseRing.material.opacity = Math.max(0, 0.9 * (1 - elapsed / 1.5));
+      }
+    } else {
+      earthGroup.remove(activePulseRing);
+      if (activePulseRing.geometry) activePulseRing.geometry.dispose();
+      if (activePulseRing.material) activePulseRing.material.dispose();
+      activePulseRing = null;
+    }
+  }
+
+  // Camera Fly-to Animation mượt mà
+  if (flyTarget) {
+    const elapsed = time - flyStartTime;
+    const progress = Math.min(1, elapsed / FLY_DURATION);
+    const ease = 0.5 - 0.5 * Math.cos(progress * Math.PI);
+
+    camera.position.lerpVectors(flyTarget.startPos, flyTarget.endPos, ease);
+    controls.target.lerpVectors(flyTarget.startLook, flyTarget.endLook, ease);
+
+    if (progress >= 1) {
+      flyTarget = null;
+    }
+  }
+
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+requestAnimationFrame(animate);
+
+// Resize handling
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  if (currentProfileData) drawRealProfileCanvas();
+});
+
+// Khởi chạy ứng dụng
+initApplication();
+</script>
+</body>
+</html>

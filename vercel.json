@@ -2,36 +2,32 @@
   "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/dia-hinh",
-      "destination": "/Dia%20Hinh%20The%20Gioi%203D/index.html"
-    },
-    {
       "source": "/dia-hinh-3d",
-      "destination": "/Dia%20Hinh%20The%20Gioi%203D/index.html"
+      "destination": "/dia-hinh/index.html"
     },
     {
       "source": "/diahinh",
-      "destination": "/Dia%20Hinh%20The%20Gioi%203D/index.html"
+      "destination": "/dia-hinh/index.html"
     },
     {
       "source": "/diahinh3d",
-      "destination": "/Dia%20Hinh%20The%20Gioi%203D/index.html"
+      "destination": "/dia-hinh/index.html"
     },
     {
       "source": "/dia-hinh-the-gioi-3d",
-      "destination": "/Dia%20Hinh%20The%20Gioi%203D/index.html"
+      "destination": "/dia-hinh/index.html"
     },
     {
       "source": "/earth-terrain",
-      "destination": "/Dia%20Hinh%20The%20Gioi%203D/index.html"
+      "destination": "/dia-hinh/index.html"
     },
     {
       "source": "/globe",
-      "destination": "/Dia%20Hinh%20The%20Gioi%203D/index.html"
+      "destination": "/dia-hinh/index.html"
     },
     {
       "source": "/data/:path*",
-      "destination": "/Dia%20Hinh%20The%20Gioi%203D/data/:path*"
+      "destination": "/dia-hinh/data/:path*"
     }
   ],
   "headers": [
