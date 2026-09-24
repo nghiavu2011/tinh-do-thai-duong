@@ -380,6 +380,60 @@
     pointer-events:none;font-family:var(--font-mono);font-size:9.5px;color:rgba(232,200,122,.32);
     letter-spacing:.06em;text-shadow:0 1px 4px rgba(0,0,0,.9);display:flex;align-items:center;gap:6px}
 
+  /* Chế độ Toàn Màn Hình Tĩnh Mịch (Zen / Cinematic Fullscreen) */
+  body.fullscreen .masthead,
+  body.fullscreen .slab,
+  body.fullscreen .console,
+  body.fullscreen .touch-hud,
+  body.fullscreen .brand-watermark,
+  body.fullscreen .colophon,
+  body.fullscreen .xsec-panel,
+  body.fullscreen .phenom,
+  body.fullscreen #evt {
+    display: none !important;
+  }
+
+  .fs-exit-btn {
+    position: fixed;
+    top: calc(16px + env(safe-area-inset-top, 0px));
+    right: calc(16px + env(safe-area-inset-right, 0px));
+    z-index: 100;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    background: rgba(7, 10, 22, 0.76);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(232, 200, 122, 0.4);
+    color: var(--brass);
+    font-family: var(--font-ui);
+    font-size: 11.5px;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    transition: opacity 0.35s ease, transform 0.2s ease, background 0.2s ease;
+    opacity: 0.88;
+  }
+  .fs-exit-btn:hover {
+    background: rgba(232, 200, 122, 0.2);
+    color: var(--parchment);
+    border-color: var(--brass);
+    opacity: 1 !important;
+    transform: scale(1.04);
+  }
+  body.fullscreen .fs-exit-btn {
+    display: flex;
+  }
+  body.fullscreen.fs-idle .fs-exit-btn {
+    opacity: 0.12;
+  }
+  body.fullscreen.fs-idle:hover .fs-exit-btn,
+  body.fullscreen .fs-exit-btn:hover {
+    opacity: 1;
+  }
+
   /* loading spinner */
   #loading{position:fixed;inset:0;z-index:9;display:grid;place-items:center;
     background:var(--void);color:var(--parchment);font-family:var(--font-ui);
@@ -642,6 +696,8 @@
   </div>
 </div>
 
+<button type="button" id="btn-exit-fullscreen" class="fs-exit-btn" title="Thoát toàn màn hình (Esc hoặc F)" aria-label="Thoát toàn màn hình">✕ <span id="txt-exit-fs">Thoát toàn màn hình</span></button>
+
 <div class="shell">
   <div class="brand-watermark">🌌 N&Mstudio_SolarSystem · tinh-do-thai-duong.vercel.app</div>
   <header class="masthead">
@@ -654,7 +710,8 @@
     <a href="/dia-hinh" class="brand-contact" style="margin-left:6px;border-color:var(--brass)" title="Phòng Thí Nghiệm Địa Hình Thế Giới 3D">🗺️ Địa Hình 3D</a>
     <button type="button" id="btn-mast-zalo" class="brand-contact" style="margin-left:6px;border-color:rgba(100,181,246,.5);color:#81D4FA;cursor:pointer" title="Cộng đồng Zalo & Tải Cẩm Nang Thiên Văn">💬 Nhóm Zalo</button>
     <button type="button" id="btn-mast-share" class="brand-contact" style="margin-left:6px;border-color:rgba(232,200,122,.4);color:var(--brass);cursor:pointer" title="Chia sẻ website">🚀 Chia sẻ</button>
-    <button type="button" id="btn-ver-badge" class="ver-badge" title="Nhật ký cập nhật / Release Notes">v1.2 <span class="ver-new-dot" id="ver-dot"></span></button>
+    <button type="button" id="btn-fullscreen" class="brand-contact" style="margin-left:6px;border-color:rgba(232,200,122,.45);color:var(--parchment);cursor:pointer" title="Toàn màn hình ngắm vũ trụ (F)">⛶ Toàn màn hình</button>
+    <button type="button" id="btn-ver-badge" class="ver-badge" title="Nhật ký cập nhật / Release Notes">v1.3 <span class="ver-new-dot" id="ver-dot"></span></button>
     <div class="lang-switch" role="group" aria-label="Ngôn ngữ / Language">
       <button class="lang-btn active" id="btn-lang-vi" type="button" title="Tiếng Việt">VN</button>
       <button class="lang-btn" id="btn-lang-en" type="button" title="English (IAU Standard)">EN</button>
@@ -746,6 +803,8 @@
     <button class="th-btn" id="th-rot-l" title="Xoay góc trái ([)" aria-label="Xoay trái">⟲</button>
     <button class="th-btn" id="th-rot-r" title="Xoay góc phải (])" aria-label="Xoay phải">⟳</button>
     <button class="th-btn" id="th-top" title="Nhìn từ trên xuống cực Bắc (T)" aria-label="Nhìn từ trên xuống">⯅</button>
+    <div class="th-sep"></div>
+    <button class="th-btn" id="th-full" title="Toàn màn hình tĩnh mịch (F)" aria-label="Toàn màn hình">⛶</button>
   </div>
 
   <div class="console">
@@ -1017,6 +1076,10 @@ var I18N = {
     community_title: "Cộng đồng Zalo & Tải Cẩm Nang Thiên Văn",
     share: "🚀 Chia sẻ",
     share_title: "Chia sẻ website",
+    fullscreen: "⛶ Toàn Màn Hình",
+    fullscreen_title: "Chế độ Toàn Màn Hình ngắm thiên thể & Dải Ngân Hà (Phím F)",
+    exit_fullscreen: "✕ Thoát Toàn Màn Hình",
+    th_full: "Toàn màn hình ngắm sao (F)",
 
     // Speeds
     speed_pause: "Dừng",
@@ -1148,6 +1211,10 @@ var I18N = {
     community_title: "Astronomy Community & Handbook",
     share: "🚀 Share",
     share_title: "Share website",
+    fullscreen: "⛶ Fullscreen",
+    fullscreen_title: "Zen Cinematic Fullscreen Mode (Press F)",
+    exit_fullscreen: "✕ Exit Fullscreen",
+    th_full: "Zen Fullscreen Mode (F)",
 
     // Speeds
     speed_pause: "Pause",
@@ -4575,11 +4642,30 @@ function renderGeoPanel(){
 
 var CHANGELOG = [
   {
+    version: "v1.3",
+    date: "2026-09-24",
+    title_vi: "Chế Độ Toàn Màn Hình Zen Cinematic (Vũ Trụ Nguyên Bản)",
+    title_en: "Zen Cinematic Fullscreen (Pure Universe Experience)",
+    badge: "Mới nhất / Latest",
+    highlights_vi: [
+      "🌌 <b>Toàn Màn Hình Đắm Chìm (Zen Mode)</b>: Ẩn toàn bộ giao diện bảng điều khiển, để lộ duy nhất các thiên thể 3D, Dải Ngân Hà sống động và bầu trời ngàn sao.",
+      "⌨️ <b>Phím Tắt Tiện Lợi</b>: Bấm phím <code>F</code> để bật/tắt toàn màn hình bất cứ lúc nào; bấm <code>Esc</code> để thoát.",
+      "👁️ <b>Tự Động Ẩn Thông Minh</b>: Nút thoát nổi tự động mờ dần sau 3.5 giây không chạm và hiện lại khi di chuyển chuột hoặc chạm màn hình.",
+      "📱 <b>Hỗ Trợ Mọi Thiết Bị</b>: Tích hợp nút ⛶ ngay trên thanh Masthead và cụm Touch HUD trên di động."
+    ],
+    highlights_en: [
+      "🌌 <b>Immersive Zen Fullscreen</b>: Clears away all UI panels and HUDs, leaving only vivid 3D celestial orbs, the glowing Milky Way, and deep space.",
+      "⌨️ <b>Instant Shortcuts</b>: Press <code>F</code> anytime to toggle fullscreen; press <code>Esc</code> to exit.",
+      "👁️ <b>Smart Auto-Dimming</b>: Floating exit pill automatically fades out after 3.5s of inactivity and revives on pointer movement.",
+      "📱 <b>Cross-Platform Controls</b>: Dedicated ⛶ button on both the Masthead and mobile Touch HUD."
+    ]
+  },
+  {
     version: "v1.2",
     date: "2026-09-24",
     title_vi: "Giai đoạn 2: Trái Đất Sống (Living Earth Geo-Overlay)",
     title_en: "Phase 2: Living Earth Geo-Overlay & Seismic Telemetry",
-    badge: "Mới nhất / Latest",
+    badge: "Đã ổn định / Stable",
     highlights_vi: [
       "🌊 <b>Trái Đất Sống 3D</b>: Bổ sung 486 ranh giới mảng kiến tạo toàn cầu (Tectonic Plate Boundaries) và Vành đai lửa Thái Bình Dương (Ring of Fire).",
       "📡 <b>Dữ liệu Động Đất Thời Gian Thực (USGS Live Feed)</b>: Kết nối trực tiếp API Cục Khảo sát Địa chất Hoa Kỳ, mã hóa màu theo độ sâu chấn tiêu (nông: đỏ <30km, trung bình: cam 30-100km, sâu: tím >100km) kèm sóng chấn động tỏa sáng.",
@@ -4657,7 +4743,7 @@ function openChangelog(){
   if(m) m.style.display = "grid";
   var dot = $("ver-dot");
   if(dot) dot.style.display = "none";
-  try { localStorage.setItem("seen_ver_tinh_do", "v1.2"); } catch(e){}
+  try { localStorage.setItem("seen_ver_tinh_do", "v1.3"); } catch(e){}
 }
 
 function closeChangelog(){
@@ -5585,6 +5671,10 @@ if(!GLOK){
     if(btnMastZalo){ btnMastZalo.textContent = I18N[lang].community; btnMastZalo.title = I18N[lang].community_title; }
     var btnMastShare = $("btn-mast-share");
     if(btnMastShare){ btnMastShare.textContent = I18N[lang].share; btnMastShare.title = I18N[lang].share_title; }
+    var btnFs = $("btn-fullscreen");
+    if(btnFs){ btnFs.textContent = I18N[lang].fullscreen; btnFs.title = I18N[lang].fullscreen_title; }
+    var txtExitFs = $("txt-exit-fs");
+    if(txtExitFs){ txtExitFs.textContent = I18N[lang].exit_fullscreen; }
 
     // Speed buttons
     var speedBtns = document.querySelectorAll("#speed button");
@@ -5599,7 +5689,7 @@ if(!GLOK){
     var hudMap = {
       "th-in": "th_in", "th-out": "th_out", "th-reset": "th_reset",
       "th-sun": "th_sun", "th-level": "th_level", "th-rot-l": "th_rot_l",
-      "th-rot-r": "th_rot_r", "th-top": "th_top"
+      "th-rot-r": "th_rot_r", "th-top": "th_top", "th-full": "th_full"
     };
     for(var hudId in hudMap){
       var btnH = $(hudId);
@@ -5777,7 +5867,7 @@ if(!GLOK){
     if(e.target === modalCl) closeChangelog();
   });
   try {
-    if(localStorage.getItem("seen_ver_tinh_do") === "v1.2"){
+    if(localStorage.getItem("seen_ver_tinh_do") === "v1.3"){
       var vDot = $("ver-dot");
       if(vDot) vDot.style.display = "none";
     }
@@ -6182,22 +6272,85 @@ if(!GLOK){
     }
   }
 
-  // Sự kiện cụm phím nổi Touch HUD
+  /* ══════════════════════════════════════════════════════════════
+     CHẾ ĐỘ TOÀN MÀN HÌNH (ZEN CINEMATIC FULLSCREEN)
+     ══════════════════════════════════════════════════════════════ */
+  var fsIdleTimer = null;
+  function resetFsIdle(){
+    if(!document.body.classList.contains("fullscreen")) return;
+    document.body.classList.remove("fs-idle");
+    if(fsIdleTimer) clearTimeout(fsIdleTimer);
+    fsIdleTimer = setTimeout(function(){
+      if(document.body.classList.contains("fullscreen")){
+        document.body.classList.add("fs-idle");
+      }
+    }, 3500);
+  }
+
+  function toggleFullscreen(forceState){
+    var wantFs = (forceState !== undefined) ? !!forceState : !document.body.classList.contains("fullscreen");
+    if(wantFs){
+      document.body.classList.add("fullscreen");
+      var docEl = document.documentElement;
+      var requestFs = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+      if(requestFs && !document.fullscreenElement && !document.webkitFullscreenElement){
+        try {
+          var p = requestFs.call(docEl);
+          if(p && p.catch) p.catch(function(){});
+        } catch(e){}
+      }
+      resetFsIdle();
+    } else {
+      document.body.classList.remove("fullscreen", "fs-idle");
+      if(fsIdleTimer) clearTimeout(fsIdleTimer);
+      var exitFs = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+      if(exitFs && (document.fullscreenElement || document.webkitFullscreenElement)){
+        try {
+          var p2 = exitFs.call(document);
+          if(p2 && p2.catch) p2.catch(function(){});
+        } catch(e){}
+      }
+    }
+    setTimeout(function(){ resizeGL(); }, 80);
+    setTimeout(function(){ resizeGL(); }, 250);
+  }
+
+  window.addEventListener("fullscreenchange", function(){
+    if(!document.fullscreenElement && document.body.classList.contains("fullscreen")){
+      toggleFullscreen(false);
+    }
+  });
+  window.addEventListener("webkitfullscreenchange", function(){
+    if(!document.webkitFullscreenElement && document.body.classList.contains("fullscreen")){
+      toggleFullscreen(false);
+    }
+  });
+
+  window.addEventListener("mousemove", resetFsIdle, {passive:true});
+  window.addEventListener("touchstart", resetFsIdle, {passive:true});
+
+  // Sự kiện cụm phím nổi Touch HUD & Fullscreen
   var thIn=$("th-in"), thOut=$("th-out"), thReset=$("th-reset");
   if(thIn) thIn.addEventListener("click",function(e){ e.stopPropagation(); zoom(0.80); });
   if(thOut) thOut.addEventListener("click",function(e){ e.stopPropagation(); zoom(1.25); });
   if(thReset) thReset.addEventListener("click",function(e){ e.stopPropagation(); resetPan(); });
 
-  var thSun=$("th-sun"), thLvl=$("th-level"), thRotL=$("th-rot-l"), thRotR=$("th-rot-r"), thTop=$("th-top");
+  var thSun=$("th-sun"), thLvl=$("th-level"), thRotL=$("th-rot-l"), thRotR=$("th-rot-r"), thTop=$("th-top"), thFull=$("th-full");
   if(thSun) thSun.addEventListener("click",function(e){ e.stopPropagation(); alignToSun(); });
   if(thLvl) thLvl.addEventListener("click",function(e){ e.stopPropagation(); levelEcliptic(); });
   if(thRotL) thRotL.addEventListener("click",function(e){ e.stopPropagation(); rotateOrbit(Math.PI/12); });
   if(thRotR) thRotR.addEventListener("click",function(e){ e.stopPropagation(); rotateOrbit(-Math.PI/12); });
   if(thTop) thTop.addEventListener("click",function(e){ e.stopPropagation(); topDownView(); });
+  if(thFull) thFull.addEventListener("click",function(e){ e.stopPropagation(); toggleFullscreen(); });
 
   var btnSunAlign=$("btn-sun-align"), btnLevelBar=$("btn-level");
   if(btnSunAlign) btnSunAlign.addEventListener("click",function(e){ e.stopPropagation(); alignToSun(); });
   if(btnLevelBar) btnLevelBar.addEventListener("click",function(e){ e.stopPropagation(); levelEcliptic(); });
+
+  var btnFsMast=$("btn-fullscreen");
+  if(btnFsMast) btnFsMast.addEventListener("click",function(e){ e.stopPropagation(); toggleFullscreen(); });
+  var btnExitFs=$("btn-exit-fullscreen");
+  if(btnExitFs) btnExitFs.addEventListener("click",function(e){ e.stopPropagation(); toggleFullscreen(false); });
 
   // Nút thu gọn / mở rộng bảng thông tin thiên thể
   var slabToggle=$("btn-slab-toggle");
@@ -6233,8 +6386,19 @@ if(!GLOK){
     if(ev.target.tagName==="INPUT" || ev.target.tagName==="TEXTAREA" || ev.target.isContentEditable) return;
     if(ev.target.tagName==="BUTTON" && (ev.key===" "||ev.key==="Enter")) return;
     if(ev.key==="Escape"){
+      if(document.body.classList.contains("fullscreen")){
+        ev.preventDefault();
+        toggleFullscreen(false);
+        return;
+      }
       if(document.body.classList.contains("lesson")) closeLesson();
       else if(V.mode==="surface") exitSurface();
+    }
+    if(ev.key==="f" || ev.key==="F"){
+      if(!ev.ctrlKey && !ev.metaKey && !ev.altKey){
+        ev.preventDefault();
+        toggleFullscreen();
+      }
     }
     if(ev.key==="+"||ev.key==="=") zoom(0.88);
     if(ev.key==="-") zoom(1.14);
@@ -6288,7 +6452,7 @@ if(!GLOK){
   window.TinhDo = Object.freeze({ V:V, BY:BY, ALL:ALL, dispRadius:dispRadius, stateAt:stateAt, observerFrame:observerFrame,
     project:projectPoint, enterSurface:enterSurface, exitSurface:exitSurface,
     focusBody:focusBody, phenom:PHENOM, sunVisAtPoint:sunVisAtPoint,
-    aimAt:aimAt, aimAtSun:aimAtSun, alignToSun:alignToSun, levelEcliptic:levelEcliptic, topDownView:topDownView, rotateOrbit:rotateOrbit, fillSlab:fillSlab,
+    aimAt:aimAt, aimAtSun:aimAtSun, alignToSun:alignToSun, levelEcliptic:levelEcliptic, topDownView:topDownView, rotateOrbit:rotateOrbit, fillSlab:fillSlab, toggleFullscreen:toggleFullscreen,
     buildTonight:buildTonight, openLesson:openLesson, dayLengthAt:dayLengthAt, jdOfDate:jdOfDate, LESSONS:LESSONS, setSpeed:setSpeed, altitudeOf:altitudeOf, moonPhase:moonPhase,
     magnitudeOf:magnitudeOf, heliocentric:heliocentric, moonGeocentric:moonGeocentric,
     vnEventsAsync:vnEventsAsync, PLACES:PLACES, SKY:SKY,
