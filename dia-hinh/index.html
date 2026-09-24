@@ -1241,6 +1241,43 @@ function initCoordinateGrid() {
 /* ══════════════════════════════════════════════════
    7. CỌC TIÊU ĐỊA DANH 3D & DANH BẠ
    ══════════════════════════════════════════════════ */
+function createIslandSprite(text) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 120;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, 512, 120);
+  
+  // Nền badge đen viền vàng sang trọng
+  ctx.fillStyle = 'rgba(7, 10, 22, 0.90)';
+  if (ctx.roundRect) {
+    ctx.beginPath();
+    ctx.roundRect(8, 12, 496, 96, 14);
+    ctx.fill();
+    ctx.strokeStyle = '#ffd700';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+  } else {
+    ctx.fillRect(8, 12, 496, 96);
+    ctx.strokeStyle = '#ffd700';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(8, 12, 496, 96);
+  }
+  
+  ctx.font = 'bold 32px "Be Vietnam Pro", sans-serif';
+  ctx.fillStyle = '#ffea00';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, 256, 60);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.minFilter = THREE.LinearFilter;
+  const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false });
+  const sprite = new THREE.Sprite(mat);
+  sprite.scale.set(0.32, 0.075, 1.0);
+  return sprite;
+}
+
 function initLandmarksMarkers() {
   while (markersGroup.children.length > 0) {
     markersGroup.remove(markersGroup.children[0]);
@@ -1282,13 +1319,18 @@ function initLandmarksMarkers() {
     ring.userData = { id: lm.id };
     marker.add(ring);
 
-    // 4. Vòng hải đảo chủ quyền phát sáng mở rộng
+    // 4. Vòng hải đảo chủ quyền phát sáng mở rộng + 3D Text Billboard
     if (isIsland) {
-      const outerRingGeo = new THREE.RingGeometry(0.016, 0.032, 24);
-      const outerRingMat = new THREE.MeshBasicMaterial({ color: 0xffaa00, side: THREE.DoubleSide, transparent: true, opacity: 0.85 });
+      const outerRingGeo = new THREE.RingGeometry(0.018, 0.036, 24);
+      const outerRingMat = new THREE.MeshBasicMaterial({ color: 0xffcc00, side: THREE.DoubleSide, transparent: true, opacity: 0.9 });
       const outerRing = new THREE.Mesh(outerRingGeo, outerRingMat);
       outerRing.userData = { id: lm.id };
       marker.add(outerRing);
+
+      const labelText = lm.id === 'hoang_sa' ? '🇻🇳 QĐ. Hoàng Sa (Việt Nam)' : '🇻🇳 QĐ. Trường Sa (Việt Nam)';
+      const sprite = createIslandSprite(labelText);
+      sprite.position.set(0, 0, stemHeight + 0.038);
+      marker.add(sprite);
     }
 
     const pos = latLonToVec3(lm.lat, lm.lon, CFG.earthR * 1.003);
