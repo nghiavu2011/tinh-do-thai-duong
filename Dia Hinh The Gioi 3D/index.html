@@ -337,7 +337,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
       <option value="vn_truong_sa">🏝️ Quần đảo Trường Sa: Cam Ranh ➔ Bồn trũng sâu ➔ Quần đảo san hô</option>
       <option value="everest">🏔️ Nóc nhà thế giới: Vịnh Bengal ➔ Everest ➔ Tây Tạng ➔ Tarim</option>
       <option value="mariana">🌊 Vực thẳm sâu nhất: Đảo Guam ➔ Vực Challenger (-10,984m)</option>
-      <option value="andes">🌎 Dãy Andes: Rãnh Peru-Chile ➔ Aconcagua ➔ Đồng bằng Pampas</option>
+      <option value="aconcagua">🌎 Dãy Andes: Rãnh Peru-Chile ➔ Aconcagua ➔ Đồng bằng Pampas</option>
       <option value="mid_atlantic">🌋 Sống núi giữa Đại Tây Dương: Nam Mỹ ➔ Khe nứt tách giãn ➔ Châu Phi</option>
       <option value="three_step">🇨🇳 Địa hình 3 bậc thang Đông Á: Tây Tạng ➔ Tứ Xuyên ➔ Đồng bằng Trường Giang ➔ Biển Hoa Đông</option>
     </select>
@@ -2234,6 +2234,10 @@ window.onTransectSelect = function(val) {
     generateRealProfile(32.5, 88.0, 31.0, 122.5, "Lát cắt 3 bậc thang Đông Á: Tây Tạng ➔ Tứ Xuyên ➔ ĐB Trường Giang ➔ Biển Hoa Đông");
     flyToLocation(31.5, 105.0, 4.2);
     triggerRadarPulse(31.5, 105.0, 0xe8c87a);
+  } else if (val === 'andes' || val === 'aconcagua') {
+    selectLandmark('aconcagua');
+  } else if (val === 'andes_sys') {
+    selectLandmark('andes_sys');
   } else if (landmarksData.find(l => l.id === val)) {
     selectLandmark(val);
   }
@@ -2693,7 +2697,7 @@ window.executeLessonAction = function(act) {
   } else if (act === 'focus_vietnam_transect') {
     onTransectSelect('vn_north');
   } else if (act === 'focus_andes') {
-    flyToLocation(-32.65, -70.01, 4.0);
+    selectLandmark('aconcagua');
     focusTectonicLayer();
   }
 };
