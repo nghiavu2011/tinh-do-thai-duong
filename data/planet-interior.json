@@ -1,0 +1,495 @@
+{
+  "earth": {
+    "R": 6371,
+    "layers": [
+      {
+        "id": "crust",
+        "name_vi": "Vỏ Trái Đất",
+        "name_en": "Crust",
+        "rOuter": 1.0,
+        "rInner": 0.99,
+        "color": "#8B7355",
+        "temp": "0 – 870°C",
+        "depth": "0 – 70 km",
+        "composition_vi": "Đá hoa cương (granite) & đá bazan (basalt)",
+        "composition_en": "Granitic continental & basaltic oceanic rocks",
+        "state_vi": "Rắn",
+        "state_en": "Solid"
+      },
+      {
+        "id": "mantle",
+        "name_vi": "Lớp Phủ (Manti)",
+        "name_en": "Mantle",
+        "rOuter": 0.99,
+        "rInner": 0.545,
+        "color": "#C0392B",
+        "temp": "870 – 4.400°C",
+        "depth": "70 – 2.890 km",
+        "composition_vi": "Khoáng vật silicat giàu Fe-Mg (Peridotite)",
+        "composition_en": "Silicate minerals rich in Fe and Mg (Peridotite)",
+        "state_vi": "Rắn dẻo (đối lưu nhiệt sinh động đất, núi lửa)",
+        "state_en": "Viscous plastic (convecting solid rock)"
+      },
+      {
+        "id": "outer_core",
+        "name_vi": "Lõi Ngoài",
+        "name_en": "Outer Core",
+        "rOuter": 0.545,
+        "rInner": 0.196,
+        "color": "#E67E22",
+        "temp": "4.400 – 6.100°C",
+        "depth": "2.890 – 5.150 km",
+        "composition_vi": "Hợp kim Sắt - Niken lỏng (dòng chảy sinh từ trường)",
+        "composition_en": "Liquid Iron-Nickel alloy (geodynamo magnetic field)",
+        "state_vi": "Lỏng",
+        "state_en": "Liquid"
+      },
+      {
+        "id": "inner_core",
+        "name_vi": "Lõi Trong",
+        "name_en": "Inner Core",
+        "rOuter": 0.196,
+        "rInner": 0.0,
+        "color": "#F1C40F",
+        "temp": "5.500 – 6.000°C",
+        "depth": "5.150 – 6.371 km",
+        "composition_vi": "Hợp kim Sắt - Niken rắn kết tinh",
+        "composition_en": "Crystalline solid Iron-Nickel alloy",
+        "state_vi": "Rắn (do áp suất cực hạn 360 GPa)",
+        "state_en": "Solid (under 360 GPa extreme pressure)"
+      }
+    ]
+  },
+  "luna": {
+    "R": 1737,
+    "layers": [
+      {
+        "id": "crust",
+        "name_vi": "Vỏ Mặt Trăng",
+        "name_en": "Lunar Crust",
+        "rOuter": 1.0,
+        "rInner": 0.963,
+        "color": "#A9A9A9",
+        "temp": "–170°C đến +130°C",
+        "depth": "0 – 65 km",
+        "composition_vi": "Đá anorthosite giàu canxi fenspat",
+        "composition_en": "Anorthosite rich in Ca-feldspar",
+        "state_vi": "Rắn",
+        "state_en": "Solid"
+      },
+      {
+        "id": "mantle",
+        "name_vi": "Lớp Phủ",
+        "name_en": "Lunar Mantle",
+        "rOuter": 0.963,
+        "rInner": 0.276,
+        "color": "#696969",
+        "temp": "500 – 1.200°C",
+        "depth": "65 – 1.250 km",
+        "composition_vi": "Khoáng vật olivin & pyroxen giàu magiê",
+        "composition_en": "Olivine and pyroxene rich in magnesium",
+        "state_vi": "Rắn",
+        "state_en": "Solid"
+      },
+      {
+        "id": "outer_core",
+        "name_vi": "Lõi Ngoài Nóng Chảy",
+        "name_en": "Fluid Outer Core",
+        "rOuter": 0.276,
+        "rInner": 0.138,
+        "color": "#B87333",
+        "temp": "1.300 – 1.400°C",
+        "depth": "1.250 – 1.500 km",
+        "composition_vi": "Sắt lỏng chứa tạp chất lưu huỳnh",
+        "composition_en": "Fluid metallic iron with sulfur",
+        "state_vi": "Lỏng",
+        "state_en": "Fluid"
+      },
+      {
+        "id": "inner_core",
+        "name_vi": "Lõi Trong Rắn",
+        "name_en": "Solid Inner Core",
+        "rOuter": 0.138,
+        "rInner": 0.0,
+        "color": "#FFD700",
+        "temp": "~1.400°C",
+        "depth": "1.500 – 1.737 km",
+        "composition_vi": "Kim loại sắt rắn nguyên chất",
+        "composition_en": "Metallic solid iron",
+        "state_vi": "Rắn (bán kính ~240 km)",
+        "state_en": "Solid (radius ~240 km)"
+      }
+    ]
+  },
+  "mars": {
+    "R": 3390,
+    "layers": [
+      {
+        "id": "crust",
+        "name_vi": "Vỏ Sao Hỏa",
+        "name_en": "Martian Crust",
+        "rOuter": 1.0,
+        "rInner": 0.985,
+        "color": "#A0522D",
+        "temp": "–125°C đến +20°C",
+        "depth": "0 – 50 km",
+        "composition_vi": "Đá bazan núi lửa giàu oxit sắt (bụi rỉ sét đỏ)",
+        "composition_en": "Basaltic volcanic rock rich in iron oxide (rust)",
+        "state_vi": "Rắn",
+        "state_en": "Solid"
+      },
+      {
+        "id": "mantle",
+        "name_vi": "Lớp Phủ Silicat",
+        "name_en": "Silicate Mantle",
+        "rOuter": 0.985,
+        "rInner": 0.53,
+        "color": "#8B4513",
+        "temp": "1.000 – 1.700°C",
+        "depth": "50 – 1.600 km",
+        "composition_vi": "Khoáng vật silicat giàu FeO và Mg",
+        "composition_en": "Silicate minerals rich in FeO and Mg",
+        "state_vi": "Rắn dẻo nhưng tĩnh lặng (không còn kiến tạo mảng)",
+        "state_en": "Stagnant solid lid mantle"
+      },
+      {
+        "id": "core",
+        "name_vi": "Lõi Kim Loại Lỏng",
+        "name_en": "Liquid Metallic Core",
+        "rOuter": 0.53,
+        "rInner": 0.0,
+        "color": "#DAA520",
+        "temp": "1.800 – 2.200°C",
+        "depth": "1.600 – 3.390 km",
+        "composition_vi": "Hợp kim Fe-Ni giàu lưu huỳnh (S), cacbon (C) và oxy (O)",
+        "composition_en": "Liquid Fe-Ni alloy enriched in sulfur, carbon and oxygen",
+        "state_vi": "Lỏng (xác thực từ tàu NASA InSight 2022)",
+        "state_en": "Liquid (confirmed by NASA InSight 2022)"
+      }
+    ]
+  },
+  "mercury": {
+    "R": 2440,
+    "layers": [
+      {
+        "id": "crust",
+        "name_vi": "Vỏ Silicat Mỏng",
+        "name_en": "Silicate Crust",
+        "rOuter": 1.0,
+        "rInner": 0.984,
+        "color": "#9E9E9E",
+        "temp": "–180°C đến +430°C",
+        "depth": "0 – 35 km",
+        "composition_vi": "Đá silicat nghèo sắt, nhiều lưu huỳnh và kali",
+        "composition_en": "Silicate rock low in iron, high in volatiles",
+        "state_vi": "Rắn có nhiều nếp đứt gãy co rút",
+        "state_en": "Solid with thrust faults"
+      },
+      {
+        "id": "mantle",
+        "name_vi": "Lớp Phủ Rất Mỏng",
+        "name_en": "Thin Mantle",
+        "rOuter": 0.984,
+        "rInner": 0.82,
+        "color": "#757575",
+        "temp": "600 – 1.000°C",
+        "depth": "35 – 400 km",
+        "composition_vi": "Khoáng vật silicat mỏng bị bóc mòn bởi va chạm cổ đại",
+        "composition_en": "Thin silicate mantle stripped by giant impacts",
+        "state_vi": "Rắn",
+        "state_en": "Solid"
+      },
+      {
+        "id": "outer_core",
+        "name_vi": "Lõi Kim Loại Ngoài",
+        "name_en": "Outer Metallic Core",
+        "rOuter": 0.82,
+        "rInner": 0.45,
+        "color": "#FFA000",
+        "temp": "1.200 – 1.700°C",
+        "depth": "400 – 1.340 km",
+        "composition_vi": "Sắt - Lưu huỳnh lỏng (chiếm tới 85% bán kính hành tinh!)",
+        "composition_en": "Molten iron-sulfur layer generating magnetic dipole",
+        "state_vi": "Lỏng",
+        "state_en": "Liquid"
+      },
+      {
+        "id": "inner_core",
+        "name_vi": "Lõi Trong Rắn Khổng Lồ",
+        "name_en": "Giant Solid Inner Core",
+        "rOuter": 0.45,
+        "rInner": 0.0,
+        "color": "#FFD54F",
+        "temp": "~1.700°C",
+        "depth": "1.340 – 2.440 km",
+        "composition_vi": "Khối sắt - niken kim loại nguyên khối đậm đặc",
+        "composition_en": "Dense solid iron-nickel crystalline core",
+        "state_vi": "Rắn",
+        "state_en": "Solid"
+      }
+    ]
+  },
+  "venus": {
+    "R": 6052,
+    "layers": [
+      {
+        "id": "crust",
+        "name_vi": "Vỏ Sao Kim",
+        "name_en": "Crust",
+        "rOuter": 1.0,
+        "rInner": 0.992,
+        "color": "#D7CCC8",
+        "temp": "465°C bề mặt (hiệu ứng nhà kính cực hạn)",
+        "depth": "0 – 50 km",
+        "composition_vi": "Đá bazan núi lửa, nhiều đồng bằng dung nham đông cứng",
+        "composition_en": "Basaltic volcanic rock, vast lava plains",
+        "state_vi": "Rắn",
+        "state_en": "Solid"
+      },
+      {
+        "id": "mantle",
+        "name_vi": "Lớp Phủ Nóng Chảy",
+        "name_en": "Mantle",
+        "rOuter": 0.992,
+        "rInner": 0.529,
+        "color": "#BF360C",
+        "temp": "1.000 – 3.000°C",
+        "depth": "50 – 2.850 km",
+        "composition_vi": "Đá silicat peridotite nhiệt độ cao",
+        "composition_en": "Silicate peridotite rock at high temperature",
+        "state_vi": "Rắn dẻo",
+        "state_en": "Plastic solid"
+      },
+      {
+        "id": "core",
+        "name_vi": "Lõi Sắt - Niken",
+        "name_en": "Iron-Nickel Core",
+        "rOuter": 0.529,
+        "rInner": 0.0,
+        "color": "#FF6F00",
+        "temp": "3.500 – 5.000°C",
+        "depth": "2.850 – 6.052 km",
+        "composition_vi": "Hợp kim Fe-Ni (chưa có từ trường do quay quá chậm)",
+        "composition_en": "Metallic iron-nickel (lacks dynamo due to slow spin)",
+        "state_vi": "Phần lỏng & phần rắn",
+        "state_en": "Partially molten and solid"
+      }
+    ]
+  },
+  "jupiter": {
+    "R": 69911,
+    "layers": [
+      {
+        "id": "atmosphere",
+        "name_vi": "Tầng Khí Quyển Mây Bão",
+        "name_en": "Atmosphere & Cloud Decks",
+        "rOuter": 1.0,
+        "rInner": 0.95,
+        "color": "#E0A96D",
+        "temp": "–145°C đến 20°C",
+        "depth": "0 – 3.500 km",
+        "composition_vi": "90% Hydro (H₂), 10% Heli (He), amoniac (NH₃), nước",
+        "composition_en": "90% H₂, 10% He, ammonia, water ice clouds",
+        "state_vi": "Khí xoáy cuộn (Vết Đỏ Lớn)",
+        "state_en": "Gas storms"
+      },
+      {
+        "id": "liquid_h2",
+        "name_vi": "Hydro Phân Tử Lỏng",
+        "name_en": "Liquid Molecular Hydrogen",
+        "rOuter": 0.95,
+        "rInner": 0.77,
+        "color": "#64B5F6",
+        "temp": "2.000 – 8.000°C",
+        "depth": "3.500 – 16.000 km",
+        "composition_vi": "Đại dương hydro lỏng siêu tới hạn dưới áp suất cao",
+        "composition_en": "Supercritical fluid molecular hydrogen ocean",
+        "state_vi": "Lỏng siêu tới hạn",
+        "state_en": "Supercritical fluid"
+      },
+      {
+        "id": "metallic_h2",
+        "name_vi": "Hydro Kim Loại Lỏng",
+        "name_en": "Liquid Metallic Hydrogen",
+        "rOuter": 0.77,
+        "rInner": 0.22,
+        "color": "#1976D2",
+        "temp": "8.000 – 20.000°C",
+        "depth": "16.000 – 54.000 km",
+        "composition_vi": "Hydro bị nén proton-electron tự do (dẫn điện cực mạnh)",
+        "composition_en": "Degenerate metallic liquid hydrogen (conducts electricity)",
+        "state_vi": "Kim loại lỏng (sinh từ trường khủng khiếp)",
+        "state_en": "Liquid metal (powers giant magnetosphere)"
+      },
+      {
+        "id": "core",
+        "name_vi": "Lõi Khuếch Tán Nặng",
+        "name_en": "Diffuse Heavy Element Core",
+        "rOuter": 0.22,
+        "rInner": 0.0,
+        "color": "#FF5722",
+        "temp": "20.000 – 30.000°C",
+        "depth": "54.000 – 69.911 km",
+        "composition_vi": "Đá, kim loại và băng hòa tan loãng vào hydro",
+        "composition_en": "Diffuse diluted mixture of rock, ice and metallic H",
+        "state_vi": "Lõi mờ khuếch tán (phát hiện bởi tàu NASA Juno)",
+        "state_en": "Fuzzy diffuse core (discovered by NASA Juno)"
+      }
+    ]
+  },
+  "saturn": {
+    "R": 58232,
+    "layers": [
+      {
+        "id": "atmosphere",
+        "name_vi": "Khí Quyển Tầng Trên",
+        "name_en": "Upper Atmosphere",
+        "rOuter": 1.0,
+        "rInner": 0.95,
+        "color": "#FFE082",
+        "temp": "–178°C đến 0°C",
+        "depth": "0 – 3.000 km",
+        "composition_vi": "96% Hydro, 3% Heli, khí mê-tan & amoniac",
+        "composition_en": "96% H₂, 3% He, methane and ammonia haze",
+        "state_vi": "Khí",
+        "state_en": "Gas"
+      },
+      {
+        "id": "liquid_h2",
+        "name_vi": "Hydro Lỏng & Mưa Heli",
+        "name_en": "Liquid H₂ & Helium Rain",
+        "rOuter": 0.95,
+        "rInner": 0.65,
+        "color": "#81D4FA",
+        "temp": "1.000 – 7.000°C",
+        "depth": "3.000 – 20.000 km",
+        "composition_vi": "Hydro phân tử lỏng kèm giọt mưa heli rơi vào sâu",
+        "composition_en": "Liquid hydrogen with droplets of condensing helium rain",
+        "state_vi": "Lỏng",
+        "state_en": "Liquid"
+      },
+      {
+        "id": "metallic_h2",
+        "name_vi": "Hydro Kim Loại",
+        "name_en": "Metallic Hydrogen",
+        "rOuter": 0.65,
+        "rInner": 0.25,
+        "color": "#0288D1",
+        "temp": "7.000 – 12.000°C",
+        "depth": "20.000 – 43.000 km",
+        "composition_vi": "Hydro kim loại dẫn điện",
+        "composition_en": "Electrically conducting metallic hydrogen",
+        "state_vi": "Kim loại lỏng",
+        "state_en": "Liquid metal"
+      },
+      {
+        "id": "core",
+        "name_vi": "Lõi Băng - Đá Mờ Loãng",
+        "name_en": "Diffuse Ice-Rock Core",
+        "rOuter": 0.25,
+        "rInner": 0.0,
+        "color": "#E64A19",
+        "temp": "~12.000°C",
+        "depth": "43.000 – 58.232 km",
+        "composition_vi": "Đá silicat, sắt và các loại băng nén chặt",
+        "composition_en": "Diffuse core of rock, iron, and compressed ices",
+        "state_vi": "Lõi khuếch tán chiếm tới 60% khối lượng hành tinh",
+        "state_en": "Fuzzy core spanning 60% of planet mass"
+      }
+    ]
+  },
+  "uranus": {
+    "R": 25362,
+    "layers": [
+      {
+        "id": "atmosphere",
+        "name_vi": "Khí Quyển Mê-tan Xanh Lơ",
+        "name_en": "Methane-Rich Atmosphere",
+        "rOuter": 1.0,
+        "rInner": 0.85,
+        "color": "#80DEEA",
+        "temp": "–224°C (lạnh nhất Hệ Mặt Trời)",
+        "depth": "0 – 3.800 km",
+        "composition_vi": "83% Hydro, 15% Heli, 2.3% Mê-tan (hấp thụ ánh sáng đỏ)",
+        "composition_en": "83% H₂, 15% He, 2.3% Methane (absorbs red light)",
+        "state_vi": "Khí",
+        "state_en": "Gas"
+      },
+      {
+        "id": "mantle",
+        "name_vi": "Lớp Phủ Băng Nóng Dày",
+        "name_en": "Slushy Icy Mantle",
+        "rOuter": 0.85,
+        "rInner": 0.28,
+        "color": "#26A69A",
+        "temp": "2.000 – 5.000°C",
+        "depth": "3.800 – 18.000 km",
+        "composition_vi": "Hỗn hợp 'Băng' siêu nén nước, amoniac, mê-tan & mưa kim cương",
+        "composition_en": "Dense slush of water, ammonia, methane & diamond rain",
+        "state_vi": "Chất lỏng ion dẫn điện (nước siêu ion)",
+        "state_en": "Superionic fluid conductor"
+      },
+      {
+        "id": "core",
+        "name_vi": "Lõi Đá - Sắt",
+        "name_en": "Rocky Core",
+        "rOuter": 0.28,
+        "rInner": 0.0,
+        "color": "#5D4037",
+        "temp": "~5.000°C",
+        "depth": "18.000 – 25.362 km",
+        "composition_vi": "Khoáng silicat và kim loại sắt - niken",
+        "composition_en": "Silicate rock and iron-nickel metal",
+        "state_vi": "Rắn",
+        "state_en": "Solid"
+      }
+    ]
+  },
+  "neptune": {
+    "R": 24622,
+    "layers": [
+      {
+        "id": "atmosphere",
+        "name_vi": "Khí Quyển Xanh Lam Đậm",
+        "name_en": "Deep Blue Atmosphere",
+        "rOuter": 1.0,
+        "rInner": 0.82,
+        "color": "#42A5F5",
+        "temp": "–218°C",
+        "depth": "0 – 4.500 km",
+        "composition_vi": "80% Hydro, 19% Heli, 1.5% Mê-tan với bão gió 2.100 km/h",
+        "composition_en": "80% H₂, 19% He, 1.5% Methane with 2,100 km/h supersonic winds",
+        "state_vi": "Khí bão siêu thanh",
+        "state_en": "Gas"
+      },
+      {
+        "id": "mantle",
+        "name_vi": "Đại Dương Nước - Amoniac Siêu Nóng",
+        "name_en": "Hot Water-Ammonia Ocean",
+        "rOuter": 0.82,
+        "rInner": 0.28,
+        "color": "#00897B",
+        "temp": "2.000 – 5.000°C",
+        "depth": "4.500 – 17.500 km",
+        "composition_vi": "Dung dịch lỏng nóng dẫn điện cực độ của nước, amoniac, mê-tan",
+        "composition_en": "Superheated electrical conductive liquid water-ammonia mix",
+        "state_vi": "Chất lỏng siêu ion hóa",
+        "state_en": "Superionic fluid"
+      },
+      {
+        "id": "core",
+        "name_vi": "Lõi Đá & Kim Loại",
+        "name_en": "Rock & Metal Core",
+        "rOuter": 0.28,
+        "rInner": 0.0,
+        "color": "#4E342E",
+        "temp": "~5.400°C",
+        "depth": "17.500 – 24.622 km",
+        "composition_vi": "Đá silicat đặc, sắt và niken (khối lượng bằng ~1.2 Trái Đất)",
+        "composition_en": "Dense silicate rock, iron, nickel (~1.2 Earth masses)",
+        "state_vi": "Rắn",
+        "state_en": "Solid"
+      }
+    ]
+  }
+}

@@ -29,6 +29,7 @@
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script defer src="telemetry.js"></script>
+<script src="planet-interior.js"></script>
 
 <!-- Tối ưu kết nối & nạp font -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -183,6 +184,39 @@
   .phenom{position:absolute;left:24px;bottom:calc(118px + env(safe-area-inset-bottom, 0px));width:290px;background:var(--panel);
     -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);border:1px solid var(--hairline);padding:14px 15px 12px;display:none}
   .phenom.open{display:block}
+
+  /* panel cắt lớp vùng lõi hành tinh */
+  .xsec-panel{position:absolute;left:24px;bottom:calc(118px + env(safe-area-inset-bottom, 0px));width:330px;
+    background:var(--panel);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+    border:1px solid var(--hairline);padding:13px 15px 13px;display:none;z-index:4;
+    box-shadow:0 8px 32px rgba(0,0,0,.65);max-height:calc(100vh - 210px);overflow-y:auto;border-radius:4px}
+  .xsec-panel.open{display:block}
+  .xsec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .xsec-title{font-family:var(--font-display);font-size:20px;font-weight:600;margin:0;color:var(--parchment);display:flex;align-items:center;gap:6px}
+  .xsec-close{appearance:none;background:none;border:none;color:var(--parchment-dim);font-size:18px;cursor:pointer;padding:2px 6px;line-height:1;border-radius:3px}
+  .xsec-close:hover{color:var(--brass);background:rgba(232,200,122,.12)}
+  .xsec-slider-row{display:flex;align-items:center;gap:8px;margin:7px 0 9px;background:rgba(232,200,122,.05);padding:5px 9px;border-radius:3px;border:1px solid var(--hairline-soft)}
+  .xsec-slider-row span{font-size:10px;color:var(--parchment-dim);font-family:var(--font-mono);white-space:nowrap}
+  .xsec-slider{flex:1;accent-color:var(--brass);cursor:ew-resize}
+  .xsec-angles{display:flex;gap:4px;margin-bottom:8px}
+  .xsec-ang-btn{flex:1;appearance:none;background:rgba(232,200,122,.06);border:1px solid var(--hairline-soft);
+    color:var(--parchment-dim);font-family:var(--font-mono);font-size:9.5px;padding:4px 0;cursor:pointer;border-radius:3px;transition:.15s}
+  .xsec-ang-btn:hover{background:rgba(232,200,122,.15);color:var(--parchment)}
+  .xsec-ang-btn.active{background:var(--brass);color:var(--ink);font-weight:600;border-color:var(--brass)}
+  .xsec-list{display:flex;flex-direction:column;gap:5px}
+  .xsec-item{display:flex;flex-direction:column;gap:3px;padding:6px 8px;border:1px solid var(--hairline-soft);
+    border-radius:3px;background:rgba(232,200,122,.03);cursor:pointer;transition:.18s}
+  .xsec-item:hover,.xsec-item.active{background:rgba(232,200,122,.15);border-color:var(--brass);transform:translateX(2px)}
+  .xsec-item-top{display:flex;align-items:center;gap:6px}
+  .xsec-dot{width:10px;height:10px;border-radius:50%;flex:none;box-shadow:0 0 6px 1px currentColor}
+  .xsec-item-name{font-size:11.5px;font-weight:600;color:var(--parchment)}
+  .xsec-item-depth{margin-left:auto;font-family:var(--font-mono);font-size:9.5px;color:var(--brass)}
+  .xsec-item-meta{display:flex;justify-content:space-between;font-size:9px;color:var(--parchment-dim);font-family:var(--font-mono)}
+  .xsec-item-desc{font-size:10px;line-height:1.42;color:#D8D2C2;margin-top:2px;display:none}
+  .xsec-item.active .xsec-item-desc{display:block}
+  @media (max-width:767px){
+    .xsec-panel{left:10px;right:10px;bottom:calc(112px + env(safe-area-inset-bottom, 0px));width:auto;max-height:48vh}
+  }
   .phenom h3{font-family:var(--font-display);font-size:19px;font-weight:600;margin:0 0 3px}
   .phenom p.sub{font-size:11px;color:var(--parchment-dim);margin:0 0 10px;line-height:1.5}
   .plist{display:grid;gap:1px}
@@ -569,8 +603,33 @@
     <div class="slab-body" id="slab-body">
       <dl class="readout" id="d-rows"></dl>
       <button class="solid" id="btn-stand" hidden>Đứng trên Trái Đất</button>
+      <button class="ghost" id="btn-xsec" hidden style="width:100%;margin-top:6px;display:none;align-items:center;justify-content:center;gap:6px"><span>🔬</span> <span id="btn-xsec-txt">Cắt Lớp Vùng Lõi</span></button>
     </div>
   </section>
+
+  <aside class="xsec-panel" id="xsec-panel" aria-live="polite">
+    <div class="xsec-head">
+      <h3 class="xsec-title"><span>🔬</span> <span id="xsec-planet-title">Vùng Lõi Hành Tinh</span></h3>
+      <button class="xsec-close" id="btn-xsec-close" title="Đóng cắt lớp" aria-label="Đóng cắt lớp">✕</button>
+    </div>
+    <div class="xsec-angles">
+      <button class="xsec-ang-btn active" id="xsec-ang-90" data-angle="90">Góc 90° (1/4)</button>
+      <button class="xsec-ang-btn" id="xsec-ang-120" data-angle="120">Góc 120°</button>
+      <button class="xsec-ang-btn" id="xsec-ang-180" data-angle="180">Bổ đôi 180°</button>
+    </div>
+    <div class="xsec-slider-row">
+      <span id="xsec-ang-label">Góc cắt: 90°</span>
+      <input type="range" class="xsec-slider" id="xsec-range" min="15" max="180" value="90" step="5">
+    </div>
+    <div class="xsec-slider-row" style="margin-top:-3px;margin-bottom:9px;">
+      <span id="xsec-explode-label">Bóc tách 3D: 35%</span>
+      <input type="range" class="xsec-slider" id="xsec-explode-range" min="0" max="100" value="35" step="2">
+    </div>
+    <div class="xsec-list" id="xsec-layers"></div>
+    <p class="pnote" style="margin-top:8px;font-size:9.5px;color:var(--brass-dim);line-height:1.4" id="xsec-hint">
+      * Click vào từng tầng để xem thành phần địa chất và cơ chế vật lý.
+    </p>
+  </aside>
 
   <aside class="phenom" id="phenom">
     <h3>Hiện tượng</h3>
@@ -851,6 +910,15 @@ var I18N = {
     expert: "Chi tiết hơn",
     light_mode: "Nhẹ máy",
     reverse: "Ngược",
+    xsec_btn: "Cắt Lớp Vùng Lõi",
+    xsec_btn_close: "Đóng Cắt Lớp",
+    xsec_panel_title: "Vùng Lõi · ",
+    xsec_ang_label: "Góc cắt: ",
+    xsec_explode_label: "Bóc tách 3D: ",
+    xsec_deg_90: "Góc 90° (1/4)",
+    xsec_deg_120: "Góc 120°",
+    xsec_deg_180: "Bổ đôi 180°",
+    xsec_close_tip: "Đóng cắt lớp",
     hint_orbit: "<b>Kéo</b> để quay · <b>Cuộn</b> để phóng · <b>Nhấn</b> vào thiên thể để tới gần",
     hint_surface: "<b>Kéo</b> để nhìn quanh · <b>Cuộn</b> để phóng như ống nhòm · <b>Esc</b> để quay ra",
     hint_peg: "Nhấn vào <b>Trái Đất, Mặt Trăng, Sao Hỏa, Sao Thủy, Io, Europa, Ganymede, Titan</b> hoặc <b>Triton</b> để đứng lên đó",
@@ -968,6 +1036,15 @@ var I18N = {
     expert: "More Details",
     light_mode: "Lite Mode",
     reverse: "Reverse",
+    xsec_btn: "Cross-Section Core",
+    xsec_btn_close: "Close Section",
+    xsec_panel_title: "Core Structure · ",
+    xsec_ang_label: "Cut Angle: ",
+    xsec_explode_label: "3D Explode: ",
+    xsec_deg_90: "90° Cut (1/4)",
+    xsec_deg_120: "120° Cut",
+    xsec_deg_180: "180° Half",
+    xsec_close_tip: "Close cross-section",
     hint_orbit: "<b>Drag</b> to orbit · <b>Scroll</b> to zoom · <b>Tap/Click</b> a body to focus",
     hint_surface: "<b>Drag</b> to look around · <b>Scroll</b> to zoom binocular · <b>Esc</b> to return to orbit",
     hint_peg: "Tap <b>Earth, Moon, Mars, Mercury, Io, Europa, Ganymede, Titan</b> or <b>Triton</b> to land",
@@ -1560,6 +1637,18 @@ function discMesh(seg, rings){
   return makeVao([{loc:0,size:3,data:new Float32Array(pos)},
                   {loc:1,size:2,data:new Float32Array(uv)}], new Uint32Array(idx));
 }
+function halfDiscMesh(seg){
+  var pos=[], idx=[];
+  pos.push(0,0,0);
+  for(var i=0; i<=seg; i++){
+    var a = -Math.PI*0.5 + (i/seg)*Math.PI; // nửa đĩa x >= 0 (-PI/2 đến PI/2)
+    pos.push(Math.cos(a), Math.sin(a), 0);
+  }
+  for(var j=1; j<=seg; j++){
+    idx.push(0, j, j+1);
+  }
+  return makeVao([{loc:0, size:3, data:new Float32Array(pos)}], new Uint16Array(idx));
+}
 
 /* ── texture / FBO ── */
 function tex2d(w,h,internal,format,type,filter,wrap){
@@ -2001,17 +2090,18 @@ layout(location=0) in vec3 aPos;
 layout(location=1) in vec2 aUv;
 uniform mat4 uModel, uVP;
 uniform mat3 uRot;
-out vec3 vPos; out vec2 vUv; out vec3 vN;
+out vec3 vPos; out vec2 vUv; out vec3 vN; out vec3 vObjPos;
 void main(){
   vec4 w = uModel*vec4(aPos,1.0);
   vPos = w.xyz; vUv = aUv;
   vN = normalize(uRot*aPos);
+  vObjPos = aPos;
   gl_Position = uVP*w;
 }`;
 
 var BODY_FS = `#version 300 es
 precision highp float;
-in vec3 vPos; in vec2 vUv; in vec3 vN;
+in vec3 vPos; in vec2 vUv; in vec3 vN; in vec3 vObjPos;
 out vec4 oCol;
 uniform sampler2D uAlb, uAux;
 uniform vec3  uAtmo, uTint;
@@ -2020,8 +2110,20 @@ uniform vec2  uTexel;
 uniform float uUoff, uReal;
 uniform float uEmissive, uExposure, uAmbient;
 uniform vec3  uPole;
+uniform float uCutAngle;
+uniform int   uInvertCut;
 ${GLSL_ECLIPSE}
 void main(){
+  if(uCutAngle > 0.01){
+    float ang = atan(vObjPos.z, vObjPos.x);
+    if(ang < 0.0) ang += 6.28318530718;
+    bool inWedge = (ang >= 0.0 && ang <= uCutAngle);
+    if(uInvertCut == 1){
+      if(!inWedge) discard;
+    } else {
+      if(inWedge) discard;
+    }
+  }
   vec2 uv = vec2(fract(vUv.x + uUoff), vUv.y);
   vec4 A = texture(uAlb, uv);
   vec4 X = texture(uAux, uv);
@@ -2091,6 +2193,168 @@ void main(){
     lit = mix(vec3(g), lit, 1.18);
   }
   oCol = vec4(lit*uExposure, 1.0);
+}`;
+
+/* ── mặt cắt phẳng vùng lõi (cross-section caps) ── */
+var CAP_VS = `#version 300 es
+layout(location=0) in vec3 aPos;
+uniform mat4 uModel, uVP;
+out vec2 vCoord;
+void main(){
+  vCoord = aPos.xy;
+  gl_Position = uVP * (uModel * vec4(aPos, 1.0));
+}`;
+
+var CAP_FS = `#version 300 es
+precision highp float;
+in vec2 vCoord;
+out vec4 oCol;
+uniform vec4  uLayerCols[8];
+uniform float uLayerRadii[8];
+uniform int   uNumLayers;
+uniform int   uHighlight;
+uniform float uExposure;
+uniform float uTime;
+
+float hash2(vec2 p){
+  p = fract(p * vec2(123.34, 456.21));
+  p += dot(p, p + 45.32);
+  return fract(p.x * p.y);
+}
+float vnoise(vec2 p){
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  float a = hash2(i);
+  float b = hash2(i + vec2(1.0, 0.0));
+  float c = hash2(i + vec2(0.0, 1.0));
+  float d = hash2(i + vec2(1.0, 1.0));
+  return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+}
+float fbm(vec2 p){
+  return 0.52 * vnoise(p) + 0.28 * vnoise(p * 2.05) + 0.14 * vnoise(p * 4.10) + 0.06 * vnoise(p * 8.20);
+}
+
+void main(){
+  float r = length(vCoord);
+  if(r > 1.002) discard;
+  vec4 col = uLayerCols[uNumLayers - 1];
+  int idx = uNumLayers - 1;
+  float rOuter = 1.0;
+  for(int i = 0; i < 8; i++){
+    if(i >= uNumLayers) break;
+    if(r <= uLayerRadii[i]){
+      col = uLayerCols[i];
+      idx = i;
+      rOuter = uLayerRadii[i];
+      break;
+    }
+  }
+
+  // Tầng Lõi trong cùng (idx == 0): Phát quang dung nham / nhiệt hạch nóng trắng rực rỡ (Hình 1)
+  if(idx == 0){
+    float coreT = clamp(r / max(0.001, rOuter), 0.0, 1.0);
+    float incand = pow(1.0 - coreT, 1.35);
+    float cTurb = fbm(vCoord * 35.0 + vec2(uTime * 0.12, -uTime * 0.08));
+    vec3 whiteHot = vec3(1.0, 0.98, 0.90);
+    vec3 goldenFire = vec3(1.0, 0.82, 0.28);
+    col.rgb = mix(col.rgb, goldenFire, incand * 0.70);
+    col.rgb = mix(col.rgb, whiteHot, incand * incand * 0.95);
+    col.rgb += vec3(0.18, 0.12, 0.05) * (cTurb - 0.5);
+  }
+  // Tầng Lõi ngoài / Dung nham đối lưu (idx == 1): Dòng nham thạch cuộn sóng (Hình 1 & 2)
+  else if(idx == 1){
+    float flowAng = atan(vCoord.y, vCoord.x);
+    vec2 flowP = vec2(r * 26.0 - uTime * 0.15, flowAng * 10.0);
+    float magma = fbm(flowP);
+    float fissure = pow(magma, 2.0);
+    vec3 hotVein = vec3(1.0, 0.72, 0.18);
+    col.rgb = mix(col.rgb * 0.72, col.rgb * 1.15, magma);
+    col.rgb = mix(col.rgb, hotVein, fissure * 0.65);
+  }
+  // Tầng Manti & Vỏ (idx >= 2): Vân silicat đá núi lửa gồ ghề nứt nẻ
+  else {
+    float rock = fbm(vCoord * 55.0);
+    col.rgb *= (0.78 + 0.38 * rock);
+  }
+
+  // Vạch biên giới & Rãnh đổ bóng 3D Ambient Occlusion giữa các tầng (Hình 1)
+  float border = 0.0;
+  float minDr = 10.0;
+  for(int j = 0; j < 8; j++){
+    if(j >= uNumLayers) break;
+    float dr = abs(r - uLayerRadii[j]);
+    if(dr < minDr) minDr = dr;
+    if(dr < 0.005){
+      border = max(border, 1.0 - dr / 0.005);
+    }
+  }
+  // Đổ bóng rãnh sâu để tạo khối dày 3D
+  float ao = smoothstep(0.0, 0.016, minDr);
+  col.rgb *= (0.78 + 0.22 * ao);
+  // Viền sáng vàng kim ngăn cách
+  col.rgb = mix(col.rgb, vec3(1.0, 0.96, 0.8), border * 0.75);
+
+  // Hiệu ứng Highlight khi người dùng nhấn chọn tầng
+  if(uHighlight == idx && uHighlight >= 0){
+    col.rgb = mix(col.rgb, vec3(1.0, 1.0, 0.5), 0.45) + vec3(0.22, 0.20, 0.10);
+  }
+
+  // Đổ bóng cong theo bề mặt cắt
+  float shade = 0.90 + 0.10 * cos(r * 3.14159);
+  col.rgb *= shade;
+  col.rgb *= smoothstep(1.002, 0.992, r);
+
+  oCol = vec4(col.rgb * uExposure, 1.0);
+}`;
+
+/* ── quả cầu lõi trong 3D phát sáng nóng rực ở tâm (Hình 1 & Hình 2) ── */
+var CORE_VS = `#version 300 es
+layout(location=0) in vec3 aPos;
+layout(location=1) in vec2 aUv;
+uniform mat4 uModel, uVP;
+out vec3 vPos, vN;
+void main(){
+  vec4 w = uModel * vec4(aPos, 1.0);
+  vPos = w.xyz;
+  vN = aPos;
+  gl_Position = uVP * w;
+}`;
+
+var CORE_FS = `#version 300 es
+precision highp float;
+in vec3 vPos, vN;
+out vec4 oCol;
+uniform vec3 uColor;
+uniform float uTime, uExposure;
+
+float hash31(vec3 p){
+  p = fract(p * 0.3183099 + 0.1);
+  p *= 17.0;
+  return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+}
+float vnoise3(vec3 p){
+  vec3 i = floor(p); vec3 f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(
+    mix(mix(hash31(i), hash31(i+vec3(1,0,0)), f.x),
+        mix(hash31(i+vec3(0,1,0)), hash31(i+vec3(1,1,0)), f.x), f.y),
+    mix(mix(hash31(i+vec3(0,0,1)), hash31(i+vec3(1,0,1)), f.x),
+        mix(hash31(i+vec3(0,1,1)), hash31(i+vec3(1,1,1)), f.x), f.y), f.z);
+}
+
+void main(){
+  vec3 N = normalize(vN);
+  float n1 = vnoise3(N * 14.0 + vec3(uTime * 0.10));
+  float n2 = vnoise3(N * 28.0 - vec3(uTime * 0.18));
+  float heat = 0.65 * n1 + 0.35 * n2;
+  vec3 whiteHot = vec3(1.0, 0.98, 0.90);
+  vec3 goldHot = vec3(1.0, 0.78, 0.25);
+  vec3 fireOrange = uColor;
+  vec3 c = mix(fireOrange, goldHot, heat * 0.75);
+  c = mix(c, whiteHot, pow(heat, 2.2));
+  c += vec3(0.22, 0.16, 0.05);
+  oCol = vec4(c * uExposure * 1.35, 1.0);
 }`;
 
 /* ── lớp khí quyển (vỏ cầu, cộng sáng) ── */
@@ -2586,6 +2850,8 @@ function initGL(){
   P.bright= prog(QUAD_VS, BRIGHT_FS, "bright");
   P.blur  = prog(QUAD_VS, BLUR_FS, "blur");
   P.comp  = prog(QUAD_VS, COMPOSITE_FS, "composite");
+  P.cap   = prog(CAP_VS, CAP_FS, "cap");
+  P.core3d= prog(CORE_VS, CORE_FS, "core3d");
   P.dust  = prog(
     `#version 300 es
      layout(location=0) in vec3 aPos;
@@ -2607,6 +2873,7 @@ function initGL(){
   MESH.ring   = ringMesh(180);
   MESH.quad   = quadMesh();
   MESH.disc   = discMesh(96, 64);
+  MESH.halfDisc = halfDiscMesh(72);
   MESH.galaxy = sphereMesh(32, 16);
 
   buildSkyCatalog();
@@ -2846,7 +3113,8 @@ var V = {
   wantYaw:-0.7, wantPitch:0.38, wantDist:60000, tgt:[0,0,0], wantTgt:[0,0,0],
   pan:[0,0,0], wantPan:[0,0,0],
   stand:null, obsLat:21.03, obsLon:105.85, look:{yaw:0, pitch:0.30}, fov:62,
-  wantLook:{yaw:0, pitch:0.30}, wantFov:62, exposure:1, eclipseNote:""
+  wantLook:{yaw:0, pitch:0.30}, wantFov:62, exposure:1, eclipseNote:"",
+  xsec:false, xsecAngle:Math.PI*0.5, xsecHighlight:-1, xsecExplode:0.35
 };
 
 /* ── ma trận chung ── */
@@ -2927,10 +3195,94 @@ function drawDeepSky(bright){
   gl.depthMask(true);
 }
 
+function hexToRgb01(h){
+  if(!h) return [1,1,1];
+  h = h.replace("#","");
+  if(h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  var num = parseInt(h, 16);
+  return [(num>>16&255)/255, (num>>8&255)/255, (num&255)/255];
+}
+
+/* ── vẽ 2 nắp đĩa mặt cắt phẳng vùng lõi ── */
+function drawCrossSectionCaps(b, posRel, radius, spin, exposure){
+  var d = (window.XSEC_DATA && window.XSEC_DATA[b.id]);
+  if(!d || !d.layers || d.layers.length === 0) return;
+  var pr = P.cap;
+  if(!pr) return;
+  gl.useProgram(pr);
+
+  var layers = d.layers;
+  var n = Math.min(8, layers.length);
+  var radii = new Float32Array(8);
+  var cols = new Float32Array(32);
+  for(var i = 0; i < n; i++){
+    var lyr = layers[n - 1 - i]; // Lõi trong cùng trước
+    radii[i] = lyr.rOuter;
+    var rgb = hexToRgb01(lyr.color);
+    cols[i*4 + 0] = rgb[0];
+    cols[i*4 + 1] = rgb[1];
+    cols[i*4 + 2] = rgb[2];
+    cols[i*4 + 3] = 1.0;
+  }
+  gl.uniform1i(pr.u.uNumLayers, n);
+  gl.uniform1fv(pr.u.uLayerRadii, radii);
+  gl.uniform4fv(pr.u.uLayerCols, cols);
+  var hl = (V.xsecHighlight >= 0 && V.xsecHighlight < n) ? (n - 1 - V.xsecHighlight) : -1;
+  gl.uniform1i(pr.u.uHighlight, hl);
+  gl.uniform1f(pr.u.uExposure, exposure);
+  gl.uniform1f(pr.u.uTime, performance.now() * 0.001);
+
+  gl.disable(gl.CULL_FACE);
+  gl.bindVertexArray(MESH.halfDisc.vao);
+
+  // Nắp cắt 1: tại kinh độ 0 (góc spin)
+  M4.body(mModel, b.frame, spin, radius, b.flat, posRel);
+  gl.uniformMatrix4fv(pr.u.uModel, false, mModel);
+  gl.uniformMatrix4fv(pr.u.uVP, false, mVP);
+  gl.drawElements(gl.TRIANGLES, MESH.halfDisc.count, gl.UNSIGNED_SHORT, 0);
+
+  // Nắp cắt 2: tại kinh độ V.xsecAngle (góc spin + V.xsecAngle)
+  M4.body(mModel, b.frame, spin + V.xsecAngle, radius, b.flat, posRel);
+  gl.uniformMatrix4fv(pr.u.uModel, false, mModel);
+  gl.drawElements(gl.TRIANGLES, MESH.halfDisc.count, gl.UNSIGNED_SHORT, 0);
+
+  gl.enable(gl.CULL_FACE);
+}
+
+/* ── quả cầu lõi trong 3D phát sáng nóng rực ở tâm (Hình 1 & Hình 2) ── */
+function drawInnerCoreOrb(b, posRel, radius, spin, exposure){
+  var d = (window.XSEC_DATA && window.XSEC_DATA[b.id]);
+  if(!d || !d.layers || d.layers.length === 0) return;
+  var pr = P.core3d;
+  if(!pr) return;
+  gl.useProgram(pr);
+
+  var n = d.layers.length;
+  var coreLyr = d.layers[n - 1]; // Lõi trong cùng
+  var rCore = radius * (coreLyr.rOuter || 0.20);
+  var rgb = hexToRgb01(coreLyr.color);
+
+  M4.body(mModel, b.frame, spin, rCore, 0, posRel);
+  gl.uniformMatrix4fv(pr.u.uModel, false, mModel);
+  gl.uniformMatrix4fv(pr.u.uVP, false, mVP);
+  gl.uniform3f(pr.u.uColor, rgb[0], rgb[1], rgb[2]);
+  gl.uniform1f(pr.u.uTime, performance.now() * 0.001);
+  gl.uniform1f(pr.u.uExposure, exposure);
+
+  gl.bindVertexArray(MESH.sphereLo.vao);
+  gl.drawElements(gl.TRIANGLES, MESH.sphereLo.count, gl.UNSIGNED_SHORT, 0);
+
+  // Quầng nhiệt phát sáng vàng cam mềm mại xung quanh quả cầu lõi
+  drawGlow(posRel, rCore * 2.3, [1.0, 0.78, 0.28], 0.72, 2.6, 0.85);
+}
+
 /* ══════════════ vẽ một thiên thể ══════════════ */
 function drawBody(b, posRel, radius, spin, exposure, occ, sunRel, sunAng, tint, lod){
   var pr=P.body;
   gl.useProgram(pr);
+  var cutAng = (V.xsec && V.focus === b.id) ? V.xsecAngle : 0.0;
+  gl.uniform1f(pr.u.uCutAngle, cutAng);
+  gl.uniform1i(pr.u.uInvertCut, 0);
   M4.body(mModel, b.frame, spin, radius, b.flat, posRel);
   gl.uniformMatrix4fv(pr.u.uModel,false,mModel);
   gl.uniformMatrix4fv(pr.u.uVP,false,mVP);
@@ -2965,9 +3317,47 @@ function drawBody(b, posRel, radius, spin, exposure, occ, sunRel, sunAng, tint, 
   var m = lod || MESH.sphere;
   gl.bindVertexArray(m.vao);
   gl.drawElements(gl.TRIANGLES, m.count, gl.UNSIGNED_SHORT, 0);
+
+  if(cutAng > 0.01){
+    // 1. Vẽ 2 nắp đĩa mặt cắt dung nham trên quả cầu chính
+    drawCrossSectionCaps(b, posRel, radius, spin, exposure);
+
+    // 2. Bóc tách khối nêm 3D (Wedge Lift - Hình 2 & Hình 3)
+    var explodeFactor = (V.xsecExplode !== undefined) ? V.xsecExplode : 0.35;
+    if(explodeFactor > 0.005){
+      var midAng = cutAng * 0.5;
+      var csM = Math.cos(midAng), snM = Math.sin(midAng);
+      var dirBisect = [
+        rot[0]*csM + rot[6]*snM,
+        rot[1]*csM + rot[7]*snM,
+        rot[2]*csM + rot[8]*snM
+      ];
+      var explodeDist = explodeFactor * radius * 0.70;
+      var wedgePos = [
+        posRel[0] + dirBisect[0] * explodeDist,
+        posRel[1] + dirBisect[1] * explodeDist,
+        posRel[2] + dirBisect[2] * explodeDist
+      ];
+
+      // Vẽ vỏ ngoài cong của khối nêm
+      gl.useProgram(pr);
+      M4.body(mModel, b.frame, spin, radius, b.flat, wedgePos);
+      gl.uniformMatrix4fv(pr.u.uModel, false, mModel);
+      gl.uniform1i(pr.u.uInvertCut, 1);
+      gl.bindVertexArray(m.vao);
+      gl.drawElements(gl.TRIANGLES, m.count, gl.UNSIGNED_SHORT, 0);
+      gl.uniform1i(pr.u.uInvertCut, 0);
+
+      // Vẽ 2 nắp mặt cắt dung nham gắn liền theo khối nêm bóc tách
+      drawCrossSectionCaps(b, wedgePos, radius, spin, exposure);
+    }
+
+    // 3. Quả cầu lõi trong 3D phát sáng nóng rực ở tâm (Hình 1 & Hình 2)
+    drawInnerCoreOrb(b, posRel, radius, spin, exposure);
+  }
 }
 function drawAtmoShell(b, posRel, radius, exposure, occ, sunRel, sunAng){
-  if(!b.atmo) return;
+  if(!b.atmo || (V.xsec && V.focus === b.id)) return;
   var pr=P.atmo;
   gl.useProgram(pr);
   M4.body(mModel, b.frame, 0, radius*(1+(b.atmoH||0.02)), b.flat, posRel);
@@ -3102,7 +3492,7 @@ function renderOrbit(S){
     var occ = b.emissive?[]:occFor(b,S,camEye);
     var lod = pxSize < (V.quality<2?110:40) ? MESH.sphereLo : MESH.sphere;
     drawBody(b, it.rel, it.r, spinOf(b,V.jd,S), expo, occ, sunRelEye, sunAng, [1,1,1], lod);
-    if(b.emissive){
+    if(b.emissive && (!V.xsec || V.focus !== b.id)){
       drawGlow(it.rel, it.r*2.6, [1.0,0.74,0.36], 1.5, 5.0, 0.85);
       drawGlow(it.rel, it.r*1.28, [1.0,0.90,0.66], 2.2, 2.6, 0.9);
     }
@@ -3759,10 +4149,13 @@ function setSpeed(i){
     x.setAttribute("aria-pressed", j===V.speed?"true":"false"); });
 }
 function closePanels(){
-  ["phenom","tonight","lessons"].forEach(function(id){
+  ["phenom","tonight","lessons","xsec-panel"].forEach(function(id){
     var el=$(id); if(el) el.classList.remove("open"); });
   ["btn-phenom","btn-tonight","btn-lesson"].forEach(function(id){
     var el=$(id); if(el) el.setAttribute("aria-pressed","false"); });
+  var xs=$("btn-xsec");
+  if(xs){ xs.classList.remove("solid"); xs.classList.add("ghost"); }
+  V.xsec=false;
   document.body.classList.remove("panel");
 }
 
@@ -3847,9 +4240,134 @@ function fillSlab(id){
     st.hidden=false;
     st.textContent=(LANG==="en"?I18N.en.stand_on:I18N.vi.stand_on) + name;
   } else st.hidden=true;
+
+  var xs=$("btn-xsec");
+  if(xs){
+    if(window.XSEC_DATA && window.XSEC_DATA[id]){
+      xs.hidden=false;
+      xs.style.display="flex";
+      $("btn-xsec-txt").textContent=(I18N[LANG] ? (V.xsec ? I18N[LANG].xsec_btn_close : I18N[LANG].xsec_btn) : (V.xsec ? "Đóng Cắt Lớp" : "Cắt Lớp Vùng Lõi"));
+      if(V.xsec){
+        xs.classList.remove("ghost"); xs.classList.add("solid");
+        renderXsecPanel(id);
+      } else {
+        xs.classList.remove("solid"); xs.classList.add("ghost");
+      }
+    } else {
+      xs.hidden=true;
+      xs.style.display="none";
+      if(V.xsec) closeXsec();
+    }
+  }
+
   document.querySelectorAll("#rail .chip").forEach(function(c){
     c.setAttribute("aria-current", c.getAttribute("data-id")===id?"true":"false"); });
 }
+
+function openXsec(id){
+  var d = window.XSEC_DATA && window.XSEC_DATA[id];
+  if(!d) return;
+  V.xsec = true;
+  V.xsecHighlight = -1;
+  var xs = $("btn-xsec");
+  if(xs){
+    xs.classList.remove("ghost"); xs.classList.add("solid");
+    $("btn-xsec-txt").textContent = I18N[LANG] ? I18N[LANG].xsec_btn_close : "Đóng Cắt Lớp";
+  }
+  var p = $("xsec-panel");
+  if(p) p.classList.add("open");
+  var ph = $("phenom"), tn = $("tonight"), ls = $("lessons");
+  if(ph) ph.classList.remove("open");
+  if(tn) tn.classList.remove("open");
+  if(ls) ls.classList.remove("open");
+  renderXsecPanel(id);
+}
+
+function closeXsec(){
+  V.xsec = false;
+  V.xsecHighlight = -1;
+  var xs = $("btn-xsec");
+  if(xs){
+    xs.classList.remove("solid"); xs.classList.add("ghost");
+    $("btn-xsec-txt").textContent = I18N[LANG] ? I18N[LANG].xsec_btn : "Cắt Lớp Vùng Lõi";
+  }
+  var p = $("xsec-panel");
+  if(p) p.classList.remove("open");
+}
+
+function toggleXsec(){
+  if(V.xsec) closeXsec();
+  else openXsec(V.focus);
+}
+
+function setXsecAngle(deg){
+  deg = Math.max(15, Math.min(180, deg));
+  V.xsecAngle = deg * D2R;
+  $("xsec-range").value = deg;
+  $("xsec-ang-label").textContent = (I18N[LANG] ? I18N[LANG].xsec_ang_label : "Góc cắt: ") + deg + "°";
+  document.querySelectorAll(".xsec-ang-btn").forEach(function(b){
+    b.classList.toggle("active", parseInt(b.getAttribute("data-angle"), 10) === deg);
+  });
+}
+
+function setXsecExplode(pct){
+  pct = Math.max(0, Math.min(100, pct));
+  V.xsecExplode = pct / 100.0;
+  var el = $("xsec-explode-range"); if(el) el.value = pct;
+  var lbl = $("xsec-explode-label");
+  if(lbl) lbl.textContent = (I18N[LANG] ? I18N[LANG].xsec_explode_label : "Bóc tách 3D: ") + pct + "%";
+}
+
+function renderXsecPanel(id){
+  var d = window.XSEC_DATA && window.XSEC_DATA[id];
+  if(!d) return;
+  var b = BY[id];
+  var name = b ? getBodyName(b) : id;
+  $("xsec-planet-title").textContent = (I18N[LANG] ? I18N[LANG].xsec_panel_title : "Vùng Lõi · ") + name;
+  $("xsec-ang-label").textContent = (I18N[LANG] ? I18N[LANG].xsec_ang_label : "Góc cắt: ") + Math.round(V.xsecAngle * R2D) + "°";
+  var expVal = Math.round((V.xsecExplode !== undefined ? V.xsecExplode : 0.35) * 100);
+  var expLbl = $("xsec-explode-label");
+  if(expLbl) expLbl.textContent = (I18N[LANG] ? I18N[LANG].xsec_explode_label : "Bóc tách 3D: ") + expVal + "%";
+  var expRng = $("xsec-explode-range");
+  if(expRng) expRng.value = expVal;
+
+  var listEl = $("xsec-layers");
+  listEl.innerHTML = d.layers.map(function(lyr, idx){
+    var lyrName = (LANG==="en" && lyr.name_en) ? lyr.name_en : lyr.name_vi;
+    var state = (LANG==="en" && lyr.state_en) ? lyr.state_en : lyr.state_vi;
+    var desc = (LANG==="en" && lyr.desc_en) ? lyr.desc_en : (lyr.desc_vi || "");
+    var comp = (LANG==="en" && lyr.composition_en) ? lyr.composition_en : lyr.composition_vi;
+    var isActive = (V.xsecHighlight === idx) ? " active" : "";
+    return '<div class="xsec-item' + isActive + '" data-idx="' + idx + '">' +
+      '<div class="xsec-item-top">' +
+        '<span class="xsec-dot" style="background:' + lyr.color + ';color:' + lyr.color + '"></span>' +
+        '<span class="xsec-item-name">' + lyrName + '</span>' +
+        '<span class="xsec-item-depth">' + lyr.depth + '</span>' +
+      '</div>' +
+      '<div class="xsec-item-meta">' +
+        '<span>' + lyr.temp + '</span>' +
+        '<span>' + state + '</span>' +
+      '</div>' +
+      '<div class="xsec-item-desc">' +
+        '<b>' + (LANG==="en" ? "Composition: " : "Thành phần: ") + '</b>' + comp + '<br>' +
+        (desc ? ('<span style="opacity:0.9">' + desc + '</span>') : '') +
+      '</div>' +
+    '</div>';
+  }).join("");
+
+  listEl.querySelectorAll(".xsec-item").forEach(function(item){
+    item.addEventListener("click", function(){
+      var idx = parseInt(this.getAttribute("data-idx"), 10);
+      if(V.xsecHighlight === idx){
+        V.xsecHighlight = -1;
+      } else {
+        V.xsecHighlight = idx;
+      }
+      renderXsecPanel(id);
+    });
+  });
+}
+
 function focusBody(id, keepDist){
   var b=BY[id]; if(!b) return;
   ensureBodyTexture(b);
@@ -3862,10 +4380,21 @@ function focusBody(id, keepDist){
     V.wantDist=Math.max(r*4.2, V.trueScale? r*4.2 : r*4.2);
     if(id==="sun") V.wantDist=V.trueScale? 4.0e5 : 42000;
   }
+  if(V.xsec){
+    if(window.XSEC_DATA && window.XSEC_DATA[id]){
+      renderXsecPanel(id);
+    } else {
+      closeXsec();
+    }
+  }
 }
 window.focusBody = focusBody;
 window.V = V;
 window.BY = BY;
+window.openXsec = openXsec;
+window.closeXsec = closeXsec;
+window.toggleXsec = toggleXsec;
+window.setXsecAngle = setXsecAngle;
 function wideView(){
   V.focus="sun"; fillSlab("sun");
   if(V.wantPan) V.wantPan=[0,0,0];
@@ -4867,6 +5396,21 @@ if(!GLOK){
     if(V.mode==="surface" && V.stand){
       $("where").textContent = (lang==="en" ? "Surface of " : "Đứng trên ") + getBodyName(BY[V.stand]);
     }
+    // Cắt lớp vùng lõi
+    var x90 = $("xsec-ang-90"); if(x90) x90.textContent = I18N[lang].xsec_deg_90;
+    var x120 = $("xsec-ang-120"); if(x120) x120.textContent = I18N[lang].xsec_deg_120;
+    var x180 = $("xsec-ang-180"); if(x180) x180.textContent = I18N[lang].xsec_deg_180;
+    var xExpLbl = $("xsec-explode-label");
+    if(xExpLbl){
+      var curExp = Math.round((V.xsecExplode !== undefined ? V.xsecExplode : 0.35) * 100);
+      xExpLbl.textContent = (I18N[lang] ? I18N[lang].xsec_explode_label : "Bóc tách 3D: ") + curExp + "%";
+    }
+    var xCls = $("btn-xsec-close");
+    if(xCls){
+      xCls.title = I18N[lang].xsec_close_tip;
+      xCls.setAttribute("aria-label", I18N[lang].xsec_close_tip);
+    }
+    if(V.xsec && V.focus) renderXsecPanel(V.focus);
     hudClear();
   }
 
@@ -4910,6 +5454,21 @@ if(!GLOK){
     this.setAttribute("aria-pressed", open?"true":"false");
   });
   $("btn-back").addEventListener("click", exitSurface);
+
+  /* điều khiển cắt lớp vùng lõi */
+  var btnXsec = $("btn-xsec");
+  if(btnXsec) btnXsec.addEventListener("click", toggleXsec);
+  var btnXsecCls = $("btn-xsec-close");
+  if(btnXsecCls) btnXsecCls.addEventListener("click", closeXsec);
+  var rngXsec = $("xsec-range");
+  if(rngXsec) rngXsec.addEventListener("input", function(){ setXsecAngle(parseInt(this.value, 10)); });
+  var rngExp = $("xsec-explode-range");
+  if(rngExp) rngExp.addEventListener("input", function(){ setXsecExplode(parseInt(this.value, 10)); });
+  document.querySelectorAll(".xsec-ang-btn").forEach(function(b){
+    b.addEventListener("click", function(){
+      setXsecAngle(parseInt(this.getAttribute("data-angle"), 10));
+    });
+  });
 
   /* bảng Tối nay */
   function renderPlaces(){
