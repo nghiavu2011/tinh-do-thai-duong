@@ -889,5 +889,59 @@
         -166.5
       ]
     }
+  },
+  {
+    "id": "hoang_sa",
+    "name_vi": "Quần đảo Hoàng Sa (Huyện đảo Hoàng Sa, TP. Đà Nẵng)",
+    "name_en": "Paracel Islands",
+    "category": "Quần đảo san hô thềm lục địa Biển Đông",
+    "lat": 16.5,
+    "lon": 112.0,
+    "elev_m": 15,
+    "status": "VERIFIED (Lãnh thổ chủ quyền thiêng liêng của Việt Nam)",
+    "plate": "Mảng Á-Âu (Thềm lục địa Biển Đông)",
+    "where": "Nằm ở vùng biển phía bắc Biển Đông, cách bờ biển Đà Nẵng khoảng 170 hải lý (khoảng 315 km) về phía đông; thuộc quyền quản lý hành chính của UBND huyện đảo Hoàng Sa, thành phố Đà Nẵng.",
+    "what": "Quần thể gồm hơn 30 đảo, đá ngầm, cồn cát và rạn san hô, phân bổ trên hai nhóm chính: nhóm An Vĩnh (phía đông) và nhóm Lưỡi Liềm (phía tây). Đảo Phú Lâm và đảo Hoàng Sa là các đảo nổi tiêu biểu.",
+    "why_there": "Được hình thành trên nền một khối vỏ lục địa tách giãn cổ của thềm lục địa Biển Đông. Qua hàng triệu năm địa chất, các rạn san hô nhiệt đới phát triển liên tục trên các đỉnh núi ngầm, bồi đắp thành các đảo san hô và rạn vòng (atoll) đặc trưng.",
+    "why_care": "Có vị trí chiến lược huyết mạch án ngữ tuyến hàng hải quốc tế bận rộn bậc nhất thế giới; vùng biển giàu tài nguyên hải sản, sinh thái rạn san hô quý giá và tiềm năng băng cháy, dầu khí thềm lục địa.",
+    "what_if": "Nếu mực nước biển toàn cầu dâng cao thêm 1–2m do biến đổi khí hậu trong thế kỷ 21, nhiều cồn cát và bờ rạn san hô thấp sẽ đối mặt nguy cơ ngập triều và xói lở nghiêm trọng, đòi hỏi giải pháp bảo tồn công trình sinh thái biển bền vững.",
+    "transect": {
+      "name": "Duyên hải Đà Nẵng ➔ Thềm lục địa Biển Đông ➔ Quần đảo Hoàng Sa",
+      "p1": [
+        16.07,
+        108.22
+      ],
+      "p2": [
+        16.8,
+        112.5
+      ]
+    }
+  },
+  {
+    "id": "truong_sa",
+    "name_vi": "Quần đảo Trường Sa (Huyện đảo Trường Sa, Tỉnh Khánh Hòa)",
+    "name_en": "Spratly Islands",
+    "category": "Quần đảo san hô bồn trũng sâu Biển Đông",
+    "lat": 9.5,
+    "lon": 113.0,
+    "elev_m": 10,
+    "status": "VERIFIED (Lãnh thổ chủ quyền thiêng liêng của Việt Nam)",
+    "plate": "Mảng Á-Âu (Bồn trũng trượt giãn Biển Đông)",
+    "where": "Trải rộng ở khu vực giữa và nam Biển Đông, cách vịnh Cam Ranh (Khánh Hòa) khoảng 250 hải lý về phía đông nam; thuộc quyền quản lý hành chính của huyện đảo Trường Sa, tỉnh Khánh Hòa.",
+    "what": "Hệ thống quần thể đảo san hô rộng lớn gồm hơn 100 đảo nổi, đảo chìm, rạn đá ngầm và bãi cạn trải dài trên diện tích biển hơn 410,000 km²; đảo Ba Bình và đảo Trường Sa Lớn là những thực thể tự nhiên trọng yếu.",
+    "why_there": "Hình thành trên các khối nâng nền ngầm sót lại sau quá trình tách giãn bồn trũng đáy biển Biển Đông sâu 3,000–4,000m trong kỷ Kainozoi (Oligocen - Miocen). Sinh vật san hô nhiệt đới đã phát triển qua hàng triệu năm trên các đỉnh ngầm này tạo thành các rạn vòng (atolls) kỳ vĩ.",
+    "why_care": "Cửa ngõ hàng hải chiến lược kết nối Ấn Độ Dương và Thái Bình Dương; hệ sinh thái biển sâu đa dạng sinh học cao, tài nguyên hải sản phong phú và nguồn dự trữ năng lượng sinh thái biển của tương lai.",
+    "what_if": "Hiện tượng ấm lên toàn cầu gây axit hóa đại dương và tẩy trắng san hô (coral bleaching) đe dọa sinh kế hệ sinh thái rạn ở Trường Sa, làm suy giảm khả năng tự bồi đắp tự nhiên của các đảo san hô.",
+    "transect": {
+      "name": "Duyên hải Cam Ranh (Khánh Hòa) ➔ Vực sâu Biển Đông ➔ Quần đảo Trường Sa",
+      "p1": [
+        11.9,
+        109.2
+      ],
+      "p2": [
+        8.8,
+        114.2
+      ]
+    }
   }
 ]

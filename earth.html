@@ -166,6 +166,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
 .l3-sun{color:var(--brass);font-family:var(--font-display);font-size:16px;font-weight:700}
 .l3-ssn{color:var(--parchment);font-size:12px;font-weight:600;text-shadow:0 0 10px rgba(232,200,122,.4)}
 .l3-city{color:#64B5F6;font-size:9px;font-weight:500}
+.l3-island{color:#FFE082;font-size:9.5px;font-weight:700;text-shadow:0 0 4px #000, 0 0 8px rgba(255,200,0,0.8);border-bottom:1px solid rgba(255,200,0,0.6)}
 .l3-time{color:var(--brass);font-family:var(--font-mono);font-size:9.5px;font-weight:500}
 .l3-sub{color:#ff6644;font-size:9px;font-weight:600}
 .l3-lat{font-size:8px;font-family:var(--font-mono);letter-spacing:.02em}
@@ -251,10 +252,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
     <!-- Chọn nhanh thành phố / Vĩ độ -->
     <select class="mast-select" id="sel-loc" onchange="onLocationSelect(this.value)">
       <option value="">📍 Vị trí khảo sát...</option>
-      <optgroup label="🇻🇳 Việt Nam (Nội chí tuyến)">
+      <optgroup label="🇻🇳 Việt Nam (Nội chí tuyến & Hải đảo)">
         <option value="21.03,105.85">🏛️ Hà Nội (21.03°B)</option>
         <option value="16.05,108.20">🌉 Đà Nẵng (16.05°B)</option>
         <option value="10.82,106.63">🏙️ TP. Hồ Chí Minh (10.82°B)</option>
+        <option value="16.50,112.00">🏝️ Quần đảo Hoàng Sa (16.50°B)</option>
+        <option value="9.50,113.00">🏝️ Quần đảo Trường Sa (9.50°B)</option>
       </optgroup>
       <optgroup label="🌐 Vĩ độ địa lý đặc biệt">
         <option value="0,105.0">⭕ Xích đạo (0°)</option>
@@ -398,9 +401,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
         </div>
         <div style="padding:6px 8px;background:rgba(100,181,246,.08);border-left:2px solid #64B5F6;border-radius:2px">
           <b style="color:#64B5F6">🇻🇳 Việt Nam thì sao?</b><br>
-          Việt Nam nằm trong vùng nhiệt đới và chịu ảnh hưởng mạnh của hoàn lưu gió mùa châu Á.
-          Hà Nội, Đà Nẵng và TP.HCM nhận bức xạ Mặt Trời khác nhau theo vĩ độ và mùa.
-          Tuy nhiên nhiệt độ và lượng mưa thực tế còn chịu ảnh hưởng mạnh của biển, địa hình, gió mùa và các hệ thống thời tiết.
+          Toàn bộ lãnh thổ và hải đảo Việt Nam (từ đất liền đến quần đảo Hoàng Sa, Trường Sa) nằm trọn trong vùng nội chí tuyến bán cầu Bắc, nhận bức xạ dồi dào với 2 lần Mặt Trời lên thiên đỉnh mỗi năm và chịu ảnh hưởng sâu sắc của hoàn lưu gió mùa châu Á cùng Biển Đông.
         </div>
       </div>
     </details>
@@ -579,6 +580,8 @@ const CFG={
     {n:'🏛️ Hà Nội',lat:21.03,lon:105.85},
     {n:'🌉 Đà Nẵng',lat:16.05,lon:108.20},
     {n:'🏙️ TP. HCM',lat:10.82,lon:106.63},
+    {n:'🏝️ Quần đảo Hoàng Sa (Đà Nẵng)',lat:16.50,lon:112.00,isIsland:true},
+    {n:'🏝️ Quần đảo Trường Sa (Khánh Hòa)',lat:9.50,lon:113.00,isIsland:true},
   ]
 };
 const PHYS={
@@ -1047,13 +1050,32 @@ const ssD=document.createElement('div');ssD.className='l3 l3-sub';ssD.textConten
 const ssL=new CSS2DObject(ssD);ssL.position.set(0,.18,0);ssM.add(ssL);
 
 /* ══════════════════════════════════════════════════
-   16. ĐÁNH DẤU 3 THÀNH PHỐ VIỆT NAM
+   16. ĐÁNH DẤU CÁC ĐỊA ĐIỂM ĐẶC TRƯNG VIỆT NAM (ĐÔ THỊ & HẢI ĐẢO CHỦ QUYỀN)
    ══════════════════════════════════════════════════ */
 CFG.cities.forEach(c=>{
   const p=latLonXYZ(c.lat,c.lon,CFG.earthR*1.005);
-  eSpin.add(new THREE.Mesh(new THREE.SphereGeometry(.045,6,4),new THREE.MeshBasicMaterial({color:0x64B5F6})).translateX(p.x).translateY(p.y).translateZ(p.z));
-  const d=document.createElement('div');d.className='l3 l3-city';d.textContent=c.n;
-  const lb=new CSS2DObject(d);lb.position.copy(p).multiplyScalar(1.05);eSpin.add(lb);
+  const dotColor = c.isIsland ? 0xffcc00 : 0x64B5F6;
+  const dotRadius = c.isIsland ? .055 : .045;
+  const dot = new THREE.Mesh(new THREE.SphereGeometry(dotRadius,8,6),new THREE.MeshBasicMaterial({color:dotColor}));
+  dot.position.copy(p);
+  eSpin.add(dot);
+
+  if(c.isIsland){
+    // Vòng hào quang chân đế quanh quần đảo chủ quyền để dễ nhận diện từ xa trên biển
+    const ringGeom = new THREE.RingGeometry(0.06, 0.09, 20);
+    const ringMat = new THREE.MeshBasicMaterial({color:0xffaa00, side:THREE.DoubleSide, transparent:true, opacity:0.8});
+    const ringMesh = new THREE.Mesh(ringGeom, ringMat);
+    ringMesh.position.copy(p);
+    ringMesh.lookAt(0,0,0);
+    eSpin.add(ringMesh);
+  }
+
+  const d=document.createElement('div');
+  d.className = c.isIsland ? 'l3 l3-island' : 'l3 l3-city';
+  d.textContent=c.n;
+  const lb=new CSS2DObject(d);
+  lb.position.copy(p).multiplyScalar(c.isIsland ? 1.065 : 1.05);
+  eSpin.add(lb);
 });
 
 /* ══════════════════════════════════════════════════

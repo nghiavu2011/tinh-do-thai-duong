@@ -333,6 +333,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;heigh
       <option value="vn_north">🇻🇳 Bắc Bộ: Tây Bắc ➔ Fansipan ➔ ĐB Sông Hồng ➔ Vịnh Bắc Bộ</option>
       <option value="vn_central">🇻🇳 Trung Bộ: Lào ➔ Ngọc Linh (Trường Sơn) ➔ Duyên hải ➔ Biển Đông</option>
       <option value="vn_south">🇻🇳 Nam Bộ: Tây Nguyên (Lâm Viên) ➔ Đông Nam Bộ ➔ ĐB Sông Cửu Long</option>
+      <option value="vn_hoang_sa">🏝️ Quần đảo Hoàng Sa: Đà Nẵng ➔ Thềm duyên hải ➔ Đảo san hô</option>
+      <option value="vn_truong_sa">🏝️ Quần đảo Trường Sa: Cam Ranh ➔ Bồn trũng sâu ➔ Quần đảo san hô</option>
       <option value="everest">🏔️ Nóc nhà thế giới: Vịnh Bengal ➔ Everest ➔ Tây Tạng ➔ Tarim</option>
       <option value="mariana">🌊 Vực thẳm sâu nhất: Đảo Guam ➔ Vực Challenger (-10,984m)</option>
       <option value="andes">🌎 Dãy Andes: Rãnh Peru-Chile ➔ Aconcagua ➔ Đồng bằng Pampas</option>
@@ -1246,16 +1248,19 @@ function initLandmarksMarkers() {
 
   // Cọc tiêu địa danh chuẩn GIS không gian hiện đại: Chân kim mảnh + Hạt ngọc phát sáng + Vòng định vị chân đế
   landmarksData.forEach(lm => {
-    const isTrench = lm.elev_m <= 0;
-    const mainColor = isTrench ? 0x00ccee : 0xe8c87a;
-    const glowColor = isTrench ? 0x66eeff : 0xffe6a3;
+    const isIsland = (lm.id === 'hoang_sa' || lm.id === 'truong_sa');
+    const isTrench = lm.elev_m <= 0 && !isIsland;
+    const mainColor = isIsland ? 0xffcc00 : (isTrench ? 0x00ccee : 0xe8c87a);
+    const glowColor = isIsland ? 0xffea00 : (isTrench ? 0x66eeff : 0xffe6a3);
+    const stemHeight = isIsland ? 0.052 : 0.038;
+    const headRadius = isIsland ? 0.018 : 0.014;
 
     const marker = new THREE.Group();
     marker.userData = { id: lm.id };
 
     // 1. Chân ghim siêu mảnh (Pin Stem)
-    const stemGeo = new THREE.CylinderGeometry(0.0016, 0.0016, 0.038, 8);
-    stemGeo.translate(0, 0.019, 0);
+    const stemGeo = new THREE.CylinderGeometry(0.0016, 0.0016, stemHeight, 8);
+    stemGeo.translate(0, stemHeight / 2, 0);
     stemGeo.rotateX(Math.PI / 2);
     const stemMat = new THREE.MeshBasicMaterial({ color: mainColor, transparent: true, opacity: 0.85 });
     const stem = new THREE.Mesh(stemGeo, stemMat);
@@ -1263,8 +1268,8 @@ function initLandmarksMarkers() {
     marker.add(stem);
 
     // 2. Đầu ngọc phát sáng nhỏ nhắn (Glowing Pin Head)
-    const headGeo = new THREE.SphereGeometry(0.014, 16, 16);
-    headGeo.translate(0, 0, 0.038);
+    const headGeo = new THREE.SphereGeometry(headRadius, 16, 16);
+    headGeo.translate(0, 0, stemHeight);
     const headMat = new THREE.MeshBasicMaterial({ color: glowColor });
     const head = new THREE.Mesh(headGeo, headMat);
     head.userData = { id: lm.id };
@@ -1276,6 +1281,15 @@ function initLandmarksMarkers() {
     const ring = new THREE.Mesh(ringGeo, ringMat);
     ring.userData = { id: lm.id };
     marker.add(ring);
+
+    // 4. Vòng hải đảo chủ quyền phát sáng mở rộng
+    if (isIsland) {
+      const outerRingGeo = new THREE.RingGeometry(0.016, 0.032, 24);
+      const outerRingMat = new THREE.MeshBasicMaterial({ color: 0xffaa00, side: THREE.DoubleSide, transparent: true, opacity: 0.85 });
+      const outerRing = new THREE.Mesh(outerRingGeo, outerRingMat);
+      outerRing.userData = { id: lm.id };
+      marker.add(outerRing);
+    }
 
     const pos = latLonToVec3(lm.lat, lm.lon, CFG.earthR * 1.003);
     marker.position.copy(pos);
@@ -1289,9 +1303,10 @@ function initLandmarksMarkers() {
 function renderLandmarksList() {
   const container = document.getElementById('landmarks-list');
   const cats = {
+    "🏝️ Quần Đảo & Hải Đảo Chủ Quyền": landmarksData.filter(l => l.id === 'hoang_sa' || l.id === 'truong_sa'),
     "🏔️ Đỉnh Cao & Dãy Núi": landmarksData.filter(l => l.elev_m > 2000 && !l.category.includes('Cao nguyên') && !l.category.includes('sông')),
     "🏞️ Cao Nguyên & Bồn Địa": landmarksData.filter(l => (l.category.includes('Cao nguyên') || l.category.includes('Bồn địa')) && !l.id.includes('baikal') && !l.category.includes('sông')),
-    "🌊 Rãnh Biển & Vực Sâu": landmarksData.filter(l => l.elev_m <= 0 && !l.category.includes('Eo biển') && l.id !== 'deadsea' && l.id !== 'caspian'),
+    "🌊 Rãnh Biển & Vực Sâu": landmarksData.filter(l => l.elev_m <= 0 && !l.category.includes('Eo biển') && l.id !== 'deadsea' && l.id !== 'caspian' && l.id !== 'hoang_sa' && l.id !== 'truong_sa'),
     "💧 Sông Lớn & Thủy Văn": landmarksData.filter(l => l.category.includes('sông') || l.category.includes('châu thổ') || l.id === 'yangtze' || l.id === 'mississippi' || l.id === 'nile' || l.id === 'amazon' || l.id === 'baikallake' || l.id === 'caspian' || l.id === 'deadsea'),
     "🚢 Eo Biển Chiến Lược": landmarksData.filter(l => l.category.includes('Eo biển') || l.id === 'malacca' || l.id === 'gibraltar' || l.id === 'bering')
   };
@@ -1394,7 +1409,8 @@ window.selectLandmark = function(id) {
   playChime(587.33);
 
   // Hiệu ứng sóng radar 3D tại tọa độ mốc
-  triggerRadarPulse(lm.lat, lm.lon, lm.elev_m < 0 ? 0x00ccee : 0xe8c87a);
+  const pulseColor = (lm.id === 'hoang_sa' || lm.id === 'truong_sa') ? 0xffcc00 : (lm.elev_m < 0 ? 0x00ccee : 0xe8c87a);
+  triggerRadarPulse(lm.lat, lm.lon, pulseColor);
 
   // Active item trong danh bạ
   document.querySelectorAll('.landmark-item').forEach(el => el.classList.remove('active'));
@@ -2128,6 +2144,12 @@ window.onTransectSelect = function(val) {
   } else if (val === 'vn_south') {
     generateRealProfile(11.9, 108.4, 9.5, 106.8, "Lát cắt Nam Bộ: Tây Nguyên ➔ Đông Nam Bộ ➔ ĐB Sông Cửu Long");
     flyToLocation(10.5, 107.0, 3.6);
+  } else if (val === 'vn_hoang_sa') {
+    generateRealProfile(16.07, 108.22, 16.8, 112.5, "Lát cắt Duyên hải Đà Nẵng ➔ Thềm lục địa Biển Đông ➔ Quần đảo Hoàng Sa");
+    flyToLocation(16.50, 112.00, 3.2);
+  } else if (val === 'vn_truong_sa') {
+    generateRealProfile(11.9, 109.2, 8.8, 114.2, "Lát cắt Duyên hải Cam Ranh (Khánh Hòa) ➔ Vực sâu Biển Đông ➔ Quần đảo Trường Sa");
+    flyToLocation(9.50, 113.00, 3.2);
   } else if (val === 'three_step') {
     generateRealProfile(32.5, 88.0, 31.0, 122.5, "Lát cắt 3 bậc thang Đông Á: Tây Tạng ➔ Tứ Xuyên ➔ ĐB Trường Giang ➔ Biển Hoa Đông");
     flyToLocation(31.5, 105.0, 4.2);
@@ -2261,6 +2283,22 @@ const vietnamRegions = [
     lat: 10.0, lon: 105.5, elev: 2,
     transect: { name: "Đồng Tháp Mười ➔ Cần Thơ ➔ Mũi Cà Mau", p1: [10.8, 105.8], p2: [8.6, 104.8] },
     desc: "Đồng bằng châu thổ trẻ bồi đắp bởi hệ thống sông Mê Kông, cao độ trung bình dưới 2m, mạng lưới kênh rạch chằng chịt thích ứng 'sống chung với lũ'."
+  },
+  {
+    id: "vn_hoang_sa",
+    name: "Quần đảo Hoàng Sa (TP. Đà Nẵng)",
+    category: "Quần đảo san hô thềm lục địa Biển Đông",
+    lat: 16.50, lon: 112.00, elev: 15,
+    transect: { name: "Đà Nẵng ➔ Thềm lục địa Biển Đông ➔ Quần đảo Hoàng Sa", p1: [16.07, 108.22], p2: [16.8, 112.5] },
+    desc: "Quần thể hơn 30 đảo, đá, cồn cát san hô trên thềm lục địa Biển Đông, thuộc huyện đảo Hoàng Sa, TP. Đà Nẵng. Vùng biển chủ quyền thiêng liêng giàu tiềm năng sinh thái và vị trí an ninh hàng hải huyết mạch."
+  },
+  {
+    id: "vn_truong_sa",
+    name: "Quần đảo Trường Sa (Tỉnh Khánh Hòa)",
+    category: "Quần đảo san hô bồn trũng sâu Biển Đông",
+    lat: 9.50, lon: 113.00, elev: 10,
+    transect: { name: "Cam Ranh ➔ Bồn trũng sâu Biển Đông ➔ Quần đảo Trường Sa", p1: [11.9, 109.2], p2: [8.8, 114.2] },
+    desc: "Quần thể hơn 100 đảo nổi, đảo chìm và bãi cạn trên các đỉnh ngầm trồi từ bồn trũng sâu Biển Đông, thuộc huyện đảo Trường Sa, tỉnh Khánh Hòa. Cửa ngõ chiến lược án ngữ tuyến hàng hải quốc tế trọng yếu."
   }
 ];
 
