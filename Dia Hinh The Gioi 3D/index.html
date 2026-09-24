@@ -1422,20 +1422,53 @@ function triggerRadarPulse(lat, lon, color = 0xe8c87a) {
   pulseStartTime = performance.now();
 }
 
-function flyToLocation(lat, lon, dist = 3.5) {
-  const phi = (90 - lat) * DEG;
-  const theta = (lon + 180) * DEG;
+// Thuật toán nội suy hình cầu Spherical Slerp mượt mà (ngăn camera cắt qua tâm Trái Đất)
+function slerpVectors(v1, v2, t, out) {
+  const len1 = v1.length();
+  const len2 = v2.length();
+  const r = (1 - t) * len1 + t * len2;
+
+  const u1 = v1.clone().normalize();
+  const u2 = v2.clone().normalize();
+
+  let dot = Math.max(-1, Math.min(1, u1.dot(u2)));
   
-  const localTarget = new THREE.Vector3(
-    -(dist * Math.sin(phi) * Math.cos(theta)),
-    dist * Math.cos(phi),
-    dist * Math.sin(phi) * Math.sin(theta)
-  );
-  localTarget.applyAxisAngle(new THREE.Vector3(0, 0, 1), -23.44 * DEG);
+  if (dot > 0.9999) {
+    out.copy(u1).multiplyScalar(r);
+    return out;
+  }
+  
+  if (dot < -0.9999) {
+    let ortho = new THREE.Vector3(0, 1, 0).cross(u1);
+    if (ortho.lengthSq() < 0.01) ortho = new THREE.Vector3(1, 0, 0).cross(u1);
+    ortho.normalize();
+    const angle = Math.PI * t;
+    out.copy(u1).multiplyScalar(Math.cos(angle)).addScaledVector(ortho, Math.sin(angle)).multiplyScalar(r);
+    return out;
+  }
+
+  const theta = Math.acos(dot);
+  const sinTheta = Math.sin(theta);
+  const w1 = Math.sin((1 - t) * theta) / sinTheta;
+  const w2 = Math.sin(t * theta) / sinTheta;
+
+  out.copy(u1).multiplyScalar(w1).addScaledVector(u2, w2).multiplyScalar(r);
+  return out;
+}
+
+function flyToLocation(lat, lon, dist = 3.6) {
+  // Tự động dừng tự quay để người dùng quan sát chính xác vị trí mốc địa lý
+  const togRot = document.getElementById('tog-rot');
+  if (togRot) togRot.checked = false;
+
+  // Cập nhật ma trận không gian thực thời của Trái Đất
+  earthGroup.updateMatrixWorld(true);
+  const localTarget = latLonToVec3(lat, lon, dist);
+  const worldTarget = earthGroup.localToWorld(localTarget.clone());
 
   flyTarget = {
     startPos: camera.position.clone(),
-    endPos: localTarget,
+    endPos: worldTarget,
     startLook: controls.target.clone(),
     endLook: new THREE.Vector3(0, 0, 0)
   };
@@ -2178,23 +2211,29 @@ window.switchRightTab = function(tabId, btn) {
 window.onTransectSelect = function(val) {
   if (!val) return;
   if (val === 'vn_north') {
-    generateRealProfile(21.5, 101.5, 20.5, 107.5, "Lát cắt Bắc Bộ: Lào ➔ Fansipan ➔ ĐB Sông Hồng ➔ Vịnh Bắc Bộ");
-    flyToLocation(21.0, 105.0, 3.6);
+    generateRealProfile(22.5, 103.5, 20.8, 107.5, "Lát cắt Bắc Bộ: Tây Bắc ➔ Fansipan ➔ ĐB Sông Hồng ➔ Vịnh Bắc Bộ");
+    flyToLocation(21.3, 105.8, 3.6);
+    triggerRadarPulse(21.3, 105.8, 0x3dd68c);
   } else if (val === 'vn_central') {
-    generateRealProfile(15.0, 106.5, 15.5, 109.5, "Lát cắt Trung Bộ: Lào ➔ Ngọc Linh ➔ Duyên hải ➔ Biển Đông");
-    flyToLocation(15.2, 108.0, 3.6);
+    generateRealProfile(14.8, 106.8, 15.8, 109.5, "Lát cắt Trung Bộ: Lào ➔ Ngọc Linh (Trường Sơn) ➔ Duyên hải ➔ Biển Đông");
+    flyToLocation(15.3, 108.2, 3.6);
+    triggerRadarPulse(15.3, 108.2, 0x3dd68c);
   } else if (val === 'vn_south') {
-    generateRealProfile(11.9, 108.4, 9.5, 106.8, "Lát cắt Nam Bộ: Tây Nguyên ➔ Đông Nam Bộ ➔ ĐB Sông Cửu Long");
-    flyToLocation(10.5, 107.0, 3.6);
+    generateRealProfile(12.0, 108.5, 9.2, 105.0, "Lát cắt Nam Bộ: Tây Nguyên (Lâm Viên) ➔ Đông Nam Bộ ➔ ĐB Sông Cửu Long");
+    flyToLocation(10.6, 106.7, 3.6);
+    triggerRadarPulse(10.6, 106.7, 0x3dd68c);
   } else if (val === 'vn_hoang_sa') {
     generateRealProfile(16.07, 108.22, 16.8, 112.5, "Lát cắt Duyên hải Đà Nẵng ➔ Thềm lục địa Biển Đông ➔ Quần đảo Hoàng Sa");
     flyToLocation(16.50, 112.00, 3.2);
+    triggerRadarPulse(16.5, 112.0, 0xffcc00);
   } else if (val === 'vn_truong_sa') {
     generateRealProfile(11.9, 109.2, 8.8, 114.2, "Lát cắt Duyên hải Cam Ranh (Khánh Hòa) ➔ Vực sâu Biển Đông ➔ Quần đảo Trường Sa");
     flyToLocation(9.50, 113.00, 3.2);
+    triggerRadarPulse(9.5, 113.0, 0xffcc00);
   } else if (val === 'three_step') {
     generateRealProfile(32.5, 88.0, 31.0, 122.5, "Lát cắt 3 bậc thang Đông Á: Tây Tạng ➔ Tứ Xuyên ➔ ĐB Trường Giang ➔ Biển Hoa Đông");
     flyToLocation(31.5, 105.0, 4.2);
+    triggerRadarPulse(31.5, 105.0, 0xe8c87a);
   } else if (landmarksData.find(l => l.id === val)) {
     selectLandmark(val);
   }
@@ -2358,7 +2397,7 @@ window.renderVietnamList = function() {
       🇻🇳 <b>Quy luật phân bậc:</b> Núi cao hiểm trở ➔ Cao nguyên xếp tầng ➔ Đồng bằng phù sa ➔ Thềm lục địa Biển Đông:
     </div>
     ${vietnamRegions.map(r => `
-      <div class="landmark-item" onclick="selectVietnamRegion('${r.id}')" style="margin-bottom:4px">
+      <div class="landmark-item" id="vnli-${r.id}" onclick="selectVietnamRegion('${r.id}')" style="margin-bottom:4px">
         <div>
           <b style="color:var(--parchment);display:block">${r.name}</b>
           <small style="font-size:9.5px;color:var(--parchment-dim)">${r.category}</small>
@@ -2372,7 +2411,78 @@ window.renderVietnamList = function() {
 window.selectVietnamRegion = function(id) {
   const r = vietnamRegions.find(x => x.id === id);
   if (!r) return;
-  flyToLocation(r.lat, r.lon, 3.6);
+
+  // Âm thanh phản hồi xúc giác nhẹ nhàng
+  playChime(587.33);
+
+  // Hiệu ứng sóng radar 3D tại tọa độ mốc
+  const pulseColor = (r.id.includes('hoang_sa') || r.id.includes('truong_sa')) ? 0xffcc00 : 0x3dd68c;
+  triggerRadarPulse(r.lat, r.lon, pulseColor);
+
+  // Active item trong danh bạ
+  document.querySelectorAll('.landmark-item').forEach(el => el.classList.remove('active'));
+  const activeEl = document.getElementById(`vnli-${r.id}`);
+  if (activeEl) activeEl.classList.add('active');
+
+  // Đồng bộ sang landmark nếu có tương ứng (fansipan, hoang_sa, truong_sa, red_river_delta, mekong_delta, ngoc_linh, truong_son, ha_long)
+  const landmarkMap = {
+    vn_fansipan: 'fansipan',
+    vn_dongbac: 'ha_long',
+    vn_dongbang_sh: 'red_river_delta',
+    vn_truongson_bac: 'truong_son',
+    vn_truongson_nam: 'ngoc_linh',
+    vn_dongbang_scl: 'mekong_delta',
+    vn_hoang_sa: 'hoang_sa',
+    vn_truong_sa: 'truong_sa'
+  };
+
+  const matchedLmId = landmarkMap[id];
+  if (matchedLmId) {
+    const lm = landmarksData.find(l => l.id === matchedLmId);
+    if (lm) {
+      activeLandmark = lm;
+      document.getElementById('p-name').textContent = lm.name_vi;
+      document.getElementById('p-kind').textContent = lm.category;
+      document.getElementById('rw-coord').textContent = `${Math.abs(lm.lat).toFixed(2)}° ${lm.lat >= 0 ? 'B' : 'N'}, ${Math.abs(lm.lon).toFixed(2)}° ${lm.lon >= 0 ? 'Đ' : 'T'}`;
+      document.getElementById('rw-elev').innerHTML = `${lm.elev_m > 0 ? '+' : ''}${lm.elev_m.toLocaleString()} m <small>(${lm.status})</small>`;
+      document.getElementById('rw-type').textContent = lm.category;
+      document.getElementById('rw-plate').textContent = lm.plate;
+
+      document.getElementById('w-where').textContent = lm.where;
+      document.getElementById('w-what').textContent = lm.what;
+      document.getElementById('w-why').textContent = lm.why_there;
+      document.getElementById('w-care').textContent = lm.why_care;
+      document.getElementById('w-whatif').textContent = lm.what_if;
+
+      document.getElementById('tel-coord').textContent = `${Math.abs(lm.lat).toFixed(2)}°${lm.lat >= 0 ? 'B' : 'N'}, ${Math.abs(lm.lon).toFixed(2)}°${lm.lon >= 0 ? 'Đ' : 'T'}`;
+      document.getElementById('tel-elev').textContent = `${lm.elev_m > 0 ? '+' : ''}${lm.elev_m.toLocaleString()} m`;
+      document.getElementById('tel-type').textContent = lm.category;
+      document.getElementById('tel-plate').textContent = lm.plate;
+    }
+  } else {
+    document.getElementById('p-name').textContent = r.name;
+    document.getElementById('p-kind').textContent = r.category;
+    document.getElementById('rw-coord').textContent = `${r.lat.toFixed(2)}° B, ${r.lon.toFixed(2)}° Đ`;
+    document.getElementById('rw-elev').innerHTML = `+${r.elev.toLocaleString()} m <small>(VERIFIED)</small>`;
+    document.getElementById('rw-type').textContent = r.category;
+    document.getElementById('rw-plate').textContent = 'Khối Indochina / Đới biến dạng Tân sinh';
+
+    document.getElementById('w-where').textContent = `Khu vực ${r.name}, Việt Nam.`;
+    document.getElementById('w-what').textContent = r.desc;
+    document.getElementById('w-why').textContent = `Hình thành qua quá trình kiến tạo Indosini và nâng bổng phân bậc mạnh mẽ thời Kainozoi.`;
+    document.getElementById('w-care').textContent = `Đóng vai trò chiến lược về sinh thái, thủy văn, phòng hộ đầu nguồn và phát triển kinh tế vùng.`;
+    document.getElementById('w-whatif').textContent = `Khảo sát trắc diện cắt ngang 2D-3D để đánh giá độ chênh cao và hướng dốc tự nhiên.`;
+
+    document.getElementById('tel-coord').textContent = `${r.lat.toFixed(2)}°B, ${r.lon.toFixed(2)}°Đ`;
+    document.getElementById('tel-elev').textContent = `+${r.elev.toLocaleString()} m`;
+    document.getElementById('tel-type').textContent = r.category;
+    document.getElementById('tel-plate').textContent = 'Khối Indochina';
+  }
+
+  // Camera bay đến chính xác vị trí mốc
+  flyToLocation(r.lat, r.lon, 3.5);
+
+  // Tạo trắc diện nếu có
   if (r.transect) {
     generateRealProfile(r.transect.p1[0], r.transect.p1[1], r.transect.p2[0], r.transect.p2[1], r.transect.name);
     document.getElementById('right-slab').classList.remove('collapsed');
@@ -2806,13 +2916,13 @@ function animate(time) {
     }
   }
 
-  // Camera Fly-to Animation mượt mà
+  // Camera Fly-to Animation mượt mà bằng Spherical Slerp hình cầu
   if (flyTarget) {
     const elapsed = time - flyStartTime;
     const progress = Math.min(1, elapsed / FLY_DURATION);
     const ease = 0.5 - 0.5 * Math.cos(progress * Math.PI);
 
-    camera.position.lerpVectors(flyTarget.startPos, flyTarget.endPos, ease);
+    slerpVectors(flyTarget.startPos, flyTarget.endPos, ease, camera.position);
     controls.target.lerpVectors(flyTarget.startLook, flyTarget.endLook, ease);
 
     if (progress >= 1) {
