@@ -53,7 +53,7 @@
     --font-mono:"IBM Plex Mono",ui-monospace,monospace;
   }
   *{box-sizing:border-box}
-  html,body{height:100%}
+  html,body{height:100%;overscroll-behavior:none;-webkit-overscroll-behavior:none}
   body{margin:0;background:var(--void);color:var(--parchment);
     font-family:var(--font-ui);font-weight:300;overflow:hidden;-webkit-font-smoothing:antialiased}
   #stage,#hud{position:fixed;inset:0;display:block;width:100%;height:100%}
@@ -61,6 +61,9 @@
   #stage.dragging{cursor:grabbing}
   #hud{pointer-events:none;z-index:2}
   body.peg #stage{cursor:crosshair}
+  body.canvas-dragging .masthead,
+  body.canvas-dragging .site-footer{opacity:0.18;transition:opacity .35s ease;pointer-events:none}
+  .masthead,.site-footer{transition:opacity .25s ease}
 
   .shell{position:fixed;inset:0;pointer-events:none;z-index:3;-webkit-user-select:none;user-select:none}
   .shell > *{pointer-events:auto}
@@ -563,53 +566,95 @@
   .ans.off{opacity:.45}
   .les-fb{font-size:12px;line-height:1.6;color:#CFC8B6;margin:10px 0 0;min-height:1px}
   .les-fb b{color:var(--brass)}
+  /* Mobile Navigation Drawer */
+  .brand-mobile-menu{display:none}
+  .mobile-drawer{position:fixed;inset:0;z-index:99;display:none;background:rgba(4,6,14,.84);
+    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:opacity .25s ease}
+  .mobile-drawer.open{display:block}
+  .mobile-drawer-content{position:absolute;top:0;right:0;bottom:0;width:min(86vw, 320px);
+    background:rgba(8,11,22,.98);border-left:1px solid var(--hairline);
+    padding:calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    display:flex;flex-direction:column;gap:13px;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    box-shadow:-8px 0 32px rgba(0,0,0,.75);animation:drawerSlideIn .25s cubic-bezier(.16,1,.3,1)}
+  @keyframes drawerSlideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+  .drawer-link-card,.drawer-action-btn,.drawer-contact-row{display:flex;align-items:center;gap:11px;
+    padding:10px 12px;border-radius:5px;text-decoration:none;border:1px solid var(--hairline-soft);
+    background:rgba(232,200,122,.04);color:var(--parchment);font-family:var(--font-ui);font-size:12px;
+    cursor:pointer;transition:.15s;width:100%;text-align:left;box-sizing:border-box}
+  .drawer-link-card:hover,.drawer-action-btn:hover,.drawer-contact-row:hover{
+    background:rgba(232,200,122,.12);border-color:var(--brass)}
+  .drawer-link-card b{display:block;font-size:12.5px;font-weight:600}
+  .drawer-link-card small{display:block;font-size:10px;color:var(--parchment-dim);line-height:1.35;margin-top:1px}
+
   /* ══════════════════════════════════════════════
      CHUẨN HÓA GIAO DIỆN 3 NỀN TẢNG (RESPONSIVE)
      ══════════════════════════════════════════════ */
 
   /* 1. Máy tính bảng / iPad (768px - 1024px) */
   @media (min-width:768px) and (max-width:1024px){
-    .slab{top:calc(16px + env(safe-area-inset-top, 0px));right:18px;width:280px;max-height:64vh;overflow-y:auto;padding:13px 15px}
-    .slab-name{font-size:25px}
-    .touch-hud{right:18px;bottom:calc(128px + env(safe-area-inset-bottom, 0px))}
-    .th-btn{width:40px;height:40px;font-size:17px}
-    .console{padding:0 12px calc(12px + env(safe-area-inset-bottom, 0px));gap:7px}
-    .seg button,.ghost,.solid{min-height:36px;padding:7px 10px;font-size:9.5px}
-    .chip{padding:9px 12px 6px;font-size:11px}
-    .phenom{left:18px;bottom:calc(118px + env(safe-area-inset-bottom, 0px));width:280px}
-    .lesson-card{bottom:calc(118px + env(safe-area-inset-bottom, 0px));right:18px;width:340px}
+    .brand-mobile-menu{display:none !important}
+    .slab{top:calc(16px + env(safe-area-inset-top, 0px));right:18px;width:300px;max-height:68vh;overflow-y:auto;padding:14px 16px;border-radius:8px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+    .slab-name{font-size:26px}
+    .touch-hud{right:18px;bottom:calc(134px + env(safe-area-inset-bottom, 0px))}
+    .th-btn{width:42px;height:42px;font-size:17px;border-radius:7px;touch-action:manipulation}
+    .console{padding:0 14px calc(14px + env(safe-area-inset-bottom, 0px));gap:8px}
+    .rail{min-height:42px;padding:4px 4px 1px}
+    .chip{padding:10px 13px 7px;font-size:11.5px;min-height:38px;touch-action:manipulation}
+    .seg button,.ghost,.solid{min-height:38px;padding:8px 11px;font-size:10px;touch-action:manipulation}
+    .phenom{left:18px;bottom:calc(124px + env(safe-area-inset-bottom, 0px));width:300px}
+    .lesson-card{bottom:calc(124px + env(safe-area-inset-bottom, 0px));right:18px;width:360px}
   }
 
   /* 2. Điện thoại thông minh / Smartphone (< 768px) */
   @media (max-width:767px){
-    .masthead{padding:calc(12px + env(safe-area-inset-top, 0px)) 12px 0}
-    .wordmark{font-size:21px}
-    .brand-contact{font-size:9px;padding:2px 6px;margin-top:3px;white-space:nowrap}
-    .brand-phone{font-size:9.5px;font-weight:700;color:var(--brass);letter-spacing:.02em}
-    .rule{margin:7px 0 5px;width:44px}
-    .clock{font-size:10px}
+    /* Ẩn các liên kết phụ trên masthead, chỉ giữ âm thanh, v2.0 và menu hamburger */
+    .mast-actions .brand-phone,
+    .mast-actions .brand-fb,
+    .mast-actions .brand-earth,
+    .mast-actions .brand-terrain,
+    .mast-actions #btn-mast-zalo,
+    .mast-actions #btn-mast-share,
+    .mast-actions #btn-fullscreen,
+    .mast-actions .lang-switch {
+      display: none !important;
+    }
+    .brand-mobile-menu {
+      display: inline-flex !important;
+    }
+
+    .masthead{padding:calc(10px + env(safe-area-inset-top, 0px)) 12px 0}
+    .wordmark{font-size:20px}
+    .brand-contact{font-size:9.5px;padding:3px 7px;margin-top:2px;white-space:nowrap}
+    .rule{margin:5px 0 4px;width:40px}
+    .clock{font-size:9.5px}
+
+    /* Tránh đè nhau khi mở cắt lớp 3D */
+    body.xsec-active .slab {
+      display: none !important;
+    }
 
     /* Bảng thông tin thiên thể dạng ngăn kéo đáy có thể thu gọn */
     .slab{top:auto;bottom:calc(112px + env(safe-area-inset-bottom, 0px));left:10px;right:10px;width:auto;
-      padding:10px 12px 8px;background:rgba(7,10,22,.94);border-radius:6px;max-height:44vh;overflow-y:auto;
+      padding:10px 12px 8px;background:rgba(7,10,22,.95);border-radius:6px;max-height:44vh;overflow-y:auto;
       -webkit-overflow-scrolling:touch}
     .slab-name{font-size:20px}
-    .slab-tag{font-size:12.5px;margin-top:3px}
+    .slab-tag{font-size:12px;margin-top:2px}
     .readout{grid-template-columns:1fr 1fr;column-gap:12px;margin-top:7px}
     .row{padding:4px 0;flex-direction:column;align-items:flex-start;gap:0}
     .row dt{font-size:7.5px}
     .row dd{text-align:left;font-size:10.5px}
 
-    /* Cụm phím nổi Touch HUD nằm bên cạnh phải vùng trời, tránh che bảng điều khiển */
-    .touch-hud{right:10px;top:calc(76px + env(safe-area-inset-top, 0px));bottom:auto;gap:5px}
-    .th-btn{width:34px;height:34px;font-size:13.5px;border-radius:5px}
+    /* Cụm phím nổi Touch HUD nằm bên cạnh phải vùng trời */
+    .touch-hud{right:10px;top:calc(66px + env(safe-area-inset-top, 0px));bottom:auto;gap:5px}
+    .th-btn{width:36px;height:36px;font-size:14px;border-radius:6px;touch-action:manipulation}
     .th-sep{width:18px;margin:1px auto}
 
-    /* Thanh điều khiển đáy */
+    /* Thanh điều khiển đáy & Thanh cuộn hành tinh chuẩn ngón tay 44px */
     .console{padding:0 6px calc(8px + env(safe-area-inset-bottom, 0px));gap:5px}
-    .rail{min-height:38px;padding:3px 1px 1px;-webkit-overflow-scrolling:touch}
-    .chip{font-size:11px;padding:9px 9px 5px}
-    .controls{gap:6px}
+    .rail{min-height:44px;padding:4px 4px 2px;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scroll-snap-type:x proximity}
+    .chip{font-size:11.5px;padding:12px 10px 8px;min-height:42px;touch-action:manipulation;scroll-snap-align:center}
+    .chip.moon{font-size:10px;padding:12px 7px 8px}
+    .controls{gap:5px}
     .seg button{font-size:8px;letter-spacing:.06em;padding:6px 6px;min-height:34px}
     .ghost,.solid{font-size:8px;letter-spacing:.06em;padding:6px 7px;min-height:34px}
     .site-footer{font-size:8.5px;gap:5px;padding:3px 6px;margin-top:0;justify-content:center}
@@ -757,6 +802,68 @@
     <div class="cl-list" id="cl-list" style="display:flex;flex-direction:column;gap:12px;max-height:60vh;overflow-y:auto;padding-right:6px"></div>
   </div>
 </div>
+
+<div id="mobile-drawer" class="mobile-drawer">
+  <div class="mobile-drawer-content">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--hairline-soft)">
+      <div style="display:flex;align-items:center;gap:8px">
+        <img src="logo/logo.png" alt="Logo" width="22" height="22" style="border-radius:50%">
+        <span style="font-family:var(--font-display);font-size:17px;font-weight:600;color:var(--parchment)">Khám Phá Vũ Trụ</span>
+      </div>
+      <button type="button" id="btn-drawer-close" style="appearance:none;background:none;border:none;color:var(--parchment-dim);font-size:22px;cursor:pointer;padding:4px 8px;line-height:1" aria-label="Đóng menu">✕</button>
+    </div>
+
+    <div>
+      <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--brass);margin-bottom:6px">Ngôn ngữ / Language</div>
+      <div class="lang-switch-drawer" style="display:flex;gap:6px">
+        <button type="button" class="drawer-lang-btn" id="drawer-lang-vi" style="flex:1;padding:7px;border-radius:4px;border:1px solid var(--hairline);background:var(--brass);color:var(--ink);font-weight:600;cursor:pointer">Tiếng Việt</button>
+        <button type="button" class="drawer-lang-btn" id="drawer-lang-en" style="flex:1;padding:7px;border-radius:4px;border:1px solid var(--hairline-soft);background:rgba(232,200,122,.06);color:var(--parchment-dim);font-weight:600;cursor:pointer">English (IAU)</button>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--brass);margin-bottom:2px">Chuyên đề 3D đặc sắc</div>
+      <a href="earth.html" class="drawer-link-card">
+        <span style="font-size:18px">🌍</span>
+        <div>
+          <b>Trái Đất 3D</b>
+          <small>Tự quay, 4 mùa, quỹ đạo Kepler & Coriolis</small>
+        </div>
+      </a>
+      <a href="/dia-hinh" class="drawer-link-card">
+        <span style="font-size:18px">🗺️</span>
+        <div>
+          <b>Bản Đồ Địa Hình 3D</b>
+          <small>Độ cao thực tế, vệ tinh & địa chất toàn cầu</small>
+        </div>
+      </a>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--brass);margin-bottom:2px">Tiện ích trải nghiệm</div>
+      <button type="button" id="drawer-btn-fs" class="drawer-action-btn">
+        <span style="font-size:16px">⛶</span> <b>Toàn màn hình ngắm sao (F)</b>
+      </button>
+      <button type="button" id="drawer-btn-share" class="drawer-action-btn">
+        <span style="font-size:16px">🚀</span> <b>Chia sẻ Tinh Đồ Thái Dương</b>
+      </button>
+      <button type="button" id="drawer-btn-zalo" class="drawer-action-btn">
+        <span style="font-size:16px">💬</span> <b>Nhóm Zalo & Cẩm nang thiên văn</b>
+      </button>
+    </div>
+
+    <div style="margin-top:auto;padding-top:12px;border-top:1px solid var(--hairline-soft);display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:10px;color:var(--parchment-dim)">Tác giả & Tư vấn chuyên môn:</div>
+      <a href="tel:0985578385" class="drawer-contact-row" style="color:var(--brass)">
+        <span>📞</span> <b>0985578385 (Hotline / Zalo)</b>
+      </a>
+      <a href="https://www.facebook.com/nghiainterior/" target="_blank" rel="noopener noreferrer" class="drawer-contact-row" style="color:#90CAF9">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        <span>Facebook N&M Studio</span>
+      </a>
+    </div>
+  </div>
+</div>
 <div id="nogl">
   <div class="nogl-box">
     <div style="font-size:38px;margin-bottom:8px">🪐</div>
@@ -801,13 +908,14 @@
       <a href="https://www.facebook.com/nghiainterior/" target="_blank" rel="noopener noreferrer" class="brand-contact brand-fb" title="Facebook N&M Studio: nghiainterior" style="border-color:rgba(24,119,242,.4);color:#90CAF9">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="#1877F2" style="vertical-align:middle;display:inline-block"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> <span>Facebook</span>
       </a>
-      <a href="earth.html" class="brand-contact" style="border-color:var(--brass)" title="Chuyên đề Trái Đất 3D: Tự Quay & 4 Mùa">🌍 Trái Đất 3D</a>
-      <a href="/dia-hinh" class="brand-contact" style="border-color:var(--brass)" title="Phòng Thí Nghiệm Địa Hình Thế Giới 3D">🗺️ Địa Hình 3D</a>
+      <a href="earth.html" class="brand-contact brand-earth" style="border-color:var(--brass)" title="Chuyên đề Trái Đất 3D: Tự Quay & 4 Mùa">🌍 Trái Đất 3D</a>
+      <a href="/dia-hinh" class="brand-contact brand-terrain" style="border-color:var(--brass)" title="Phòng Thí Nghiệm Địa Hình Thế Giới 3D">🗺️ Địa Hình 3D</a>
       <button type="button" id="btn-mast-zalo" class="brand-contact" style="border-color:rgba(100,181,246,.5);color:#81D4FA;cursor:pointer" title="Cộng đồng Zalo & Tải Cẩm Nang Thiên Văn">💬 Nhóm Zalo</button>
       <button type="button" id="btn-mast-share" class="brand-contact" style="border-color:rgba(232,200,122,.4);color:var(--brass);cursor:pointer" title="Chia sẻ website">🚀 Chia sẻ</button>
       <button type="button" id="btn-fullscreen" class="brand-contact" style="border-color:rgba(232,200,122,.45);color:var(--parchment);cursor:pointer" title="Toàn màn hình ngắm vũ trụ (F)">⛶ Toàn màn hình</button>
       <button type="button" id="btn-audio" class="brand-contact" style="border-color:rgba(232,200,122,.45);color:var(--parchment-dim);cursor:pointer;display:inline-flex;align-items:center;gap:4px" title="Âm thanh vũ trụ (M)"><span id="audio-icon">🔇</span> <span id="audio-txt">Âm thanh</span></button>
       <button type="button" id="btn-ver-badge" class="ver-badge" title="Nhật ký cập nhật / Release Notes">v2.0 <span class="ver-new-dot" id="ver-dot"></span></button>
+      <button type="button" id="btn-mobile-menu" class="brand-contact brand-mobile-menu" title="Menu tiện ích khám phá">☰ <span id="mobile-menu-txt">Menu</span></button>
       <div class="lang-switch" role="group" aria-label="Ngôn ngữ / Language">
         <button class="lang-btn active" id="btn-lang-vi" type="button" title="Tiếng Việt">VN</button>
         <button class="lang-btn" id="btn-lang-en" type="button" title="English (IAU Standard)">EN</button>
@@ -4666,6 +4774,7 @@ function openXsec(id){
   if(window.AUDIO && window.AUDIO.playCrossSection) window.AUDIO.playCrossSection();
   V.xsec = true;
   V.xsecHighlight = -1;
+  document.body.classList.add("xsec-active");
   var xs = $("btn-xsec");
   if(xs){
     xs.classList.remove("ghost"); xs.classList.add("solid");
@@ -4683,6 +4792,7 @@ function openXsec(id){
 function closeXsec(){
   V.xsec = false;
   V.xsecHighlight = -1;
+  document.body.classList.remove("xsec-active");
   var xs = $("btn-xsec");
   if(xs){
     xs.classList.remove("solid"); xs.classList.add("ghost");
@@ -5869,6 +5979,7 @@ if(!GLOK){
       el.setAttribute("aria-current", V.focus===b.id?"true":"false");
       el.addEventListener("click",function(){
         if(window.AUDIO && window.AUDIO.playTwinkle) window.AUDIO.playTwinkle();
+        if(navigator.vibrate) try{ navigator.vibrate(8); }catch(e){}
         if(V.mode==="surface"){ exitSurface(); }
         focusBody(b.id);
       });
@@ -5884,6 +5995,15 @@ if(!GLOK){
     var btnVi=$("btn-lang-vi"), btnEn=$("btn-lang-en");
     if(btnVi) btnVi.classList.toggle("active", lang==="vi");
     if(btnEn) btnEn.classList.toggle("active", lang==="en");
+    var dVi = $("drawer-lang-vi"), dEn = $("drawer-lang-en");
+    if(dVi){
+      dVi.style.background = (lang==="vi" ? "var(--brass)" : "rgba(232,200,122,.06)");
+      dVi.style.color = (lang==="vi" ? "var(--ink)" : "var(--parchment-dim)");
+    }
+    if(dEn){
+      dEn.style.background = (lang==="en" ? "var(--brass)" : "rgba(232,200,122,.06)");
+      dEn.style.color = (lang==="en" ? "var(--ink)" : "var(--parchment-dim)");
+    }
 
     // Masthead & Labels
     var eb=document.querySelector(".masthead .eyebrow");
@@ -6106,6 +6226,46 @@ if(!GLOK){
       if(vDot) vDot.style.display = "none";
     }
   } catch(e){}
+
+  /* Drawer điều hướng di động (Mobile Menu) */
+  var drawerEl = $("mobile-drawer");
+  function openMobileDrawer(){
+    if(!drawerEl) return;
+    drawerEl.classList.add("open");
+    drawerEl.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+  function closeMobileDrawer(){
+    if(!drawerEl) return;
+    drawerEl.classList.remove("open");
+    drawerEl.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+  var btnMobileMenu = $("btn-mobile-menu");
+  if(btnMobileMenu) btnMobileMenu.addEventListener("click", openMobileDrawer);
+  var btnDrawerClose = $("btn-drawer-close");
+  if(btnDrawerClose) btnDrawerClose.addEventListener("click", closeMobileDrawer);
+  if(drawerEl) {
+    drawerEl.addEventListener("click", function(e){
+      if(e.target === drawerEl) closeMobileDrawer();
+    });
+  }
+  var dLangVi = $("drawer-lang-vi"), dLangEn = $("drawer-lang-en");
+  if(dLangVi) dLangVi.addEventListener("click", function(){ applyLanguage("vi"); closeMobileDrawer(); });
+  if(dLangEn) dLangEn.addEventListener("click", function(){ applyLanguage("en"); closeMobileDrawer(); });
+  var dBtnFs = $("drawer-btn-fs");
+  if(dBtnFs) dBtnFs.addEventListener("click", function(){ closeMobileDrawer(); toggleFullscreen(); });
+  var dBtnShare = $("drawer-btn-share");
+  if(dBtnShare) dBtnShare.addEventListener("click", function(){ closeMobileDrawer(); openCommunity(); });
+  var dBtnZalo = $("drawer-btn-zalo");
+  if(dBtnZalo) dBtnZalo.addEventListener("click", function(){ closeMobileDrawer(); openCommunity(); });
+
+  /* Tối ưu xoay màn hình (iPad & Mobile Orientation Change) */
+  window.addEventListener("orientationchange", function(){
+    setTimeout(function(){
+      resizeGL();
+    }, 120);
+  });
 
   /* bảng Tối nay */
   function renderPlaces(){
@@ -6373,6 +6533,7 @@ if(!GLOK){
     lx=ev.clientX; ly=ev.clientY; dragged=false;
     isPanning=(ev.button===2 || ev.button===1);
     cv.classList.add("dragging");
+    document.body.classList.add("canvas-dragging");
     var k=Object.keys(pts);
     if(k.length===2){
       var a=pts[k[0]], b=pts[k[1]];
@@ -6425,7 +6586,9 @@ if(!GLOK){
       // Chuyển ngón mượt mà khi nhấc bớt 1 ngón, không bị giật góc nhìn
       lx=pts[rem[0]].x; ly=pts[rem[0]].y; pinch=0;
     } else if(rem.length===0){
-      cv.classList.remove("dragging"); pinch=0; isPanning=false;
+      cv.classList.remove("dragging");
+      document.body.classList.remove("canvas-dragging");
+      pinch=0; isPanning=false;
       if(!dragged){
         var now=performance.now();
         if(now-lastTapT<320 && Math.hypot(ev.clientX-lastTapX, ev.clientY-lastTapY)<28){
@@ -6444,7 +6607,11 @@ if(!GLOK){
     delete pts[ev.pointerId];
     var rem=Object.keys(pts);
     if(rem.length===1){ lx=pts[rem[0]].x; ly=pts[rem[0]].y; pinch=0; }
-    else if(rem.length===0){ cv.classList.remove("dragging"); pinch=0; isPanning=false; }
+    else if(rem.length===0){
+      cv.classList.remove("dragging");
+      document.body.classList.remove("canvas-dragging");
+      pinch=0; isPanning=false;
+    }
   });
 
   function zoom(f){
