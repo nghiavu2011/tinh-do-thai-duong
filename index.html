@@ -30,6 +30,7 @@
 <script defer src="/_vercel/insights/script.js"></script>
 <script defer src="telemetry.js"></script>
 <script src="planet-interior.js"></script>
+<script src="audio-space.js"></script>
 <script src="geo-data.js"></script>
 <script src="geo-earth.js"></script>
 
@@ -805,6 +806,7 @@
       <button type="button" id="btn-mast-zalo" class="brand-contact" style="border-color:rgba(100,181,246,.5);color:#81D4FA;cursor:pointer" title="Cộng đồng Zalo & Tải Cẩm Nang Thiên Văn">💬 Nhóm Zalo</button>
       <button type="button" id="btn-mast-share" class="brand-contact" style="border-color:rgba(232,200,122,.4);color:var(--brass);cursor:pointer" title="Chia sẻ website">🚀 Chia sẻ</button>
       <button type="button" id="btn-fullscreen" class="brand-contact" style="border-color:rgba(232,200,122,.45);color:var(--parchment);cursor:pointer" title="Toàn màn hình ngắm vũ trụ (F)">⛶ Toàn màn hình</button>
+      <button type="button" id="btn-audio" class="brand-contact" style="border-color:rgba(232,200,122,.45);color:var(--parchment-dim);cursor:pointer;display:inline-flex;align-items:center;gap:4px" title="Âm thanh vũ trụ (M)"><span id="audio-icon">🔇</span> <span id="audio-txt">Âm thanh</span></button>
       <button type="button" id="btn-ver-badge" class="ver-badge" title="Nhật ký cập nhật / Release Notes">v1.3 <span class="ver-new-dot" id="ver-dot"></span></button>
       <div class="lang-switch" role="group" aria-label="Ngôn ngữ / Language">
         <button class="lang-btn active" id="btn-lang-vi" type="button" title="Tiếng Việt">VN</button>
@@ -4736,6 +4738,7 @@ function renderXsecPanel(id){
 
 function focusBody(id, keepDist){
   var b=BY[id]; if(!b) return;
+  if(window.AUDIO){ AUDIO.playWarp(); AUDIO.playChime(); }
   ensureBodyTexture(b);
   V.focus=id; fillSlab(id);
   if(V.wantPan) V.wantPan=[0,0,0];
@@ -5852,6 +5855,11 @@ if(!GLOK){
     if(btnFs){ btnFs.textContent = I18N[lang].fullscreen; btnFs.title = I18N[lang].fullscreen_title; }
     var txtExitFs = $("txt-exit-fs");
     if(txtExitFs){ txtExitFs.textContent = I18N[lang].exit_fullscreen; }
+    var btnAudio = $("btn-audio");
+    if(btnAudio && window.AUDIO){
+      btnAudio.title = (lang === "en" ? "Cosmic Audio (M)" : "Âm thanh vũ trụ (M)");
+      AUDIO.updateUI();
+    }
 
     // Speed buttons
     var speedBtns = document.querySelectorAll("#speed button");
@@ -6526,6 +6534,8 @@ if(!GLOK){
 
   var btnFsMast=$("btn-fullscreen");
   if(btnFsMast) btnFsMast.addEventListener("click",function(e){ e.stopPropagation(); toggleFullscreen(); });
+  var btnAudio=$("btn-audio");
+  if(btnAudio) btnAudio.addEventListener("click",function(e){ e.stopPropagation(); if(window.AUDIO) AUDIO.toggle(); });
   var btnExitFs=$("btn-exit-fullscreen");
   if(btnExitFs) btnExitFs.addEventListener("click",function(e){ e.stopPropagation(); toggleFullscreen(false); });
   var fsBrandLogo=$("fs-brand-logo");
@@ -6572,6 +6582,12 @@ if(!GLOK){
       }
       if(document.body.classList.contains("lesson")) closeLesson();
       else if(V.mode==="surface") exitSurface();
+    }
+    if(ev.key==="m" || ev.key==="M"){
+      if(!ev.ctrlKey && !ev.metaKey && !ev.altKey){
+        ev.preventDefault();
+        if(window.AUDIO) AUDIO.toggle();
+      }
     }
     if(ev.key==="f" || ev.key==="F"){
       if(!ev.ctrlKey && !ev.metaKey && !ev.altKey){
@@ -6635,6 +6651,20 @@ if(!GLOK){
   }
 
   // móc gỡ lỗi / điều khiển bằng script (được đóng băng chống ghi đè)
+  // Khởi tạo trạng thái âm thanh nếu người dùng đã bật trước đó
+  if(window.AUDIO){
+    AUDIO.updateUI();
+    if(localStorage.getItem("tinhdo-audio") === "on"){
+      var resumeAudio = function(){
+        AUDIO.startAmbient();
+        window.removeEventListener("pointerdown", resumeAudio);
+        window.removeEventListener("keydown", resumeAudio);
+      };
+      window.addEventListener("pointerdown", resumeAudio, { once: true });
+      window.addEventListener("keydown", resumeAudio, { once: true });
+    }
+  }
+
   window.TinhDo = Object.freeze({ V:V, BY:BY, ALL:ALL, dispRadius:dispRadius, stateAt:stateAt, observerFrame:observerFrame,
     project:projectPoint, enterSurface:enterSurface, exitSurface:exitSurface,
     focusBody:focusBody, phenom:PHENOM, sunVisAtPoint:sunVisAtPoint,
