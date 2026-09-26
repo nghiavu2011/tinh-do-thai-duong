@@ -1561,7 +1561,7 @@ var BODY = [
 
  { id:"venus", albedo:0.95, ten:"Sao Kim", loai:"Hành tinh đá", R:6051.8, rot:-5832.5,
    pole:poleFromRaDec(272.76,67.16), col:"#E7C98B", tex:"venus",
-   atmo:"#F2D79A", atmoH:0.030, stand:true, standAlt:0.06,
+   atmo:"#F2D79A", atmoH:0.015, stand:true, standAlt:0.06,
    tag:"Khí quyển nặng như biển, nóng hơn cả Sao Thủy.",
    rows:[["Đường kính","12.104 km"],["Khoảng cách","108,2 triệu km <small>0,72 AU</small>"],
          ["Chu kỳ quỹ đạo","224,7 ngày"],["Chu kỳ tự quay","243 ngày <small>nghịch</small>"],
@@ -3102,6 +3102,7 @@ var EXTERNAL_TEX = {
   sun: "textures/sun.webp",
   mercury: "textures/mercury.webp",
   venus: "textures/venus.webp",
+  earth: "textures/earth.webp",
   mars: "textures/mars.webp",
   jupiter: "textures/jupiter.webp",
   saturn: "textures/saturn.webp",
@@ -3203,15 +3204,12 @@ function initGL(){
 
   applyRealTextures();
 
-  // Mặt Trời tải ngay ảnh độ phân giải cao từ Solar System Scope
-  if(EXTERNAL_TEX.sun){
-    loadExternalTexture(BY.sun);
-  } else {
-    renderBodyTexture(BY.sun);
-  }
+  // Mặt Trời và Trái Đất tải ngay ảnh 2K độ phân giải cao từ Solar System Scope
+  if(EXTERNAL_TEX.sun) loadExternalTexture(BY.sun);
+  if(EXTERNAL_TEX.earth) loadExternalTexture(BY.earth);
 
   // Hàng đợi sinh vân & nạp texture tuần tự cho các hành tinh còn lại (1 thiên thể / khung hình)
-  PROC_QUEUE = ALL.filter(function(b){ return b.id!=="sun" && !b.real; });
+  PROC_QUEUE = ALL.filter(function(b){ return b.id!=="sun" && b.id!=="earth"; });
 
   window.dumpTex=function(id){
     var b=BY[id]; ensureBodyTexture(b);
@@ -3619,7 +3617,7 @@ function drawBody(b, posRel, radius, spin, exposure, occ, sunRel, sunAng, tint, 
   gl.uniform1f(pr.u.uUoff, b.uOff||0);
   gl.uniform1f(pr.u.uReal, b.real?1:0);
   gl.uniform3fv(pr.u.uAtmo, b.atmo?hexRgb(b.atmo):[0,0,0]);
-  var ab = b.albedo===undefined?1:(0.34+0.66*b.albedo);
+  var ab = (b.albedo===undefined || b.real)?1:(0.34+0.66*b.albedo);
   var tn = tint||[1,1,1];
   gl.uniform3fv(pr.u.uTint, [tn[0]*ab, tn[1]*ab, tn[2]*ab]);
   gl.uniform3fv(pr.u.uPole, b.frame.n);
