@@ -1622,7 +1622,15 @@ var BODY = [
    tag:"Gió 2.100 km/h — mạnh nhất trong cả hệ.",
    rows:[["Đường kính","49.244 km"],["Khoảng cách","4,495 tỉ km <small>30,05 AU</small>"],
          ["Chu kỳ quỹ đạo","164,8 năm"],["Chu kỳ tự quay","16 giờ 06 phút"],
-         ["Nhiệt độ đỉnh mây","−201 °C"],["Mặt trăng","≈16"]] }
+         ["Nhiệt độ đỉnh mây","−201 °C"],["Mặt trăng","≈16"]] },
+
+  { id:"pluto", albedo:0.52, ten:"Sao Diêm Vương", loai:"Hành tinh lùn", R:1188.3, rot:-153.29,
+    pole:poleFromRaDec(132.99,-6.16), col:"#C8A882", tex:"pluto",
+    atmo:"#A0B8C8", atmoH:0.040, flat:0.0,
+    tag:"Hành tinh lùn trứ danh vùng Vành đai Kuiper mang trái tim băng Tombaugh Regio.",
+    rows:[["Đường kính","2.376,6 km"],["Khoảng cách","5,906 tỉ km <small>39,48 AU</small>"],
+          ["Chu kỳ quỹ đạo","248 năm"],["Chu kỳ tự quay","6 ngày 9 giờ <small>nghịch</small>"],
+          ["Nhiệt độ bề mặt","−230 °C"],["Mặt trăng","5 (Charon lớn nhất)"]] }
 ];
 
 /* ── vệ tinh: quỹ đạo tròn trong mặt phẳng xích đạo hành tinh ──
@@ -1688,7 +1696,13 @@ var MOON = [
    col:"#C6CBD6", tex:"ice", locked:true, stand:true, loai:"Vệ tinh của Sao Hải Vương",
    tag:"Đi ngược chiều hành tinh — có lẽ bị bắt giữ từ vành Kuiper.",
    rows:[["Đường kính","2.707 km"],["Khoảng cách","354.759 km"],
-         ["Chu kỳ quỹ đạo","5,88 ngày <small>nghịch</small>"],["Nhiệt độ","−235 °C"]] }
+         ["Chu kỳ quỹ đạo","5,88 ngày <small>nghịch</small>"],["Nhiệt độ","−235 °C"]] },
+
+  { id:"charon", albedo:0.38, ten:"Charon", host:"pluto", R:606.0, a:19591, per:6.38723, inc:0.0,
+    col:"#8C857B", tex:"rock", locked:true, stand:true, loai:"Vệ tinh của Sao Diêm Vương",
+    tag:"Khóa thủy triều đôi đồng bộ tuyệt đối với Sao Diêm Vương.",
+    rows:[["Đường kính","1.212 km"],["Khoảng cách","19.591 km"],
+          ["Chu kỳ quỹ đạo","6,39 ngày"],["Khóa thủy triều","đồng bộ 2 chiều"]] }
 ];
 
 var BY = {};
@@ -2330,17 +2344,31 @@ uniform vec4  uOcc[7];         // xyz = tâm (toạ độ tương đối camera)
 uniform float uSunAng;         // bán kính góc Mặt Trời (rad) nhìn từ thiên thể
 uniform vec3  uSunPos;         // tâm Mặt Trời (toạ độ tương đối camera)
 float visFrac(float d, float rs, float ro){
+  if(rs < 1e-6) return 1.0;
+  if(ro < 1e-6) return 1.0;
   if(d >= rs+ro) return 1.0;
   if(ro >= rs && d <= ro-rs) return 0.0;
-  if(rs >= ro && d <= rs-ro) return 1.0 - (ro*ro)/(rs*rs);
+  if(rs >= ro && d <= rs-ro) return max(0.0, 1.0 - (ro*ro)/(rs*rs));
+  
+  // Khi ro lớn hơn nhiều so với rs (thiên thể che lớn hơn nhiều góc Mặt Trời):
+  // Ranh giới vùng nửa tối (penumbra) siêu hẹp, nội suy tuyến tính tránh nổ mẫu số float32
+  if(ro > rs*4.0){
+    return clamp((d - (ro - rs)) / (2.0 * rs), 0.0, 1.0);
+  }
+
   float rs2=rs*rs, ro2=ro*ro, d2=d*d;
-  float a1=acos(clamp((d2+rs2-ro2)/(2.0*d*rs),-1.0,1.0));
-  float a2=acos(clamp((d2+ro2-rs2)/(2.0*d*ro),-1.0,1.0));
-  float ar= rs2*(a1-sin(2.0*a1)*0.5) + ro2*(a2-sin(2.0*a2)*0.5);
-  return clamp(1.0 - ar/(3.14159265*rs2), 0.0, 1.0);
+  float den1 = max(2.0*d*rs, 1e-12);
+  float den2 = max(2.0*d*ro, 1e-12);
+  float a1 = acos(clamp((d2+rs2-ro2)/den1, -1.0, 1.0));
+  float a2 = acos(clamp((d2+ro2-rs2)/den2, -1.0, 1.0));
+  float ar = rs2*(a1 - sin(2.0*a1)*0.5) + ro2*(a2 - sin(2.0*a2)*0.5);
+  float denAr = max(3.14159265*rs2, 1e-12);
+  float res = clamp(1.0 - ar/denAr, 0.0, 1.0);
+  return isnan(res) ? 1.0 : res;
 }
 float sunVisible(vec3 P, vec3 Ldir, out float redShadow){
   float vis=1.0; redShadow=0.0;
+  if(uNOcc <= 0) return 1.0;
   for(int i=0;i<7;i++){
     if(i>=uNOcc) break;
     vec3 rel = uOcc[i].xyz - P;
@@ -2349,10 +2377,10 @@ float sunVisible(vec3 P, vec3 Ldir, out float redShadow){
     float ro = asin(clamp(uOcc[i].w/d, 0.0, 0.9999));
     if(ro < uSunAng*0.03) continue;
     float sep = acos(clamp(dot(Ldir, rel/d), -1.0, 1.0));
-    float v = visFrac(sep, uSunAng, ro);
+    float v = visFrac(sep, max(uSunAng, 1e-6), ro);
     if(v < vis){ vis = v; }
   }
-  return vis;
+  return clamp(vis, 0.0, 1.0);
 }
 `;
 
@@ -5358,7 +5386,7 @@ function fmtNum(x, dec){
 }
 
 /* ══════════ dựng bảng "Tối nay" ══════════ */
-var PLANET_LIST=["mercury","venus","mars","jupiter","saturn","uranus","neptune"];
+var PLANET_LIST=["mercury","venus","mars","jupiter","saturn","uranus","neptune","pluto"];
 function buildTonight(){
   var lat=PLACE.lat, lon=PLACE.lon, tz=PLACE.tz;
   // ngày địa phương đang xem, bắt đầu từ 0h địa phương
