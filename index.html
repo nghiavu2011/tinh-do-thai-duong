@@ -1114,7 +1114,7 @@ var LANG = (function(){
 var I18N = {
   vi: {
     sun: "Mặt Trời", mercury: "Sao Thủy", venus: "Sao Kim", earth: "Trái Đất", luna: "Mặt Trăng",
-    mars: "Sao Hỏa", jupiter: "Sao Mộc", saturn: "Sao Thổ", uranus: "Sao Thiên Vương", neptune: "Sao Hải Vương",
+    mars: "Sao Hỏa", jupiter: "Sao Mộc", saturn: "Sao Thổ", uranus: "Sao Thiên Vương", neptune: "Sao Hải Vương", pluto: "Sao Diêm Vương", charon: "Charon",
     phobos: "Phobos", deimos: "Deimos", io: "Io", europa: "Europa", ganymede: "Ganymede",
     callisto: "Callisto", titan: "Titan", enceladus: "Enceladus", titania: "Titania", triton: "Triton",
     
@@ -1128,7 +1128,7 @@ var I18N = {
     moon_jupiter: "Vệ tinh của Sao Mộc",
     moon_saturn: "Vệ tinh của Sao Thổ",
     moon_uranus: "Vệ tinh của Sao Thiên Vương",
-    moon_neptune: "Vệ tinh của Sao Hải Vương",
+    moon_neptune: "Vệ tinh của Sao Hải Vương", dwarf: "Hành tinh lùn", moon_pluto: "Vệ tinh của Sao Diêm Vương",
 
     // Thao tác & Điều khiển
     stand_on: "Đứng trên ",
@@ -1249,7 +1249,7 @@ var I18N = {
   en: {
     // Chuẩn danh pháp quốc tế IAU cho Hệ Mặt Trời
     sun: "Sun", mercury: "Mercury", venus: "Venus", earth: "Earth", luna: "Moon",
-    mars: "Mars", jupiter: "Jupiter", saturn: "Saturn", uranus: "Uranus", neptune: "Neptune",
+    mars: "Mars", jupiter: "Jupiter", saturn: "Saturn", uranus: "Uranus", neptune: "Neptune", pluto: "Pluto", charon: "Charon",
     phobos: "Phobos", deimos: "Deimos", io: "Io", europa: "Europa", ganymede: "Ganymede",
     callisto: "Callisto", titan: "Titan", enceladus: "Enceladus", titania: "Titania", triton: "Triton",
     
@@ -1263,7 +1263,7 @@ var I18N = {
     moon_jupiter: "Moon of Jupiter",
     moon_saturn: "Moon of Saturn",
     moon_uranus: "Moon of Uranus",
-    moon_neptune: "Moon of Neptune",
+    moon_neptune: "Moon of Neptune", dwarf: "Dwarf Planet", moon_pluto: "Moon of Pluto",
 
     // Controls & Actions
     stand_on: "Land on ",
@@ -1402,9 +1402,11 @@ function getBodyKind(b){
       if(host==="saturn") return I18N.en.moon_saturn;
       if(host==="uranus") return I18N.en.moon_uranus;
       if(host==="neptune") return I18N.en.moon_neptune;
+      if(host==="pluto") return I18N.en.moon_pluto;
     }
     if(b.id==="jupiter" || b.id==="saturn") return I18N.en.gas;
     if(b.id==="uranus" || b.id==="neptune") return I18N.en.ice;
+    if(b.id==="pluto") return I18N.en.dwarf;
     return I18N.en.rocky;
   }
   return b.loai;
@@ -1466,7 +1468,9 @@ var KEP = {
  uranus: [[19.18916464,0.04725744,0.77263783,313.23810451,170.95427630,74.01692503],
           [-0.00196176,-0.00004397,-0.00242939,428.48202785,0.40805281,0.04240589]],
  neptune:[[30.06992276,0.00859048,1.77004347,-55.12002969,44.96476227,131.78422574],
-          [0.00026291,0.00005105,0.00035372,218.45945325,-0.32241464,-0.00508664]]
+          [0.00026291,0.00005105,0.00035372,218.45945325,-0.32241464,-0.00508664]],
+  pluto:  [[39.48168677,0.24880766,17.14175344,238.92881,224.06676,110.30347],
+          [-0.00076912,0.00006465,0.00307536,145.2078,-0.04063,-0.01183]]
 };
 
 function kepler(M,e){                       // giải E − e·sinE = M
@@ -1686,7 +1690,7 @@ var MOON = [
 ];
 
 var BY = {};
-BODY.forEach(function(b){ b.kind="planet"; BY[b.id]=b; });
+BODY.forEach(function(b){ b.kind=(b.id==="pluto"?"dwarf":"planet"); BY[b.id]=b; });
 BODY[0].kind="star";
 MOON.forEach(function(m){ m.kind="moon"; BY[m.id]=m; });
 var ALL = BODY.concat(MOON);
@@ -2961,7 +2965,7 @@ void main(){
    ══════════════════════════════════════════════════════════════ */
 var P={}, MESH={}, FB={}, STARS=null, hud=document.getElementById("hud"), h2=hud.getContext("2d");
 var TEXMODE={ sun:0, rock:1, venus:2, earth:3, mars:4, jupiter:5, saturn:6,
-              uranus:7, neptune:8, luna:9, io:10, europa:11, ganymede:12, titan:13, ice:14,
+              uranus:7, neptune:8, luna:9, io:10, europa:11, ganymede:12, titan:13, ice:14, pluto:14,
               mercury:15 };
 var HERO={ mars:1, jupiter:1, saturn:1, mercury:1, venus:1 };
 
@@ -3108,6 +3112,7 @@ var EXTERNAL_TEX = {
   saturn: "textures/saturn.webp",
   uranus: "textures/uranus.webp",
   neptune: "textures/neptune.webp",
+  pluto: "textures/pluto.webp",
   luna: "textures/moon.webp"
 };
 
@@ -4556,7 +4561,9 @@ function translateTag(id, tag){
     titan: "Rivers, lakes, and rains — flowing with liquid hydrocarbons.",
     enceladus: "Cryovolcanic geysers venting ocean water into space.",
     titania: "Massive rift valleys cleaving through an icy mantle.",
-    triton: "Retrograde orbit suggesting capture from the Kuiper Belt."
+    triton: "Retrograde orbit suggesting capture from the Kuiper Belt.",
+    pluto: "Famed dwarf planet in the Kuiper Belt with its nitrogen-ice heart Tombaugh Regio.",
+    charon: "Mutually tidally locked in a synchronous binary dance with Pluto."
   };
   return tags[id] || tag;
 }
@@ -5296,7 +5303,7 @@ function transitOf(id, jd0, span, lat, lon){
 }
 /* cấp sao biểu kiến gần đúng */
 var ABS_MAG = { mercury:-0.60, venus:-4.47, mars:-1.52, jupiter:-9.40,
-                saturn:-8.88, uranus:-7.19, neptune:-6.87 };
+                saturn:-8.88, uranus:-7.19, neptune:-6.87, pluto:-1.0 };
 function magnitudeOf(id, jd){
   if(!ABS_MAG[id]) return null;
   var obs=heliocentric("earth",jd), P=posFast(id,jd);
