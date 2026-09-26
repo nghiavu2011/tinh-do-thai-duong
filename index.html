@@ -950,8 +950,8 @@
   <p class="colophon">Vị trí hành tinh tính từ phần tử Kepler J2000 (JPL/Standish 1992), Mặt Trăng theo chuỗi Meeus rút gọn.
     Mô hình thiên văn xấp xỉ phục vụ giáo dục; sai số phụ thuộc thời kỳ, ΔT và mức rút gọn của chuỗi tính toán.
     Danh mục 5.044 sao, chòm sao và Messier lấy từ d3-celestial (Hipparcos · Yale BSC). Ảnh bề mặt Trái Đất từ NASA Visible Earth (Blue Marble),
-    Mặt Trăng từ NASA LRO/USGS, nền Ngân Hà từ ESO/S. Brunier (CC BY 4.0); các thiên thể còn lại
-    được dựng vân theo dữ liệu vị trí địa hình thật. Ở chế độ sơ đồ, khoảng cách và đường kính được nén lại (Visual Scale / Diagram).</p>
+    Mặt Trăng từ NASA LRO/USGS, nền Ngân Hà từ ESO/S. Brunier (CC BY 4.0); bản đồ bề mặt chi tiết các hành tinh cung cấp bởi Solar System Scope (CC BY 4.0).
+    Ở chế độ sơ đồ, khoảng cách và đường kính được nén lại (Visual Scale / Diagram).</p>
 </div>
 
 <script>
@@ -3097,9 +3097,57 @@ function renderBodyTexture(b){
   b.texel = [1/w, 1/h];
   b._procDone = true;
 }
+/* Bản đồ bề mặt độ phân giải cao từ Solar System Scope (CC BY 4.0) */
+var EXTERNAL_TEX = {
+  sun: "textures/sun.webp",
+  mercury: "textures/mercury.webp",
+  venus: "textures/venus.webp",
+  mars: "textures/mars.webp",
+  jupiter: "textures/jupiter.webp",
+  saturn: "textures/saturn.webp",
+  uranus: "textures/uranus.webp",
+  neptune: "textures/neptune.webp",
+  luna: "textures/moon.webp"
+};
+
+function loadExternalTexture(b, cb){
+  if(!b || !EXTERNAL_TEX[b.id]) {
+    if(cb) cb();
+    return;
+  }
+  if(b._extLoaded) {
+    if(cb) cb();
+    return;
+  }
+  if(b._extLoading) return;
+  b._extLoading = true;
+  var im = new Image();
+  im.onload = function(){
+    if(!gl) return;
+    if(b.texA) gl.deleteTexture(b.texA);
+    b.texA = texFromSource(im, true);
+    b.real = true;
+    b.uOff = 0.5;
+    b.texel = [1 / (im.naturalWidth || 2048), 1 / (im.naturalHeight || 1024)];
+    b._procDone = true;
+    b._extLoaded = true;
+    b._extLoading = false;
+    if(cb) cb();
+  };
+  im.onerror = function(){
+    b._extLoading = false;
+    if(!b._procDone && !b.real) renderBodyTexture(b);
+    if(cb) cb();
+  };
+  im.src = EXTERNAL_TEX[b.id];
+}
+
 function ensureBodyTexture(b){
-  if(!b || b._procDone || b.real) return;
-  renderBodyTexture(b);
+  if(!b) return;
+  if(!b._procDone && !b.real) renderBodyTexture(b);
+  if(EXTERNAL_TEX[b.id] && !b._extLoaded){
+    loadExternalTexture(b);
+  }
   var idx = PROC_QUEUE.indexOf(b);
   if(idx >= 0) PROC_QUEUE.splice(idx, 1);
 }
@@ -3155,10 +3203,14 @@ function initGL(){
 
   applyRealTextures();
 
-  // Mặt Trời vẽ ngay vì ở tâm quan sát ban đầu
-  renderBodyTexture(BY.sun);
+  // Mặt Trời tải ngay ảnh độ phân giải cao từ Solar System Scope
+  if(EXTERNAL_TEX.sun){
+    loadExternalTexture(BY.sun);
+  } else {
+    renderBodyTexture(BY.sun);
+  }
 
-  // Hàng đợi sinh vân tuần tự cho các hành tinh còn lại (1 thiên thể / khung hình)
+  // Hàng đợi sinh vân & nạp texture tuần tự cho các hành tinh còn lại (1 thiên thể / khung hình)
   PROC_QUEUE = ALL.filter(function(b){ return b.id!=="sun" && !b.real; });
 
   window.dumpTex=function(id){
@@ -4400,11 +4452,14 @@ function loop(now){
   var S=stateAt(V.jd);
   if(V.mode==="orbit") renderOrbit(S); else renderSurface(S);
   updateClock();
-  // ponytail: sinh vân tuần tự 1 thiên thể / khung hình để không bao giờ đơ máy
+  // ponytail: nạp texture tuần tự 1 thiên thể / khung hình để không bao giờ đơ máy
   if(PROC_QUEUE.length > 0){
     var nextBody = PROC_QUEUE.shift();
     if(nextBody && !nextBody._procDone && !nextBody.real){
       renderBodyTexture(nextBody);
+    }
+    if(nextBody && EXTERNAL_TEX[nextBody.id] && !nextBody._extLoaded){
+      loadExternalTexture(nextBody);
     }
   }
   requestAnimationFrame(loop);
