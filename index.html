@@ -4663,6 +4663,7 @@ function fillSlab(id){
 function openXsec(id){
   var d = window.XSEC_DATA && window.XSEC_DATA[id];
   if(!d) return;
+  if(window.AUDIO && window.AUDIO.playCrossSection) window.AUDIO.playCrossSection();
   V.xsec = true;
   V.xsecHighlight = -1;
   var xs = $("btn-xsec");
@@ -4766,7 +4767,7 @@ function renderXsecPanel(id){
 
 function focusBody(id, keepDist){
   var b=BY[id]; if(!b) return;
-  if(window.AUDIO){ AUDIO.playWarp(); AUDIO.playChime(); }
+  if(window.AUDIO && window.AUDIO.playWarp) AUDIO.playWarp();
   ensureBodyTexture(b);
   V.focus=id; fillSlab(id);
   if(V.wantPan) V.wantPan=[0,0,0];
@@ -5848,6 +5849,7 @@ if(!GLOK){
       el.setAttribute("data-id",b.id);
       el.setAttribute("aria-current", V.focus===b.id?"true":"false");
       el.addEventListener("click",function(){
+        if(window.AUDIO && window.AUDIO.playTwinkle) window.AUDIO.playTwinkle();
         if(V.mode==="surface"){ exitSurface(); }
         focusBody(b.id);
       });
