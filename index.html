@@ -605,6 +605,8 @@
     .lesson-card{bottom:calc(124px + env(safe-area-inset-bottom, 0px));right:18px;width:360px}
   }
 
+  .btn-mobile-explore{display:none}
+
   /* 2. Điện thoại thông minh / Smartphone (< 768px) */
   @media (max-width:767px){
     /* Ẩn các liên kết phụ trên masthead, chỉ giữ âm thanh, v2.0 và menu hamburger */
@@ -628,53 +630,88 @@
     .rule{margin:5px 0 4px;width:40px}
     .clock{font-size:9.5px}
 
-    /* Tránh đè nhau khi mở cắt lớp 3D */
-    body.xsec-active .slab {
+    /* Ẩn footer và watermark trên mobile để giải phóng hoàn toàn chân trang */
+    .site-footer, .brand-watermark, .colophon, .hint {
       display: none !important;
     }
 
-    /* Bảng thông tin thiên thể dạng ngăn kéo đáy có thể thu gọn */
-    .slab{top:auto;bottom:calc(112px + env(safe-area-inset-bottom, 0px));left:10px;right:10px;width:auto;
-      padding:10px 12px 8px;background:rgba(7,10,22,.95);border-radius:6px;max-height:44vh;overflow-y:auto;
-      -webkit-overflow-scrolling:touch}
-    .slab-name{font-size:20px}
-    .slab-tag{font-size:12px;margin-top:2px}
-    .readout{grid-template-columns:1fr 1fr;column-gap:12px;margin-top:7px}
-    .row{padding:4px 0;flex-direction:column;align-items:flex-start;gap:0}
-    .row dt{font-size:7.5px}
-    .row dd{text-align:left;font-size:10.5px}
+    /* Ẩn các nút trùng lặp & tab học tập ở thanh đáy (đã có trong Touch HUD & Drawer) */
+    .controls #btn-sun-align,
+    .controls #btn-level,
+    .controls #btn-lesson,
+    .controls #btn-phenom,
+    .controls #btn-tonight,
+    .controls #btn-more,
+    .controls .more-wrap,
+    .controls #btn-rev {
+      display: none !important;
+    }
+    .btn-mobile-explore {
+      display: inline-flex !important;
+      align-items: center;
+      gap: 4px;
+      border-color: rgba(232,200,122,.5) !important;
+      color: var(--brass) !important;
+      background: rgba(232,200,122,.1) !important;
+    }
 
-    /* Cụm phím nổi Touch HUD nằm bên cạnh phải vùng trời */
-    .touch-hud{right:10px;top:calc(66px + env(safe-area-inset-top, 0px));bottom:auto;gap:5px}
+    /* Chống va chạm: Khi mở panel cắt lớp, bài học hoặc hiện tượng -> ẩn triệt để .slab */
+    body.xsec-active .slab,
+    body.lesson .slab,
+    body.panel .slab {
+      display: none !important;
+    }
+
+    /* Console đáy tinh gọn 1 hàng duy nhất */
+    .console{position:absolute;left:0;right:0;bottom:0;padding:0 6px calc(6px + env(safe-area-inset-bottom, 0px));gap:4px;z-index:4}
+    .rail{min-height:38px;padding:2px 4px 1px;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scroll-snap-type:x proximity}
+    .chip{font-size:11px;padding:10px 9px 6px;min-height:38px;touch-action:manipulation;scroll-snap-align:center}
+    .chip.moon{font-size:9.5px;padding:10px 6px 6px}
+    .controls{gap:4px;flex-wrap:nowrap;overflow-x:auto;max-width:100%;scrollbar-width:none;-webkit-overflow-scrolling:touch;justify-content:flex-start;padding:1px 4px}
+    .controls::-webkit-scrollbar{display:none}
+    .seg{flex-shrink:0}
+    .seg button{font-size:8.5px;letter-spacing:.05em;padding:6px 7px;min-height:32px}
+    .ghost,.solid{font-size:8.5px;letter-spacing:.05em;padding:6px 9px;min-height:32px;flex-shrink:0}
+
+    /* Bảng thông tin thiên thể (.slab) thiết kế 2 trạng thái: Thu gọn thanh mỏng (Pill) và Chi tiết (Sheet) */
+    .slab{top:auto;bottom:calc(82px + env(safe-area-inset-bottom, 0px));left:10px;right:54px;width:auto;
+      padding:8px 12px;background:rgba(8,12,24,.95);border:1px solid var(--hairline);border-radius:6px;
+      -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);z-index:5;transition:max-height .25s ease, box-shadow .25s ease}
+
+    /* Khi Thu gọn (Mặc định trên mobile): chỉ hiện 1 dòng mỏng không che khuất màn 3D */
+    body.slab-collapsed .slab{padding:6px 10px;max-height:42px;overflow:hidden;background:rgba(7,10,22,.88)}
+    body.slab-collapsed .slab-top{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%}
+    body.slab-collapsed .slab-name{font-size:15px;margin:0;font-weight:600;display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+    body.slab-collapsed .slab-kind{font-size:8.5px;letter-spacing:.12em;margin-left:4px;display:inline-block}
+    body.slab-collapsed .slab-toggle{padding:3px 8px;font-size:9px;font-weight:600;color:var(--brass);border-color:rgba(232,200,122,.4);background:rgba(232,200,122,.12)}
+    body.slab-collapsed .slab-tag,
+    body.slab-collapsed .slab-body{display:none !important}
+
+    /* Khi Mở rộng chi tiết: Bung thành Bottom Sheet nổi bật, nền tối đục 98% chống xuyên thấu */
+    body:not(.slab-collapsed) .slab{right:10px;max-height:54vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+      background:rgba(8,12,24,.98);border-color:var(--brass);box-shadow:0 -8px 32px rgba(0,0,0,.85);z-index:10}
+    body:not(.slab-collapsed) .slab-name{font-size:22px;margin:2px 0 0}
+    body:not(.slab-collapsed) .slab-tag{font-size:12.5px;margin:4px 0 2px;display:block}
+    body:not(.slab-collapsed) .readout{grid-template-columns:1fr 1fr;column-gap:12px;margin-top:6px}
+    body:not(.slab-collapsed) .row{padding:4px 0;flex-direction:column;align-items:flex-start;gap:0}
+    body:not(.slab-collapsed) .row dt{font-size:7.5px}
+    body:not(.slab-collapsed) .row dd{text-align:left;font-size:10.5px}
+
+    /* Cụm phím nổi Touch HUD nằm cạnh phải vùng trời, thẳng hàng công thái học ngón cái */
+    .touch-hud{right:10px;top:calc(66px + env(safe-area-inset-top, 0px));bottom:auto;gap:4px;z-index:4}
     .th-btn{width:36px;height:36px;font-size:14px;border-radius:6px;touch-action:manipulation}
     .th-sep{width:18px;margin:1px auto}
-
-    /* Thanh điều khiển đáy & Thanh cuộn hành tinh chuẩn ngón tay 44px */
-    .console{padding:0 6px calc(8px + env(safe-area-inset-bottom, 0px));gap:5px}
-    .rail{min-height:44px;padding:4px 4px 2px;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scroll-snap-type:x proximity}
-    .chip{font-size:11.5px;padding:12px 10px 8px;min-height:42px;touch-action:manipulation;scroll-snap-align:center}
-    .chip.moon{font-size:10px;padding:12px 7px 8px}
-    .controls{gap:5px}
-    .seg button{font-size:8px;letter-spacing:.06em;padding:6px 6px;min-height:34px}
-    .ghost,.solid{font-size:8px;letter-spacing:.06em;padding:6px 7px;min-height:34px}
-    .site-footer{font-size:8.5px;gap:5px;padding:3px 6px;margin-top:0;justify-content:center}
-    .footer-center{display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:center}
-    .footer-phone{font-size:9.5px;font-weight:700;color:var(--brass);white-space:nowrap}
-    .footer-logo{width:14px;height:14px}
-    .footer-right{display:none}
-    .colophon,.hint{display:none}
-    .brand-watermark{bottom:calc(76px + env(safe-area-inset-bottom, 0px));left:8px;font-size:8px;opacity:.65}
 
     .fs-brand-logo{top:calc(10px + env(safe-area-inset-top, 0px));left:10px;padding:5px 9px 5px 6px;gap:5px}
     .fs-logo-img{width:18px;height:18px}
     .fs-logo-text{font-size:9.5px}
 
-    /* Bài học & Hiện tượng */
-    .lesson-card{left:10px;right:10px;width:auto;bottom:calc(112px + env(safe-area-inset-bottom, 0px));padding:12px 14px 11px}
+    /* Bài học, Hiện tượng, Cắt lớp khi mở trên mobile */
+    .lesson-card{left:10px;right:10px;width:auto;bottom:calc(84px + env(safe-area-inset-bottom, 0px));padding:12px 14px 11px;z-index:10}
     .lesson-card h3{font-size:18px}
     .les-txt{font-size:12px;line-height:1.6}
-    body.lesson .slab{display:none}
-    .phenom{left:10px;right:10px;bottom:calc(112px + env(safe-area-inset-bottom, 0px));width:auto;max-height:50vh;overflow-y:auto}
+    .phenom{left:10px;right:10px;bottom:calc(84px + env(safe-area-inset-bottom, 0px));width:auto;max-height:54vh;overflow-y:auto;z-index:10}
+    .xsec-panel{left:10px;right:10px;bottom:calc(84px + env(safe-area-inset-bottom, 0px));width:auto;max-height:52vh;z-index:10}
     #evt{font-size:9px;padding:5px 9px;letter-spacing:.08em;top:auto;bottom:calc(100% - 68px)}
   }
   @media (prefers-reduced-motion:reduce){ *{transition-duration:.01ms !important} }
@@ -837,6 +874,31 @@
           <small>Độ cao thực tế, vệ tinh & địa chất toàn cầu</small>
         </div>
       </a>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--brass);margin-bottom:2px">Nội dung học tập & Quan sát</div>
+      <button type="button" id="drawer-btn-lesson" class="drawer-action-btn">
+        <span style="font-size:16px">📚</span>
+        <div style="text-align:left">
+          <b>Bài học thiên văn</b>
+          <small style="display:block;font-size:10px;color:var(--parchment-dim);margin-top:1px">Chương trình quan sát từng bước sinh động</small>
+        </div>
+      </button>
+      <button type="button" id="drawer-btn-phenom" class="drawer-action-btn">
+        <span style="font-size:16px">🔭</span>
+        <div style="text-align:left">
+          <b>Hiện tượng kỳ thú</b>
+          <small style="display:block;font-size:10px;color:var(--parchment-dim);margin-top:1px">Nhật thực, nguyệt thực, thẳng hàng, giao hội</small>
+        </div>
+      </button>
+      <button type="button" id="drawer-btn-tonight" class="drawer-action-btn">
+        <span style="font-size:16px">🌌</span>
+        <div style="text-align:left">
+          <b>Bầu trời tối nay</b>
+          <small style="display:block;font-size:10px;color:var(--parchment-dim);margin-top:1px">Vị trí hành tinh quan sát thực tế từ Việt Nam</small>
+        </div>
+      </button>
     </div>
 
     <div style="display:flex;flex-direction:column;gap:6px">
@@ -1021,6 +1083,7 @@
       <button class="ghost" id="btn-sun-align" title="Góc nhìn từ thiên thể hướng thẳng về Mặt Trời">Hướng Mặt Trời</button>
       <button class="ghost" id="btn-level" title="Căn phẳng ngang mặt phẳng quỹ đạo">Căn phẳng</button>
       <button class="ghost" id="btn-scale" aria-pressed="false" title="Bật/tắt khoảng cách và kích thước thật theo tỉ lệ 1:1">Tỉ lệ thật</button>
+      <button type="button" class="ghost btn-mobile-explore" id="btn-mobile-explore" title="Khám phá Bài học, Hiện tượng, Bầu trời tối nay">📖 Khám phá</button>
       <button class="ghost" id="btn-lesson">Bài học</button>
       <button class="ghost" id="btn-phenom">Hiện tượng</button>
       <button class="ghost" id="btn-tonight">Tối nay</button>
@@ -1243,7 +1306,7 @@ var I18N = {
     // Thao tác & Điều khiển
     stand_on: "Đứng trên ",
     collapse: "Thu gọn ▾",
-    expand: "Mở rộng ▴",
+    expand: "Chi tiết ▴",
     orbit_view: "Về quỹ đạo",
     land_on: "Thả người xuống",
     now: "Bây giờ",
@@ -1378,7 +1441,7 @@ var I18N = {
     // Controls & Actions
     stand_on: "Land on ",
     collapse: "Collapse ▾",
-    expand: "Expand ▴",
+    expand: "Details ▴",
     orbit_view: "Orbit View",
     land_on: "Land on Surface",
     now: "Now",
@@ -6058,9 +6121,13 @@ if(!GLOK){
     var bSun = $("btn-sun-align"); if(bSun){ bSun.textContent = I18N[lang].align_sun; bSun.title = I18N[lang].sun_title; }
     var bLvl = $("btn-level"); if(bLvl){ bLvl.textContent = I18N[lang].level_ecliptic; bLvl.title = I18N[lang].level_title; }
     var bScale = $("btn-scale"); if(bScale){ bScale.textContent = I18N[lang].true_scale; bScale.title = I18N[lang].scale_title; }
+    var bMobExp = $("btn-mobile-explore"); if(bMobExp){ bMobExp.textContent = (lang === "en" ? "📖 Explore" : "📖 Khám phá"); }
     var bLes = $("btn-lesson"); if(bLes) bLes.textContent = I18N[lang].lessons;
     var bPhe = $("btn-phenom"); if(bPhe) bPhe.textContent = I18N[lang].phenom;
     var bTon = $("btn-tonight"); if(bTon) bTon.textContent = I18N[lang].tonight;
+    var dTxtLes = document.querySelector("#drawer-btn-lesson b"); if(dTxtLes) dTxtLes.textContent = I18N[lang].lessons;
+    var dTxtPhe = document.querySelector("#drawer-btn-phenom b"); if(dTxtPhe) dTxtPhe.textContent = I18N[lang].phenom;
+    var dTxtTon = document.querySelector("#drawer-btn-tonight b"); if(dTxtTon) dTxtTon.textContent = I18N[lang].tonight;
     var bPeg = $("btn-peg"); if(bPeg) bPeg.textContent = I18N[lang].land_on;
     var bMor = $("btn-more"); if(bMor) bMor.textContent = I18N[lang].more;
     var bCon = $("btn-constel"); if(bCon) bCon.textContent = I18N[lang].constel;
@@ -6259,6 +6326,14 @@ if(!GLOK){
   if(dBtnShare) dBtnShare.addEventListener("click", function(){ closeMobileDrawer(); openCommunity(); });
   var dBtnZalo = $("drawer-btn-zalo");
   if(dBtnZalo) dBtnZalo.addEventListener("click", function(){ closeMobileDrawer(); openCommunity(); });
+  var dBtnLesson = $("drawer-btn-lesson");
+  if(dBtnLesson) dBtnLesson.addEventListener("click", function(){ closeMobileDrawer(); var b=$("btn-lesson"); if(b) b.click(); });
+  var dBtnPhenom = $("drawer-btn-phenom");
+  if(dBtnPhenom) dBtnPhenom.addEventListener("click", function(){ closeMobileDrawer(); var b=$("btn-phenom"); if(b) b.click(); });
+  var dBtnTonight = $("drawer-btn-tonight");
+  if(dBtnTonight) dBtnTonight.addEventListener("click", function(){ closeMobileDrawer(); var b=$("btn-tonight"); if(b) b.click(); });
+  var btnMobExp = $("btn-mobile-explore");
+  if(btnMobExp) btnMobExp.addEventListener("click", openMobileDrawer);
 
   /* Tối ưu xoay màn hình (iPad & Mobile Orientation Change) */
   window.addEventListener("orientationchange", function(){
@@ -6759,11 +6834,23 @@ if(!GLOK){
 
   // Nút thu gọn / mở rộng bảng thông tin thiên thể
   var slabToggle=$("btn-slab-toggle");
-  if(slabToggle) slabToggle.addEventListener("click",function(e){
-    e.stopPropagation();
-    var col=document.body.classList.toggle("slab-collapsed");
-    this.textContent=col?"Mở rộng ▴":"Thu gọn ▾";
-  });
+  function updateSlabToggleText(){
+    if(!slabToggle) return;
+    var col = document.body.classList.contains("slab-collapsed");
+    slabToggle.textContent = col ? (LANG==="en" ? "Details ▴" : "Chi tiết ▴") : (LANG==="en" ? "Collapse ▾" : "Thu gọn ▾");
+  }
+  if(slabToggle) {
+    slabToggle.addEventListener("click",function(e){
+      e.stopPropagation();
+      document.body.classList.toggle("slab-collapsed");
+      updateSlabToggleText();
+    });
+  }
+  // Mặc định trên smartphone (< 768px), thu gọn bảng thông tin thành thanh mỏng để trả lại không gian 3D
+  if(window.innerWidth < 768){
+    document.body.classList.add("slab-collapsed");
+    updateSlabToggleText();
+  }
 
   function pick(px,py){
     var r=cv.getBoundingClientRect(), x=px-r.left, y=py-r.top;
