@@ -4125,18 +4125,26 @@ function buildDust(){
   gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0);
   gl.bindVertexArray(null);
 }
-/* vị trí thật (AU) của một hạt tại thời điểm jd */
+/* vị trí thật (AU) của một hạt tại thời điểm jd (cùng mặt phẳng hoàng đạo XY với các hành tinh) */
 function dustAt(o, jd, jupLon){
-  var th;
-  if(o.node<0){                       // Trojan: bám theo Sao Mộc ±60°
+  var th, r;
+  if(o.node < 0){                       // Trojan: bám theo Sao Mộc ±60°
     th = jupLon + o.ph + 0.06*Math.sin((jd-J2000)/4331*TAU + o.a*7);
-  } else {
-    var T = Math.pow(o.a,1.5)*365.25;
-    th = o.ph + TAU*(jd-J2000)/T;
+    r = o.a*(1 - o.e*Math.cos(th));
+    return [Math.cos(th)*r, Math.sin(th)*r*Math.cos(o.inc), Math.sin(th)*r*Math.sin(o.inc)];
   }
-  var r = o.a*(1 - o.e*Math.cos(th));
-  var x=Math.cos(th)*r, y=Math.sin(th)*r;
-  return [x, y*Math.sin(o.inc), y*Math.cos(o.inc)];
+  var T = Math.pow(o.a,1.5)*365.25;
+  th = o.ph + TAU*(jd-J2000)/T;
+  r = o.a*(1 - o.e*Math.cos(th));
+  var u = th - o.node;
+  var cO = Math.cos(o.node), sO = Math.sin(o.node);
+  var cI = Math.cos(o.inc),  sI = Math.sin(o.inc);
+  var cu = Math.cos(u),      su = Math.sin(u);
+  return [
+    r * (cO*cu - sO*su*cI),
+    r * (sO*cu + cO*su*cI),
+    r * su*sI
+  ];
 }
 function drawDust(S, camEye){
   if(!DUST || !V.dust) return;
