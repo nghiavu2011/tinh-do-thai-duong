@@ -807,7 +807,7 @@
       <button type="button" id="btn-mast-share" class="brand-contact" style="border-color:rgba(232,200,122,.4);color:var(--brass);cursor:pointer" title="Chia sẻ website">🚀 Chia sẻ</button>
       <button type="button" id="btn-fullscreen" class="brand-contact" style="border-color:rgba(232,200,122,.45);color:var(--parchment);cursor:pointer" title="Toàn màn hình ngắm vũ trụ (F)">⛶ Toàn màn hình</button>
       <button type="button" id="btn-audio" class="brand-contact" style="border-color:rgba(232,200,122,.45);color:var(--parchment-dim);cursor:pointer;display:inline-flex;align-items:center;gap:4px" title="Âm thanh vũ trụ (M)"><span id="audio-icon">🔇</span> <span id="audio-txt">Âm thanh</span></button>
-      <button type="button" id="btn-ver-badge" class="ver-badge" title="Nhật ký cập nhật / Release Notes">v1.3 <span class="ver-new-dot" id="ver-dot"></span></button>
+      <button type="button" id="btn-ver-badge" class="ver-badge" title="Nhật ký cập nhật / Release Notes">v2.0 <span class="ver-new-dot" id="ver-dot"></span></button>
       <div class="lang-switch" role="group" aria-label="Ngôn ngữ / Language">
         <button class="lang-btn active" id="btn-lang-vi" type="button" title="Tiếng Việt">VN</button>
         <button class="lang-btn" id="btn-lang-en" type="button" title="English (IAU Standard)">EN</button>
@@ -4851,11 +4851,30 @@ function renderGeoPanel(){
 
 var CHANGELOG = [
   {
+    version: "v2.0",
+    date: "2026-09-26",
+    title_vi: "Đại Bản Doanh Thái Dương Hệ: Sao Diêm Vương & Không Gian Âm Thanh 3D",
+    title_en: "Solar System Frontier: Pluto, Audio Space Engine & Cassini Core Seismology",
+    badge: "Mới nhất / Latest",
+    highlights_vi: [
+      "🪐 <b>Bổ sung Sao Diêm Vương (Pluto)</b>: Đưa Pluto trở lại trọn vẹn với bản đồ chi tiết Vùng Trái Tim (Tombaugh Regio), quỹ đạo lệch nghiêng 17° chuẩn Kepler và lát cắt cấu trúc băng - manti lỏng - lõi đá.",
+      "🎵 <b>Không Gian Âm Thanh Vũ Trụ (Anti-Clash Audio)</b>: Nhạc nền Ambient Deep Space thư giãn kết hợp hiệu ứng Warp Speed & Cắt lớp có cơ chế tự động hạ nhỏ nhạc nền (Ducking) êm ái.",
+      "🔬 <b>Chuẩn Hóa Vật Lý Thiên Văn Lõi Khí</b>: Khắc phục ngộ nhận màu sắc lõi Sao Mộc & Sao Thổ (hydro lỏng siêu tới hạn màu hổ phách, hydro kim loại ánh bạc) và cập nhật lõi khuếch tán 60% bán kính theo dữ liệu địa chấn vành đai Cassini.",
+      "✨ <b>Tối Ưu Hiển Thị & Khử Nhiễu Shader</b>: Sửa triệt để lỗi góc bóng tối Eclipse GLSL, hiển thị mượt mà không nhấp nháy trên mọi thiết bị di động & máy tính."
+    ],
+    highlights_en: [
+      "🪐 <b>Pluto Reintegration</b>: Full dwarf planet addition featuring Tombaugh Regio heart, 17° inclined Keplerian orbit, and ice-ocean-rock interior cross-section.",
+      "🎵 <b>Spatial Audio Engine</b>: Ambient deep space soundtrack paired with Warp and Cross-section sound effects powered by anti-clash audio ducking.",
+      "🔬 <b>Standardized Gas Giant Astrophysics</b>: Corrected interior color schemes (amber supercritical fluid & metallic silver) and implemented Cassini 60% diffuse core geometry.",
+      "✨ <b>Shader Stability & Anti-Flicker</b>: Guarded Eclipse shadow GLSL against zero-division NaNs, delivering rock-solid visual fidelity across all devices."
+    ]
+  },
+  {
     version: "v1.3",
     date: "2026-09-24",
     title_vi: "Chế Độ Toàn Màn Hình Zen Cinematic (Vũ Trụ Nguyên Bản)",
     title_en: "Zen Cinematic Fullscreen (Pure Universe Experience)",
-    badge: "Mới nhất / Latest",
+    badge: "Đã ổn định / Stable",
     highlights_vi: [
       "🌌 <b>Toàn Màn Hình Đắm Chìm (Zen Mode)</b>: Ẩn toàn bộ giao diện bảng điều khiển, để lộ duy nhất các thiên thể 3D, Dải Ngân Hà sống động và bầu trời ngàn sao.",
       "⌨️ <b>Phím Tắt Tiện Lợi</b>: Bấm phím <code>F</code> để bật/tắt toàn màn hình bất cứ lúc nào; bấm <code>Esc</code> để thoát.",
@@ -4952,7 +4971,7 @@ function openChangelog(){
   if(m) m.style.display = "grid";
   var dot = $("ver-dot");
   if(dot) dot.style.display = "none";
-  try { localStorage.setItem("seen_ver_tinh_do", "v1.3"); } catch(e){}
+  try { localStorage.setItem("seen_ver_tinh_do", "v2.0"); } catch(e){}
 }
 
 function closeChangelog(){
@@ -6082,7 +6101,7 @@ if(!GLOK){
     if(e.target === modalCl) closeChangelog();
   });
   try {
-    if(localStorage.getItem("seen_ver_tinh_do") === "v1.3"){
+    if(localStorage.getItem("seen_ver_tinh_do") === "v2.0"){
       var vDot = $("ver-dot");
       if(vDot) vDot.style.display = "none";
     }
