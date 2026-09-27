@@ -759,6 +759,7 @@
           <a href="https://www.facebook.com/nghiainterior/" target="_blank" rel="noopener noreferrer" style="color:#81D4FA;text-decoration:none;display:inline-flex;align-items:center;gap:3px">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Facebook
           </a>
+          <button type="button" id="wel-head-donate" style="appearance:none;background:rgba(232,200,122,.12);border:1px solid rgba(232,200,122,.35);border-radius:3px;color:var(--brass);font-family:var(--font-ui);font-size:10px;font-weight:600;padding:1px 6px;cursor:pointer;display:inline-flex;align-items:center;gap:3px" title="Ủng hộ & Tiếp sức dự án">☕ Buy Me a Coffee</button>
         </div>
       </div>
     </div>
@@ -774,9 +775,13 @@
         <span>Đứng đúng chỗ bóng Mặt Trăng quét qua Trái Đất</span></button>
       <button class="wel-card" id="wel-free"><b>Tự do khám phá</b>
         <span>Kéo để quay, cuộn để phóng to, nhấn vào hành tinh để tới gần</span></button>
-      <button class="wel-card" id="wel-community" style="grid-column:1/-1;border-color:rgba(100,181,246,.4);background:rgba(0,136,255,.07)">
-        <b style="color:#64B5F6">💬 Gia nhập Cộng đồng Thiên Văn & Tải Cẩm nang PDF</b>
-        <span>Tham gia Nhóm Zalo giao lưu, giải đáp thắc mắc và nhận tài liệu ngắm sao 2024–2025</span>
+      <button class="wel-card" id="wel-community" style="border-color:rgba(100,181,246,.4);background:rgba(0,136,255,.07)">
+        <b style="color:#64B5F6" id="wel-comm-b">💬 Gia nhập Cộng đồng</b>
+        <span id="wel-comm-span">Nhóm Zalo giao lưu, hỏi đáp hiện tượng &amp; nhận PDF</span>
+      </button>
+      <button class="wel-card" id="wel-donate" style="border-color:rgba(232,200,122,.5);background:rgba(232,200,122,.09)">
+        <b style="color:var(--brass)" id="wel-donate-b">☕ Buy Me a Coffee</b>
+        <span id="wel-donate-span">Quét QR Techcombank / MoMo tiếp sức học liệu mở</span>
       </button>
     </div>
     <label class="wel-skip"><input type="checkbox" id="wel-never"> Lần sau không hiện bảng này</label>
@@ -6220,6 +6225,14 @@ if(!GLOK){
       if(dTxt) dTxt.textContent = (lang === "en" ? "Buy Coffee" : "Ủng hộ");
       bDonate.title = I18N[lang].donate_title;
     }
+    var welHeadD = $("wel-head-donate");
+    if(welHeadD) welHeadD.textContent = (lang === "en" ? "☕ Buy Me a Coffee" : "☕ Buy Me a Coffee");
+    var welCommB = $("wel-comm-b"), welCommS = $("wel-comm-span");
+    if(welCommB) welCommB.textContent = (lang === "en" ? "💬 Astronomy Community" : "💬 Gia nhập Cộng đồng");
+    if(welCommS) welCommS.textContent = (lang === "en" ? "Join Zalo group, discuss & get Sky Guide PDF" : "Nhóm Zalo giao lưu, hỏi đáp hiện tượng & nhận PDF");
+    var welDonB = $("wel-donate-b"), welDonS = $("wel-donate-span");
+    if(welDonB) welDonB.textContent = (lang === "en" ? "☕ Buy Me a Coffee" : "☕ Buy Me a Coffee");
+    if(welDonS) welDonS.textContent = (lang === "en" ? "Techcombank QR / MoMo to keep 3D STEM free" : "Quét QR Techcombank / MoMo tiếp sức học liệu mở");
 
     // Speed buttons
     var speedBtns = document.querySelectorAll("#speed button");
@@ -6665,6 +6678,10 @@ if(!GLOK){
   if(footerBtnDonate) footerBtnDonate.addEventListener("click", function(ev){ ev.preventDefault(); openDonate(); });
   var commBtnDonate = $("comm-btn-donate");
   if(commBtnDonate) commBtnDonate.addEventListener("click", function(){ closeCommunity(); openDonate(); });
+  var welDonate = $("wel-donate");
+  if(welDonate) welDonate.addEventListener("click", function(){ closeWelcome(); openDonate(); });
+  var welHeadDonate = $("wel-head-donate");
+  if(welHeadDonate) welHeadDonate.addEventListener("click", function(){ closeWelcome(); openDonate(); });
 
   // Tab chuyển đổi Techcombank / MoMo
   var tabTcb = $("tab-btn-tcb"), tabMomo = $("tab-btn-momo");
