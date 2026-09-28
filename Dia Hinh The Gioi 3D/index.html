@@ -15,6 +15,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 
+<!-- Bảo mật, chống nhúng iframe & chống clone mã nguồn -->
+<script src="/security-guard.js"></script>
+
 <style>
 /* ═══ 1. DESIGN TOKENS (ĐỒNG BỘ TINH ĐỒ THÁI DƯƠNG) ═══ */
 :root{
@@ -1052,6 +1055,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.05;
+canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); console.warn('⚠️ WebGL context lost.'); }, false);
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
